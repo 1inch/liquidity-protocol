@@ -1,5 +1,6 @@
-const { constants, time, ether, expectRevert } = require('@openzeppelin/test-helpers');
+const { constants, time, ether, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
+const { fromWei } = require('web3-utils');
 
 const money = {
     ether,
@@ -58,7 +59,7 @@ const Factory = artifacts.require('FactoryMock');
 const Mooniswap = artifacts.require('MooniswapMock');
 const Token = artifacts.require('TokenMock');
 
-contract('Mooniswap', function ([_, wallet1, wallet2]) {
+contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
         this.WETH = await Token.new('WETH', 'WETH', 18);
@@ -157,6 +158,27 @@ contract('Mooniswap', function ([_, wallet1, wallet2]) {
                 () => this.mooniswap.swap(this.DAI.address, constants.ZERO_ADDRESS, money.dai('270'), money.zero, constants.ZERO_ADDRESS, { from: wallet2 }),
             );
             expect(received).to.be.bignumber.equal(money.eth('0.5'));
+        });
+    });
+
+    describe.only('Referral', async function () {
+        beforeEach(async function () {
+            this.mooniswap = await Mooniswap.new([this.WETH.address, this.DAI.address], 'Mooniswap', 'MOON');
+            const factory = await Factory.at(await this.mooniswap.factory());
+            await factory.setFee(money.weth('0.003'));
+            await this.WETH.mint(wallet1, new BN('1000'));
+            await this.DAI.mint(wallet1, new BN('1000'));
+            await this.WETH.mint(wallet2, new BN('1000000000000'));
+            await this.WETH.approve(this.mooniswap.address, new BN('1000'), { from: wallet1 });
+            await this.DAI.approve(this.mooniswap.address, new BN('10000'), { from: wallet1 });
+            await this.WETH.approve(this.mooniswap.address, new BN('1000000000000'), { from: wallet2 });
+        });
+
+        it('referral reward should be 1/20 of value increase', async function () {
+            await this.mooniswap.deposit([new BN('1000'), new BN('1000')], [money.zero, money.zero], { from: wallet1 });
+            await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
+            await this.mooniswap.swap(this.WETH.address, this.DAI.address, new BN('1000000000000'), money.zero, wallet3, { from: wallet2 });
+            expect(await this.mooniswap.balanceOf(wallet3)).to.be.bignumber.equal('4995');
         });
     });
 
