@@ -137,7 +137,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst));
     }
 
-    function deposit(uint256[] calldata amounts, uint256[] calldata minAmounts) external payable nonReentrant returns(uint256 fairSupply) {
+    function deposit(uint256[] memory amounts, uint256[] memory minAmounts) external payable nonReentrant returns(uint256 fairSupply) {
         IERC20[] memory _tokens = tokens;
         require(amounts.length == _tokens.length, "Mooniswap: wrong amounts length");
         require(msg.value == (_tokens[0].isETH() ? amounts[0] : (_tokens[1].isETH() ? amounts[1] : 0)), "Mooniswap: wrong value usage");
