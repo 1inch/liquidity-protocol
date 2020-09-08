@@ -9,44 +9,8 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
-
-
-interface IFactory {
-    function fee() external view returns(uint256);
-}
-
-
-library VirtualBalance {
-    using SafeMath for uint256;
-
-    struct Data {
-        uint216 balance;
-        uint40 time;
-    }
-
-    uint256 public constant DECAY_PERIOD = 5 minutes;
-
-    function set(VirtualBalance.Data storage self, uint256 balance) internal {
-        self.balance = uint216(balance);
-        self.time = uint40(block.timestamp);
-    }
-
-    function update(VirtualBalance.Data storage self, uint256 realBalance) internal {
-        set(self, current(self, realBalance));
-    }
-
-    function scale(VirtualBalance.Data storage self, uint256 realBalance, uint256 num, uint256 denom) internal {
-        set(self, current(self, realBalance).mul(num).add(denom.sub(1)).div(denom));
-    }
-
-    function current(VirtualBalance.Data memory self, uint256 realBalance) internal view returns(uint256) {
-        uint256 timePassed = Math.min(DECAY_PERIOD, block.timestamp.sub(self.time));
-        uint256 timeRemain = DECAY_PERIOD.sub(timePassed);
-        return uint256(self.balance).mul(timeRemain).add(
-            realBalance.mul(timePassed)
-        ).div(DECAY_PERIOD);
-    }
-}
+import "./libraries/VirtualBalance.sol";
+import "./interfaces/IMooniFactory.sol";
 
 
 contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
@@ -91,7 +55,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     uint256 public constant BASE_SUPPLY = 1000;  // Total supply on first deposit
     uint256 public constant FEE_DENOMINATOR = 1e18;
 
-    IFactory public factory;
+    IMooniFactory public factory;
     IERC20[] public tokens;
     mapping(IERC20 => bool) public isToken;
     mapping(IERC20 => SwapVolumes) public volumes;
@@ -103,7 +67,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
         require(assets.length == 2, "Mooniswap: only 2 tokens allowed");
 
-        factory = IFactory(msg.sender);
+        factory = IMooniFactory(msg.sender);
         tokens = assets;
         for (uint i = 0; i < assets.length; i++) {
             require(!isToken[assets[i]], "Mooniswap: duplicate tokens");

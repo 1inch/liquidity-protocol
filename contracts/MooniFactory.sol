@@ -4,10 +4,11 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./libraries/UniERC20.sol";
+import "./interfaces/IMooniFactory.sol";
 import "./Mooniswap.sol";
 
 
-contract MooniFactory is Ownable {
+contract MooniFactory is IMooniFactory, Ownable {
     using UniERC20 for IERC20;
 
     event Deployed(
