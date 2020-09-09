@@ -19,11 +19,6 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     using UniERC20 for IERC20;
     using VirtualBalance for VirtualBalance.Data;
 
-    struct Balances {
-        uint256 src;
-        uint256 dst;
-    }
-
     struct SwapVolumes {
         uint128 confirmed;
         uint128 result;
@@ -178,37 +173,35 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external payable nonReentrant returns(uint256 result) {
         require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
 
-        Balances memory balances = Balances({
-            src: src.uniBalanceOf(address(this)).sub(src.isETH() ? msg.value : 0),
-            dst: dst.uniBalanceOf(address(this))
-        });
+        uint256 srcBalance = src.uniBalanceOf(address(this)).sub(src.isETH() ? msg.value : 0);
+        uint256 dstBalance = dst.uniBalanceOf(address(this));
 
         // catch possible airdrops and external balance changes for deflationary tokens
-        uint256 srcAdditionBalance = Math.max(virtualBalancesForAddition[src].current(balances.src), balances.src);
-        uint256 dstRemovalBalance = Math.min(virtualBalancesForRemoval[dst].current(balances.dst), balances.dst);
+        uint256 srcAdditionBalance = Math.max(virtualBalancesForAddition[src].current(srcBalance), srcBalance);
+        uint256 dstRemovalBalance = Math.min(virtualBalancesForRemoval[dst].current(dstBalance), dstBalance);
 
         src.uniTransferFromSenderToThis(amount);
-        uint256 confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
+        uint256 confirmed = src.uniBalanceOf(address(this)).sub(srcBalance);
         result = _getReturn(src, dst, confirmed, srcAdditionBalance, dstRemovalBalance);
         require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
         dst.uniTransfer(msg.sender, result);
 
         // Update virtual balances to the same direction only at imbalanced state
-        if (srcAdditionBalance != balances.src) {
+        if (srcAdditionBalance != srcBalance) {
             virtualBalancesForAddition[src].set(srcAdditionBalance.add(confirmed));
         }
-        if (dstRemovalBalance != balances.dst) {
+        if (dstRemovalBalance != dstBalance) {
             virtualBalancesForRemoval[dst].set(dstRemovalBalance.sub(result));
         }
 
         // Update virtual balances to the opposite direction
-        virtualBalancesForRemoval[src].update(balances.src);
-        virtualBalancesForAddition[dst].update(balances.dst);
+        virtualBalancesForRemoval[src].update(srcBalance);
+        virtualBalancesForAddition[dst].update(dstBalance);
 
         if (referral != address(0)) {
             uint256 invariantRatio = uint256(1e36);
-            invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
-            invariantRatio = invariantRatio.mul(balances.dst.sub(result)).div(balances.dst);
+            invariantRatio = invariantRatio.mul(srcBalance.add(confirmed)).div(srcBalance);
+            invariantRatio = invariantRatio.mul(dstBalance.sub(result)).div(dstBalance);
             invariantRatio = invariantRatio.sqrt();
             if (invariantRatio > 1e18) {
                 // calculate share only if invariant increased
@@ -219,7 +212,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             }
         }
 
-        emit Swapped(msg.sender, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
+        emit Swapped(msg.sender, address(src), address(dst), confirmed, result, srcBalance, dstBalance, totalSupply(), referral);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);

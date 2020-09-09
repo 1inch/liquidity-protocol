@@ -55,7 +55,7 @@ async function checkBalances (mooniswap, token, expectedBalance, expectedAdditio
     expect(removalBalance).to.be.bignumber.equal(expectedRemovalBalance);
 }
 
-const Factory = artifacts.require('FactoryMock');
+const Factory = artifacts.require('MooniFactoryMock');
 const Mooniswap = artifacts.require('MooniswapMock');
 const Token = artifacts.require('TokenMock');
 
@@ -161,7 +161,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
         });
     });
 
-    describe.only('Referral', async function () {
+    describe('Referral', async function () {
         beforeEach(async function () {
             this.mooniswap = await Mooniswap.new([this.WETH.address, this.DAI.address], 'Mooniswap', 'MOON');
             const factory = await Factory.at(await this.mooniswap.factory());

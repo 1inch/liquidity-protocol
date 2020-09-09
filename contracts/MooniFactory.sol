@@ -19,7 +19,7 @@ contract MooniFactory is IMooniFactory, Ownable {
 
     uint256 public constant MAX_FEE = 0.003e18; // 0.3%
 
-    uint256 public fee;
+    uint256 public override fee;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
