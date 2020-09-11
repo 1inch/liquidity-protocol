@@ -52,7 +52,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     uint256 public constant BASE_SUPPLY = 1000;  // Total supply on first deposit
     uint256 public constant FEE_DENOMINATOR = 1e18;
 
-    IMooniFactory public factory;
+    IMooniFactory private immutable _factory;
     IERC20[] public tokens;
     mapping(IERC20 => bool) public isToken;
     mapping(IERC20 => SwapVolumes) public volumes;
@@ -64,7 +64,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
         require(assets.length == 2, "Mooniswap: only 2 tokens allowed");
 
-        factory = IMooniFactory(msg.sender);
+        _factory = IMooniFactory(msg.sender);
         tokens = assets;
         for (uint i = 0; i < assets.length; i++) {
             require(!isToken[assets[i]], "Mooniswap: duplicate tokens");
@@ -72,8 +72,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         }
     }
 
+    function factory() public view virtual returns(IMooniFactory) {
+        return _factory;
+    }
+
     function fee() public view returns(uint256) {
-        return factory.fee();
+        return _factory.fee();
     }
 
     function getTokens() external view returns(IERC20[] memory) {
