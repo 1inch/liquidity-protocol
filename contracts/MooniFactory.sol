@@ -38,15 +38,13 @@ contract MooniFactory is IMooniFactory, Ownable {
         require(pools[tokenA][tokenB] == Mooniswap(0), "Factory: pool already exists");
 
         (IERC20 token1, IERC20 token2) = sortTokens(tokenA, tokenB);
-        IERC20[] memory tokens = new IERC20[](2);
-        tokens[0] = token1;
-        tokens[1] = token2;
 
         string memory symbol1 = token1.uniSymbol();
         string memory symbol2 = token2.uniSymbol();
 
         pool = new Mooniswap(
-            tokens,
+            token1,
+            token2,
             string(abi.encodePacked("Mooniswap V1 (", symbol1, "-", symbol2, ")")),
             string(abi.encodePacked("MOON-V1-", symbol1, "-", symbol2))
         );
