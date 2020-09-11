@@ -102,16 +102,16 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst));
     }
 
-    function deposit(uint256[] memory amounts, uint256[] memory minAmounts) external payable returns(uint256 fairSupply) {
-        return deposit(amounts, minAmounts, msg.sender);
+    function deposit(uint256[] memory maxAmounts, uint256[] memory minAmounts) external payable returns(uint256 fairSupply) {
+        return deposit(maxAmounts, minAmounts, msg.sender);
     }
 
-    function deposit(uint256[] memory amounts, uint256[] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
+    function deposit(uint256[] memory maxAmounts, uint256[] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
         IERC20[] memory _tokens = tokens;
-        require(amounts.length == _tokens.length, "Mooniswap: wrong amounts length");
-        require(msg.value == (_tokens[0].isETH() ? amounts[0] : (_tokens[1].isETH() ? amounts[1] : 0)), "Mooniswap: wrong value usage");
+        require(maxAmounts.length == _tokens.length, "Mooniswap: wrong amounts length");
+        require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
-        uint256[] memory realBalances = new uint256[](amounts.length);
+        uint256[] memory realBalances = new uint256[](maxAmounts.length);
         for (uint i = 0; i < realBalances.length; i++) {
             realBalances[i] = _tokens[i].uniBalanceOf(address(this)).sub(_tokens[i].isETH() ? msg.value : 0);
         }
@@ -122,22 +122,22 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             _mint(address(this), BASE_SUPPLY); // Donate up to 1%
 
             // Use the greatest token amount but not less than 99k for the initial supply
-            for (uint i = 0; i < amounts.length; i++) {
-                fairSupply = Math.max(fairSupply, amounts[i]);
+            for (uint i = 0; i < maxAmounts.length; i++) {
+                fairSupply = Math.max(fairSupply, maxAmounts[i]);
             }
         }
         else {
             // Pre-compute fair supply
             fairSupply = type(uint256).max;
-            for (uint i = 0; i < amounts.length; i++) {
-                fairSupply = Math.min(fairSupply, totalSupply.mul(amounts[i]).div(realBalances[i]));
+            for (uint i = 0; i < maxAmounts.length; i++) {
+                fairSupply = Math.min(fairSupply, totalSupply.mul(maxAmounts[i]).div(realBalances[i]));
             }
         }
 
         uint256 fairSupplyCached = fairSupply;
-        for (uint i = 0; i < amounts.length; i++) {
-            require(amounts[i] > 0, "Mooniswap: amount is zero");
-            uint256 amount = (totalSupply == 0) ? amounts[i] :
+        for (uint i = 0; i < maxAmounts.length; i++) {
+            require(maxAmounts[i] > 0, "Mooniswap: amount is zero");
+            uint256 amount = (totalSupply == 0) ? maxAmounts[i] :
                 realBalances[i].mul(fairSupplyCached).add(totalSupply - 1).div(totalSupply);
             require(amount >= minAmounts[i], "Mooniswap: minAmount not reached");
 
@@ -149,7 +149,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         }
 
         if (totalSupply > 0) {
-            for (uint i = 0; i < amounts.length; i++) {
+            for (uint i = 0; i < maxAmounts.length; i++) {
                 virtualBalancesForRemoval[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
                 virtualBalancesForAddition[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
             }
