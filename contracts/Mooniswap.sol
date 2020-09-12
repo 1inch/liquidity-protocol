@@ -207,6 +207,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return swap(src, dst, amount, minReturn, referral, msg.sender);
     }
 
+    // solhint-disable-next-line visibility-modifier-order
     function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant returns(uint256 result) {
         require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
 
