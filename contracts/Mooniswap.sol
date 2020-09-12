@@ -252,7 +252,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             }
         }
 
-        emit Swapped(msg.sender, receiver, address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
+        emit Swapped(msg.sender, receiver, address(src), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
