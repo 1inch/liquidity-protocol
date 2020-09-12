@@ -8,7 +8,6 @@ const money = {
     oneWei: ether('0').addn(1),
     weth: ether,
     dai: ether,
-    usdc: (value) => ether(value).divn(1e12),
 };
 
 async function trackReceivedToken (token, wallet, txPromise) {
@@ -62,7 +61,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
         this.WETH = await Token.new('WETH', 'WETH', 18);
-        this.USDC = await Token.new('USDC', 'USDC', 6);
+        while (this.WETH.address > this.DAI.address) {
+            this.WETH = await Token.new('WETH', 'WETH', 18);
+        }
     });
 
     describe('Creation', async function () {
