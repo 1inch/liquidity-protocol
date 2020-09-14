@@ -60,6 +60,10 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         uint256 fee
     );
 
+    event DecayPeriodUpdate(
+        uint256 decayPeriod
+    );
+
     uint256 public constant REFERRAL_SHARE = 20; // 1/share = 5% of LPs revenue
     uint256 public constant BASE_SUPPLY = 1000;  // Total supply on first deposit
     uint256 public constant FEE_DENOMINATOR = 1e18;
@@ -72,7 +76,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
     uint256 public fee;
+    uint256 public decayPeriod;
     mapping(address => uint256) public feeVotes;
+    mapping(address => uint256) public decayPeriodVotes;
 
     constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public ERC20(name, symbol) {
         require(_token0 != _token1, "Mooniswap: duplicate tokens");
@@ -100,18 +106,14 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         }
     }
 
-    function decayPeriod() external pure returns(uint256) {
-        return VirtualBalance.DECAY_PERIOD;
-    }
-
     function getBalanceForAddition(IERC20 token) public view returns(uint256) {
         uint256 balance = token.uniBalanceOf(address(this));
-        return Math.max(virtualBalancesForAddition[token].current(balance), balance);
+        return Math.max(virtualBalancesForAddition[token].current(decayPeriod, balance), balance);
     }
 
     function getBalanceForRemoval(IERC20 token) public view returns(uint256) {
         uint256 balance = token.uniBalanceOf(address(this));
-        return Math.min(virtualBalancesForRemoval[token].current(balance), balance);
+        return Math.min(virtualBalancesForRemoval[token].current(decayPeriod, balance), balance);
     }
 
     function getReturn(IERC20 src, IERC20 dst, uint256 amount) external view returns(uint256) {
@@ -165,8 +167,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
 
         if (totalSupply > 0) {
             for (uint i = 0; i < maxAmounts.length; i++) {
-                virtualBalancesForRemoval[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
-                virtualBalancesForAddition[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForRemoval[_tokens[i]].scale(decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForAddition[_tokens[i]].scale(decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
             }
         }
 
@@ -194,8 +196,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
             token.uniTransfer(target, value);
             require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
 
-            virtualBalancesForAddition[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
-            virtualBalancesForRemoval[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForAddition[token].scale(decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForRemoval[token].scale(decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
         }
 
         emit Withdrawn(msg.sender, target, amount);
@@ -215,8 +217,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         });
 
         // catch possible airdrops and external balance changes for deflationary tokens
-        uint256 srcAdditionBalance = Math.max(virtualBalancesForAddition[src].current(balances.src), balances.src);
-        uint256 dstRemovalBalance = Math.min(virtualBalancesForRemoval[dst].current(balances.dst), balances.dst);
+        uint256 srcAdditionBalance = Math.max(virtualBalancesForAddition[src].current(decayPeriod, balances.src), balances.src);
+        uint256 dstRemovalBalance = Math.min(virtualBalancesForRemoval[dst].current(decayPeriod, balances.dst), balances.dst);
 
         src.uniTransferFrom(msg.sender, address(this), amount);
         uint256 confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
@@ -233,8 +235,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         }
 
         // Update virtual balances to the opposite direction
-        virtualBalancesForRemoval[src].update(balances.src);
-        virtualBalancesForAddition[dst].update(balances.dst);
+        virtualBalancesForRemoval[src].update(decayPeriod, balances.src);
+        virtualBalancesForAddition[dst].update(decayPeriod, balances.dst);
 
         if (referral != address(0)) {
             uint256 invariantRatio = uint256(1e36);
@@ -270,11 +272,11 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
 
     function feeVote(uint256 vote) external nonReentrant {
         require(vote <= MAX_FEE, "Fee vote is too high");
-        uint256 prevVote = feeVotes.get(msg.sender, _factory);
-        if (vote != prevVote || feeVotes[msg.sender] == 0) {
+        (uint256 prevVote, bool defaultVote) = feeVotes.get(msg.sender, _factory.fee);
+        if (defaultVote || vote != prevVote) {
             feeVotes.set(msg.sender, vote);
             uint256 prevFee = fee;
-            uint256 newFee = _recalcGovernance(prevFee, vote, prevVote, balanceOf(msg.sender), totalSupply());
+            uint256 newFee = _recalcAverage(prevFee, vote, prevVote, balanceOf(msg.sender), totalSupply());
             if (newFee != prevFee) {
                 emit FeeUpdate(newFee);
                 fee = newFee;
@@ -282,35 +284,65 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         }
     }
 
+    function decayPeriodVote(uint256 vote) external nonReentrant {
+        require(vote <= MAX_DECAY_PERIOD, "Decay period vote is too high");
+        (uint256 prevVote, bool defaultVote) = decayPeriodVotes.get(msg.sender, _factory.decayPeriod);
+        if (defaultVote || vote != prevVote) {
+            feeVotes.set(msg.sender, vote);
+            uint256 prevDecayPeriod = decayPeriod;
+            uint256 newDecayPeriod = _recalcAverage(prevDecayPeriod, vote, prevVote, balanceOf(msg.sender), totalSupply());
+            if (newDecayPeriod != prevDecayPeriod) {
+                emit DecayPeriodUpdate(newDecayPeriod);
+                decayPeriod = newDecayPeriod;
+            }
+        }
+    }
+
     function discardFeeVote() external nonReentrant {
         feeVotes.discard(msg.sender);
+    }
+
+    function discardDecayPeriodVote() external nonReentrant {
+        decayPeriodVotes.discard(msg.sender);
     }
  
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override { 
         uint256 totalWeight = totalSupply();
         uint256 prevFee = fee;
+        uint256 prevDecayPeriod = decayPeriod;
         uint256 newFee = prevFee.mul(totalWeight);
+        uint256 newDecayPeriod = prevDecayPeriod.mul(totalWeight);
         if (from != address(0)) {
-            uint256 vote = feeVotes.get(from, _factory);
-            newFee = newFee.sub(vote.mul(amount));
-            totalWeight = totalWeight.sub(amount);
+            (uint256 _feeVote, ) = feeVotes.get(from, _factory.fee);
+            newFee = newFee.sub(_feeVote.mul(amount));
+            (uint256 _decayPeriodVote, ) = decayPeriodVotes.get(from, _factory.decayPeriod);
+            newDecayPeriod = newDecayPeriod.sub(_decayPeriodVote.mul(amount));
             if (balanceOf(from) == amount) {
                 feeVotes.discard(from);
+                decayPeriodVotes.discard(from);
             }
+            totalWeight = totalWeight.sub(amount);
         }
         if (to != address(0)) {
-            uint256 vote = feeVotes.get(to, _factory);
-            newFee = newFee.add(vote.mul(amount));
+            (uint256 _feeVote, ) = feeVotes.get(to, _factory.fee);
+            newFee = newFee.add(_feeVote.mul(amount));
+            (uint256 _decayPeriodVote, ) = decayPeriodVotes.get(to, _factory.decayPeriod);
+            newDecayPeriod = newDecayPeriod.add(_decayPeriodVote.mul(amount));
             totalWeight = totalWeight.add(amount);
         }
         newFee = newFee.div(totalWeight);
+        newDecayPeriod = newDecayPeriod.div(totalWeight);
         if (newFee != prevFee) {
             emit FeeUpdate(newFee);
             fee = newFee;
         }
+        if (newDecayPeriod != prevDecayPeriod) {
+            emit DecayPeriodUpdate(newDecayPeriod);
+            decayPeriod = newDecayPeriod;
+        }
     }
 
-    function _recalcGovernance(uint256 total, uint256 vote, uint256 prev, uint256 weight, uint256 totalWeight) internal pure returns(uint256) {
+    function _recalcAverage(uint256 total, uint256 vote, uint256 prev, uint256 weight, uint256 totalWeight) internal pure returns(uint256) {
         return total.mul(totalWeight).add(vote.mul(weight)).sub(prev.mul(weight)).div(totalWeight);
     }
 

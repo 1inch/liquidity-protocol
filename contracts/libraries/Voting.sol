@@ -6,14 +6,13 @@ import "../interfaces/IMooniFactory.sol";
 
 
 library Voting {
-    function get(mapping(address => uint256) storage votes, address voter, IMooniFactory factory) internal view returns(uint256) {
+    function get(mapping(address => uint256) storage votes, address voter, function() external view returns(uint256) defaultGetter) internal view returns(uint256, bool) {
         uint256 vote = votes[voter];
         if (vote == 0) {
-            vote = factory.fee();
+            return (defaultGetter(), true);
         } else {
-            vote = vote - 1;
+            return (vote - 1, false);
         }
-        return vote;
     }
 
     function set(mapping(address => uint256) storage votes, address voter, uint256 vote) internal returns(uint256) {

@@ -19,6 +19,7 @@ contract MooniFactory is IMooniFactory, Ownable, MooniswapConstants {
     );
 
     uint256 public override fee;
+    uint256 public override decayPeriod = 5 minutes;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
