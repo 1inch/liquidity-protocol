@@ -82,11 +82,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return factory().fee();
     }
 
-    function getTokens() external view returns(IERC20[] memory) {
-        IERC20[] memory tokens = new IERC20[](2);
-        tokens[0] = token0;
-        tokens[1] = token1;
-        return tokens;
+    function getTokens() external view returns(IERC20[2] memory) {
+        return [token0, token1];
     }
 
     function tokens(uint256 i) external view returns(IERC20) {
@@ -115,18 +112,15 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst));
     }
 
-    function deposit(uint256[] memory maxAmounts, uint256[] memory minAmounts) external payable returns(uint256 fairSupply) {
+    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply) {
         return deposit(maxAmounts, minAmounts, msg.sender);
     }
 
-    function deposit(uint256[] memory maxAmounts, uint256[] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
-        IERC20[] memory _tokens = new IERC20[](2);
-        _tokens[0] = token0;
-        _tokens[1] = token1;
-        require(maxAmounts.length == _tokens.length, "Mooniswap: wrong amounts length");
+    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
+        IERC20[2] memory _tokens = [token0, token1];
         require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
-        uint256[] memory realBalances = new uint256[](maxAmounts.length);
+        uint256[2] memory realBalances;
         for (uint i = 0; i < realBalances.length; i++) {
             realBalances[i] = _tokens[i].uniBalanceOf(address(this)).sub(_tokens[i].isETH() ? msg.value : 0);
         }
@@ -181,9 +175,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     }
 
     function withdraw(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant {
-        IERC20[] memory _tokens = new IERC20[](2);
-        _tokens[0] = token0;
-        _tokens[1] = token1;
+        IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
         _burn(msg.sender, amount);
