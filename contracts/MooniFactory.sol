@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./libraries/UniERC20.sol";
 import "./interfaces/IMooniFactory.sol";
 import "./Mooniswap.sol";
+import "./MooniswapConstants.sol";
 
 
-contract MooniFactory is IMooniFactory, Ownable {
+contract MooniFactory is IMooniFactory, Ownable, MooniswapConstants {
     using UniERC20 for IERC20;
 
     event Deployed(
@@ -16,8 +17,6 @@ contract MooniFactory is IMooniFactory, Ownable {
         address indexed token1,
         address indexed token2
     );
-
-    uint256 public constant MAX_FEE = 0.003e18; // 0.3%
 
     uint256 public override fee;
     Mooniswap[] public allPools;

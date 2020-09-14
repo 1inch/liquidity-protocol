@@ -10,14 +10,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
+import "./libraries/Voting.sol";
 import "./interfaces/IMooniFactory.sol";
+import "./MooniswapConstants.sol";
 
 
-contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
+contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     using Sqrt for uint256;
     using SafeMath for uint256;
     using UniERC20 for IERC20;
     using VirtualBalance for VirtualBalance.Data;
+    using Voting for mapping(address => uint256);
 
     struct Balances {
         uint256 src;
@@ -53,6 +56,10 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         address referral
     );
 
+    event FeeUpdate(
+        uint256 fee
+    );
+
     uint256 public constant REFERRAL_SHARE = 20; // 1/share = 5% of LPs revenue
     uint256 public constant BASE_SUPPLY = 1000;  // Total supply on first deposit
     uint256 public constant FEE_DENOMINATOR = 1e18;
@@ -63,6 +70,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     mapping(IERC20 => SwapVolumes) public volumes;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
+
+    uint256 public fee;
+    mapping(address => uint256) public feeVotes;
 
     constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public ERC20(name, symbol) {
         require(_token0 != _token1, "Mooniswap: duplicate tokens");
@@ -76,10 +86,6 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
 
     function factory() external view virtual returns(IMooniFactory) {
         return _factory;
-    }
-
-    function fee() public view returns(uint256) {
-        return this.factory().fee();
     }
 
     function getTokens() external view returns(IERC20[] memory) {
@@ -270,12 +276,58 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         require(balanceOf(address(this)) >= BASE_SUPPLY, "Mooniswap: access denied");
     }
 
+    function feeVote(uint256 vote) external nonReentrant {
+        require(vote <= MAX_FEE, "Fee vote is too high");
+        uint256 prevVote = feeVotes.get(msg.sender, _factory);
+        if (vote != prevVote || feeVotes[msg.sender] == 0) {
+            feeVotes.set(msg.sender, vote);
+            uint256 prevFee = fee;
+            uint256 newFee = _recalcGovernance(prevFee, vote, prevVote, balanceOf(msg.sender), totalSupply());
+            if (newFee != prevFee) {
+                emit FeeUpdate(newFee);
+                fee = newFee;
+            }
+        }
+    }
+
+    function discardFeeVote() external nonReentrant {
+        feeVotes.discard(msg.sender);
+    }
+ 
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override { 
+        uint256 totalWeight = totalSupply();
+        uint256 prevFee = fee;
+        uint256 newFee = prevFee.mul(totalWeight);
+        if (from != address(0)) {
+            uint256 vote = feeVotes.get(from, _factory);
+            newFee = newFee.sub(vote.mul(amount));
+            totalWeight = totalWeight.sub(amount);
+            if (balanceOf(from) == amount) {
+                feeVotes.discard(from);
+            }
+        }
+        if (to != address(0)) {
+            uint256 vote = feeVotes.get(to, _factory);
+            newFee = newFee.add(vote.mul(amount));
+            totalWeight = totalWeight.add(amount);
+        }
+        newFee = newFee.div(totalWeight);
+        if (newFee != prevFee) {
+            emit FeeUpdate(newFee);
+            fee = newFee;
+        }
+    }
+
+    function _recalcGovernance(uint256 total, uint256 vote, uint256 prev, uint256 weight, uint256 totalWeight) internal pure returns(uint256) {
+        return total.mul(totalWeight).add(vote.mul(weight)).sub(prev.mul(weight)).div(totalWeight);
+    }
+
     function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
         if (src > dst) {
             (src, dst) = (dst, src);
         }
         if (src != dst && amount > 0 && src == token0 && dst == token1) {
-            uint256 taxedAmount = amount.sub(amount.mul(fee()).div(FEE_DENOMINATOR));
+            uint256 taxedAmount = amount.sub(amount.mul(fee).div(FEE_DENOMINATOR));
             return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
         }
     }

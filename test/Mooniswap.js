@@ -53,8 +53,8 @@ async function checkBalances (mooniswap, token, expectedBalance, expectedAdditio
     expect(removalBalance).to.be.bignumber.equal(expectedRemovalBalance);
 }
 
-const Factory = artifacts.require('MooniFactoryMock');
-const Mooniswap = artifacts.require('MooniswapMock');
+const MooniFactory = artifacts.require('MooniFactory');
+const Mooniswap = artifacts.require('Mooniswap');
 const Token = artifacts.require('TokenMock');
 
 contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
@@ -100,7 +100,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Raw ETH support', async function () {
         beforeEach(async function () {
-            this.mooniswap = await Mooniswap.new(constants.ZERO_ADDRESS, this.DAI.address, 'Mooniswap', 'MOON');
+            this.factory = await MooniFactory.new();
+            await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
+            this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
             await this.DAI.mint(wallet1, money.dai('270'));
             await this.DAI.mint(wallet2, money.dai('2700'));
             await this.DAI.approve(this.mooniswap.address, money.dai('270'), { from: wallet1 });
@@ -146,9 +148,10 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Referral', async function () {
         beforeEach(async function () {
-            this.mooniswap = await Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', 'MOON');
-            const factory = await Factory.at(await this.mooniswap.factory());
-            await factory.setFee(money.weth('0.003'));
+            this.factory = await MooniFactory.new();
+            await this.factory.deploy(this.WETH.address, this.DAI.address);
+            this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
+            await this.factory.setFee(money.weth('0.003'));
             await this.WETH.mint(wallet1, new BN('1000'));
             await this.DAI.mint(wallet1, new BN('1000'));
             await this.WETH.mint(wallet2, new BN('1000000000000'));
@@ -167,7 +170,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Actions', async function () {
         beforeEach(async function () {
-            this.mooniswap = await Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', 'MOON');
+            this.factory = await MooniFactory.new();
+            await this.factory.deploy(this.WETH.address, this.DAI.address);
+            this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, money.weth('1'));
             await this.DAI.mint(wallet1, money.dai('270'));
             await this.WETH.mint(wallet2, money.weth('10'));
@@ -631,18 +636,17 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 const result = await this.mooniswap.getReturn(this.WETH.address, this.DAI.address, money.eth('1'));
                 expect(result).to.be.bignumber.equal(money.dai('135'));
 
-                const factory = await Factory.at(await this.mooniswap.factory.call());
-                await factory.setFee(money.weth('0.003'));
+                await this.mooniswap.feeVote(money.weth('0.003'), { from: wallet1 });
 
                 const result2 = await this.mooniswap.getReturn(this.WETH.address, this.DAI.address, money.eth('1'));
-                expect(result2).to.be.bignumber.equal('134797195793690535803');
+                expect(result2).to.be.bignumber.equal('134797195793690535871');
 
                 const received1 = await trackReceivedToken(
                     this.DAI,
                     wallet2,
                     () => this.mooniswap.swap(this.WETH.address, this.DAI.address, money.weth('1'), money.zero, constants.ZERO_ADDRESS, wallet2, { from: wallet2 }),
                 );
-                expect(received1).to.be.bignumber.equal('134797195793690535803');
+                expect(received1).to.be.bignumber.equal('134797195793690535871');
             });
         });
     });
