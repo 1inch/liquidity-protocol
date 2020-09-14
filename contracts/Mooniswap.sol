@@ -113,10 +113,10 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     }
 
     function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply) {
-        return deposit(maxAmounts, minAmounts, msg.sender);
+        return depositFor(maxAmounts, minAmounts, msg.sender);
     }
 
-    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
+    function depositFor(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
         IERC20[2] memory _tokens = [token0, token1];
         require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
@@ -171,10 +171,10 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     }
 
     function withdraw(uint256 amount, uint256[] memory minReturns) external {
-        withdraw(amount, minReturns, msg.sender);
+        withdrawFor(amount, minReturns, msg.sender);
     }
 
-    function withdraw(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant {
+    function withdrawFor(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant {
         IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
@@ -196,11 +196,11 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
     }
 
     function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external payable returns(uint256 result) {
-        return swap(src, dst, amount, minReturn, referral, msg.sender);
+        return swapFor(src, dst, amount, minReturn, referral, msg.sender);
     }
 
     // solhint-disable-next-line visibility-modifier-order
-    function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant returns(uint256 result) {
+    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant returns(uint256 result) {
         require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
 
         Balances memory balances = Balances({
