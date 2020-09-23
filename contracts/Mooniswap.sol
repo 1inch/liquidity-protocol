@@ -360,30 +360,39 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        uint256 balanceFrom = balanceOf(from);
-        uint256 balanceTo = balanceOf(to);
-        uint256 totalSupply = totalSupply();
+        uint256 balanceFrom = (from != address(0)) ? balanceOf(from) : 0;
+        uint256 balanceTo = (from != address(0)) ? balanceOf(to) : 0;
+        uint256 totalSupplyBefore = totalSupply();
+        uint256 totalSupplyAfter = totalSupplyBefore
+            .add(from == address(0) ? amount : 0)
+            .sub(to == address(0) ? amount : 0);
 
         uint256 oldFee = _fee.result;
-        _fee.updateVote(
-            from,
-            _fee.votes[from],
-            balanceFrom,
-            balanceFrom.sub(amount),
-            totalSupply,
-            totalSupply,
-            _factory.fee
-        );
+        uint256 newFee = 0;
 
-        (uint256 newFee,) = _fee.updateVote(
-            to,
-            _fee.votes[to],
-            balanceTo,
-            balanceTo.add(amount),
-            totalSupply,
-            totalSupply,
-            _factory.fee
-        );
+        if (from != address(0)) {
+            (newFee,) = _fee.updateVote(
+                from,
+                _fee.votes[from],
+                balanceFrom,
+                balanceFrom.sub(amount),
+                totalSupplyBefore,
+                totalSupplyAfter,
+                _factory.fee
+            );
+        }
+
+        if (to != address(0)) {
+            (newFee,) = _fee.updateVote(
+                to,
+                _fee.votes[to],
+                balanceTo,
+                balanceTo.add(amount),
+                totalSupplyBefore,
+                totalSupplyAfter,
+                _factory.fee
+            );
+        }
 
         if (oldFee != newFee) {
             emit FeeUpdate(newFee);
@@ -392,26 +401,31 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         //
 
         uint256 oldDecayPeriod = _decayPeriod.result;
+        uint256 newDecayPeriod = 0;
 
-        _decayPeriod.updateVote(
-            from,
-            _decayPeriod.votes[from],
-            balanceFrom,
-            balanceFrom.sub(amount),
-            totalSupply,
-            totalSupply,
-            _factory.decayPeriod
-        );
+        if (from != address(0)) {
+            _decayPeriod.updateVote(
+                from,
+                _decayPeriod.votes[from],
+                balanceFrom,
+                balanceFrom.sub(amount),
+                totalSupplyBefore,
+                totalSupplyAfter,
+                _factory.decayPeriod
+            );
+        }
 
-        (uint256 newDecayPeriod,) = _decayPeriod.updateVote(
-            to,
-            _decayPeriod.votes[to],
-            balanceTo,
-            balanceTo.add(amount),
-            totalSupply,
-            totalSupply,
-            _factory.decayPeriod
-        );
+        if (to != address(0)) {
+            (newDecayPeriod,) = _decayPeriod.updateVote(
+                to,
+                _decayPeriod.votes[to],
+                balanceTo,
+                balanceTo.add(amount),
+                totalSupplyBefore,
+                totalSupplyAfter,
+                _factory.decayPeriod
+            );
+        }
 
         if (oldDecayPeriod != newDecayPeriod) {
             emit DecayPeriodUpdate(newDecayPeriod);
