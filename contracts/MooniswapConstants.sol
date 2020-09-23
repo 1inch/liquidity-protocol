@@ -3,6 +3,8 @@
 pragma solidity ^0.6.0;
 
 contract MooniswapConstants {
-    uint256 public constant MAX_FEE = 0.05e18; // 5%
-    uint256 public constant MAX_DECAY_PERIOD = 1 days;
+    uint256 internal constant _MAX_FEE = 0.1e18; // 10%
+    uint256 internal constant _MAX_SHARE = 0.5e18; // 50%
+    uint256 internal constant _MAX_DECAY_PERIOD = 1 days;
+    uint256 internal constant _FEE_DENOMINATOR = 1e18;
 }

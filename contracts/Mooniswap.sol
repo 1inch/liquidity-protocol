@@ -64,9 +64,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         uint256 decayPeriod
     );
 
-    uint256 public constant REFERRAL_SHARE = 20; // 1/share = 5% of LPs revenue
-    uint256 public constant BASE_SUPPLY = 1000;  // Total supply on first deposit
-    uint256 public constant FEE_DENOMINATOR = 1e18;
+    uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
 
     IMooniFactory private immutable _factory;
     IERC20 public immutable token0;
@@ -135,8 +133,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
 
         uint256 totalSupply = totalSupply();
         if (totalSupply == 0) {
-            fairSupply = BASE_SUPPLY.mul(99);
-            _mint(address(this), BASE_SUPPLY); // Donate up to 1%
+            fairSupply = _BASE_SUPPLY.mul(99);
+            _mint(address(this), _BASE_SUPPLY); // Donate up to 1%
 
             // Use the greatest token amount but not less than 99k for the initial supply
             for (uint i = 0; i < maxAmounts.length; i++) {
@@ -245,9 +243,14 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
             invariantRatio = invariantRatio.sqrt();
             if (invariantRatio > 1e18) {
                 // calculate share only if invariant increased
-                uint256 referralShare = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio).div(REFERRAL_SHARE);
+                uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
+                uint256 referralShare = invIncrease.mul(_factory.referralShare()).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
+                }
+                uint256 governanceShare = invIncrease.mul(_factory.governanceShare()).div(_FEE_DENOMINATOR);
+                if (governanceShare > 0) {
+                    _mint(_factory.governanceFeeReceiver(), governanceShare);
                 }
             }
         }
@@ -267,11 +270,11 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
 
         require(token0.uniBalanceOf(address(this)) >= balance0, "Mooniswap: access denied");
         require(token1.uniBalanceOf(address(this)) >= balance1, "Mooniswap: access denied");
-        require(balanceOf(address(this)) >= BASE_SUPPLY, "Mooniswap: access denied");
+        require(balanceOf(address(this)) >= _BASE_SUPPLY, "Mooniswap: access denied");
     }
 
     function feeVote(uint256 vote) external nonReentrant {
-        require(vote <= MAX_FEE, "Fee vote is too high");
+        require(vote <= _MAX_FEE, "Fee vote is too high");
         (uint256 prevVote, bool defaultVote) = feeVotes.get(msg.sender, _factory.fee);
         if (defaultVote || vote != prevVote) {
             feeVotes.set(msg.sender, vote);
@@ -285,7 +288,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     }
 
     function decayPeriodVote(uint256 vote) external nonReentrant {
-        require(vote <= MAX_DECAY_PERIOD, "Decay period vote is too high");
+        require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
         (uint256 prevVote, bool defaultVote) = decayPeriodVotes.get(msg.sender, _factory.decayPeriod);
         if (defaultVote || vote != prevVote) {
             feeVotes.set(msg.sender, vote);
@@ -351,7 +354,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
             (src, dst) = (dst, src);
         }
         if (src != dst && amount > 0 && src == token0 && dst == token1) {
-            uint256 taxedAmount = amount.sub(amount.mul(fee).div(FEE_DENOMINATOR));
+            uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
             return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
         }
     }
