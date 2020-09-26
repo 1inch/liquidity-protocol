@@ -19,6 +19,7 @@ library Voting {
     function update(
         Voting.Data storage self,
         address user,
+        Vote.Data memory oldVote,
         Vote.Data memory newVote,
         uint256 oldBalance,
         uint256 newBalance,
@@ -26,17 +27,16 @@ library Voting {
         uint256 newTotalSupply,
         function() external view returns(uint256) defaultVoteFn
     ) internal returns(uint256 newResult, bool changed) {
-        Vote.Data memory oldVote = self.votes[msg.sender];
         uint256 defaultVote = (newVote.isDefault() || oldVote.isDefault()) ? defaultVoteFn() : 0;
 
-        uint256 result = self.result;
-        newResult = result;
+        uint256 oldResult = self.result;
+        newResult = oldResult;
         newResult = newResult.mul(oldTotalSupply);
         newResult = newResult.add(newBalance.mul(newVote.get(defaultVote)));
         newResult = newResult.sub(oldBalance.mul(oldVote.get(defaultVote)));
         newResult = newResult.div(newTotalSupply);
 
-        if (newResult != result) {
+        if (newResult != oldResult) {
             self.result = newResult;
             changed = true;
         }
