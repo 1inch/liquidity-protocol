@@ -291,17 +291,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     function feeVote(uint256 vote) external nonReentrant {
         require(vote <= _MAX_FEE, "Fee vote is too high");
 
-        uint256 balance = balanceOf(msg.sender);
-        uint256 totalSupply = totalSupply();
-
-        (uint256 newFee, bool changed) = _fee.update(
+        (uint256 newFee, bool changed) = _fee.updateVote(
             msg.sender,
             _fee.votes[msg.sender],
             Vote.init(vote),
-            balance,
-            balance,
-            totalSupply,
-            totalSupply,
+            balanceOf(msg.sender),
+            totalSupply(),
             _factory.fee
         );
 
@@ -313,17 +308,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     function decayPeriodVote(uint256 vote) external nonReentrant {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
 
-        uint256 balance = balanceOf(msg.sender);
-        uint256 totalSupply = totalSupply();
-
-        (uint256 newDecayPeriod, bool decayPeriodChanged) = _decayPeriod.update(
+        (uint256 newDecayPeriod, bool decayPeriodChanged) = _decayPeriod.updateVote(
             msg.sender,
             _decayPeriod.votes[msg.sender],
             Vote.init(vote),
-            balance,
-            balance,
-            totalSupply,
-            totalSupply,
+            balanceOf(msg.sender),
+            totalSupply(),
             _factory.decayPeriod
         );
 
@@ -333,17 +323,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     }
 
     function discardFeeVote() external nonReentrant {
-        uint256 balance = balanceOf(msg.sender);
-        uint256 totalSupply = totalSupply();
-
-        (uint256 newFee, bool feeChanged) = _fee.update(
+        (uint256 newFee, bool feeChanged) = _fee.updateVote(
             msg.sender,
             _fee.votes[msg.sender],
             Vote.init(),
-            balance,
-            balance,
-            totalSupply,
-            totalSupply,
+            balanceOf(msg.sender),
+            totalSupply(),
             _factory.fee
         );
 
@@ -353,17 +338,12 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     }
 
     function discardDecayPeriodVote() external nonReentrant {
-        uint256 balance = balanceOf(msg.sender);
-        uint256 totalSupply = totalSupply();
-
-        (uint256 newFee, bool changed) = _decayPeriod.update(
+        (uint256 newFee, bool changed) = _decayPeriod.updateVote(
             msg.sender,
             _decayPeriod.votes[msg.sender],
             Vote.init(),
-            balance,
-            balance,
-            totalSupply,
-            totalSupply,
+            balanceOf(msg.sender),
+            totalSupply(),
             _factory.decayPeriod
         );
 
@@ -384,11 +364,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         uint256 newFee = 0;
 
         if (from != address(0)) {
-            Vote.Data memory voteFrom = _fee.votes[from];
-            (newFee,) = _fee.update(
+            (newFee,) = _fee.updateBalance(
                 from,
-                voteFrom,
-                voteFrom,
+                _fee.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
                 totalSupplyBefore,
@@ -398,11 +376,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         }
 
         if (to != address(0)) {
-            Vote.Data memory voteTo = _fee.votes[to];
-            (newFee,) = _fee.update(
+            (newFee,) = _fee.updateBalance(
                 to,
-                voteTo,
-                voteTo,
+                _fee.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
                 totalSupplyBefore,
@@ -421,11 +397,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         uint256 newDecayPeriod = 0;
 
         if (from != address(0)) {
-            Vote.Data memory voteFrom = _decayPeriod.votes[from];
-            _decayPeriod.update(
+            _decayPeriod.updateBalance(
                 from,
-                voteFrom,
-                voteFrom,
+                _decayPeriod.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
                 totalSupplyBefore,
@@ -435,11 +409,9 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         }
 
         if (to != address(0)) {
-            Vote.Data memory voteTo = _decayPeriod.votes[to];
-            (newDecayPeriod,) = _decayPeriod.update(
+            (newDecayPeriod,) = _decayPeriod.updateBalance(
                 to,
-                voteTo,
-                voteTo,
+                _decayPeriod.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
                 totalSupplyBefore,

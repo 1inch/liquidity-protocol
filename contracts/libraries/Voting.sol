@@ -16,6 +16,31 @@ library Voting {
         mapping(address => Vote.Data) votes;
     }
 
+    function updateVote(
+        Voting.Data storage self,
+        address user,
+        Vote.Data memory oldVote,
+        Vote.Data memory newVote,
+        uint256 balance,
+        uint256 totalSupply,
+        function() external view returns(uint256) defaultVoteFn
+    ) internal returns(uint256 newResult, bool changed) {
+        return update(self, user, oldVote, newVote, balance, balance, totalSupply, totalSupply, defaultVoteFn);
+    }
+
+    function updateBalance(
+        Voting.Data storage self,
+        address user,
+        Vote.Data memory vote,
+        uint256 oldBalance,
+        uint256 newBalance,
+        uint256 oldTotalSupply,
+        uint256 newTotalSupply,
+        function() external view returns(uint256) defaultVoteFn
+    ) internal returns(uint256 newResult, bool changed) {
+        return update(self, user, vote, vote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVoteFn);
+    }
+
     function update(
         Voting.Data storage self,
         address user,
