@@ -108,11 +108,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             for (uint i = 0; i < maxAmounts.length; i++) {
                 fairSupply = Math.max(fairSupply, maxAmounts[i]);
 
-                uint256 amount = maxAmounts[i];
-                require(amount > 0, "Mooniswap: amount is zero");
-                require(amount >= minAmounts[i], "Mooniswap: minAmount not reached");
+                require(maxAmounts[i] > 0, "Mooniswap: amount is zero");
+                require(maxAmounts[i] >= minAmounts[i], "Mooniswap: minAmount not reached");
 
-                _tokens[i].uniTransferFrom(msg.sender, address(this), amount);
+                _tokens[i].uniTransferFrom(msg.sender, address(this), maxAmounts[i]);
             }
         }
         else {
