@@ -316,7 +316,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
     function discardDecayPeriodVote() external nonReentrant {
         decayPeriodVotes.discard(msg.sender);
     }
- 
+
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override { 
         uint256 totalWeight = totalSupply();
         uint256 prevFee = fee;

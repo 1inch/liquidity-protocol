@@ -2,8 +2,6 @@
 
 pragma solidity ^0.6.12;
 
-import "../interfaces/IMooniFactory.sol";
-
 
 library Voting {
     function get(mapping(address => uint256) storage votes, address voter, function() external view returns(uint256) defaultGetter) internal view returns(uint256, bool) {
