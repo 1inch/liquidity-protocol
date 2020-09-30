@@ -11,7 +11,7 @@ const TokenWithNoSymbolMock = artifacts.require('TokenWithNoSymbolMock');
 
 contract('MooniFactory', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
-        this.factory = await MooniFactory.new();
+        this.factory = await MooniFactory.new(wallet1);
     });
 
     describe('Symbol', async function () {

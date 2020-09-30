@@ -100,7 +100,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Raw ETH support', async function () {
         beforeEach(async function () {
-            this.factory = await MooniFactory.new();
+            this.factory = await MooniFactory.new(wallet1);
             await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
             await this.DAI.mint(wallet1, money.dai('270'));
@@ -148,7 +148,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Referral', async function () {
         beforeEach(async function () {
-            this.factory = await MooniFactory.new();
+            this.factory = await MooniFactory.new(wallet1);
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.factory.setFee(money.weth('0.003'));
@@ -170,7 +170,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
 
     describe('Actions', async function () {
         beforeEach(async function () {
-            this.factory = await MooniFactory.new();
+            this.factory = await MooniFactory.new(wallet1);
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, money.weth('1'));
