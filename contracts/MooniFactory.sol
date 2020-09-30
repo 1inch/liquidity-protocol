@@ -16,9 +16,14 @@ contract MooniFactory is MooniFactoryGovernance {
         address indexed token2
     );
     
+    address public immutable poolOwner;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
+
+    constructor (address _poolOwner) public {
+        poolOwner = _poolOwner;
+    }
 
     function getAllPools() external view returns(Mooniswap[] memory) {
         return allPools;
@@ -40,7 +45,7 @@ contract MooniFactory is MooniFactoryGovernance {
             string(abi.encodePacked("MOON-V2-", symbol1, "-", symbol2))
         );
 
-        pool.transferOwnership(owner());
+        pool.transferOwnership(poolOwner);
         pools[token1][token2] = pool;
         pools[token2][token1] = pool;
         allPools.push(pool);
