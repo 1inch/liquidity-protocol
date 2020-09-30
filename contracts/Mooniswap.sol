@@ -3,25 +3,19 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
-import "./libraries/Voting.sol";
-import "./interfaces/IMooniFactory.sol";
-import "./MooniswapConstants.sol";
+import "./MooniswapGovernance.sol";
 
 
-contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
+contract Mooniswap is MooniswapGovernance, Ownable {
     using Sqrt for uint256;
     using SafeMath for uint256;
     using UniERC20 for IERC20;
     using VirtualBalance for VirtualBalance.Data;
-    using Vote for Vote.Data;
-    using Voting for Voting.Data;
 
     struct Balances {
         uint256 src;
@@ -57,54 +51,18 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         address referral
     );
 
-    event FeeUpdate(
-        uint256 fee
-    );
-
-    event DecayPeriodUpdate(
-        uint256 decayPeriod
-    );
-
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
 
-    IMooniFactory private immutable _factory;
     IERC20 public immutable token0;
     IERC20 public immutable token1;
     mapping(IERC20 => SwapVolumes) public volumes;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
-    Voting.Data private _fee;
-    Voting.Data private _decayPeriod;
-
-    function fee() public view returns(uint256) {
-        return _fee.result;
-    }
-
-    function decayPeriod() public view returns(uint256) {
-        return _decayPeriod.result;
-    }
-
-    function feeVotes(address user) public view returns(uint256) {
-        return _fee.votes[user].get(_factory.fee);
-    }
-
-    function decayPeriodVotes(address user) public view returns(uint256) {
-        return _decayPeriod.votes[user].get(_factory.decayPeriod);
-    }
-
-    constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public ERC20(name, symbol) {
+    constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public MooniswapGovernance(name, symbol) {
         require(_token0 != _token1, "Mooniswap: duplicate tokens");
-        require(bytes(name).length > 0, "Mooniswap: name is empty");
-        require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
-
-        _factory = IMooniFactory(msg.sender);
         token0 = _token0;
         token1 = _token1;
-    }
-
-    function factory() public view virtual returns(IMooniFactory) {
-        return _factory;
     }
 
     function getTokens() external view returns(IERC20[2] memory) {
@@ -267,13 +225,13 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
             if (invariantRatio > 1e18) {
                 // calculate share only if invariant increased
                 uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
-                uint256 referralShare = invIncrease.mul(_factory.referralShare()).div(_FEE_DENOMINATOR);
+                uint256 referralShare = invIncrease.mul(factory().referralShare()).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
                 }
-                uint256 governanceShare = invIncrease.mul(_factory.governanceShare()).div(_FEE_DENOMINATOR);
+                uint256 governanceShare = invIncrease.mul(factory().governanceShare()).div(_FEE_DENOMINATOR);
                 if (governanceShare > 0) {
-                    _mint(_factory.governanceFeeReceiver(), governanceShare);
+                    _mint(factory().governanceFeeReceiver(), governanceShare);
                 }
             }
         }
@@ -294,142 +252,6 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable, MooniswapConstants {
         require(token0.uniBalanceOf(address(this)) >= balance0, "Mooniswap: access denied");
         require(token1.uniBalanceOf(address(this)) >= balance1, "Mooniswap: access denied");
         require(balanceOf(address(this)) >= _BASE_SUPPLY, "Mooniswap: access denied");
-    }
-
-    function feeVote(uint256 vote) external nonReentrant {
-        require(vote <= _MAX_FEE, "Fee vote is too high");
-
-        (uint256 newFee, bool changed) = _fee.updateVote(
-            msg.sender,
-            _fee.votes[msg.sender],
-            Vote.init(vote),
-            balanceOf(msg.sender),
-            totalSupply(),
-            _factory.fee
-        );
-
-        if (changed) {
-            emit FeeUpdate(newFee);
-        }
-    }
-
-    function decayPeriodVote(uint256 vote) external nonReentrant {
-        require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
-
-        (uint256 newDecayPeriod, bool decayPeriodChanged) = _decayPeriod.updateVote(
-            msg.sender,
-            _decayPeriod.votes[msg.sender],
-            Vote.init(vote),
-            balanceOf(msg.sender),
-            totalSupply(),
-            _factory.decayPeriod
-        );
-
-        if (decayPeriodChanged) {
-            emit DecayPeriodUpdate(newDecayPeriod);
-        }
-    }
-
-    function discardFeeVote() external nonReentrant {
-        (uint256 newFee, bool feeChanged) = _fee.updateVote(
-            msg.sender,
-            _fee.votes[msg.sender],
-            Vote.init(),
-            balanceOf(msg.sender),
-            totalSupply(),
-            _factory.fee
-        );
-
-        if (feeChanged) {
-            emit FeeUpdate(newFee);
-        }
-    }
-
-    function discardDecayPeriodVote() external nonReentrant {
-        (uint256 newFee, bool changed) = _decayPeriod.updateVote(
-            msg.sender,
-            _decayPeriod.votes[msg.sender],
-            Vote.init(),
-            balanceOf(msg.sender),
-            totalSupply(),
-            _factory.decayPeriod
-        );
-
-        if (changed) {
-            emit DecayPeriodUpdate(newFee);
-        }
-    }
-
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        uint256 balanceFrom = (from != address(0)) ? balanceOf(from) : 0;
-        uint256 balanceTo = (from != address(0)) ? balanceOf(to) : 0;
-        uint256 totalSupplyBefore = totalSupply();
-        uint256 totalSupplyAfter = totalSupplyBefore
-            .add(from == address(0) ? amount : 0)
-            .sub(to == address(0) ? amount : 0);
-
-        uint256 oldFee = _fee.result;
-        uint256 newFee = 0;
-        if (from != address(0)) {
-            (newFee,) = _fee.updateBalance(
-                from,
-                _fee.votes[from],
-                balanceFrom,
-                balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
-                _factory.fee
-            );
-        }
-
-        if (to != address(0)) {
-            (newFee,) = _fee.updateBalance(
-                to,
-                _fee.votes[to],
-                balanceTo,
-                balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
-                _factory.fee
-            );
-        }
-
-        if (oldFee != newFee) {
-            emit FeeUpdate(newFee);
-        }
-
-        //
-
-        uint256 oldDecayPeriod = _decayPeriod.result;
-        uint256 newDecayPeriod = 0;
-
-        if (from != address(0)) {
-            _decayPeriod.updateBalance(
-                from,
-                _decayPeriod.votes[from],
-                balanceFrom,
-                balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
-                _factory.decayPeriod
-            );
-        }
-
-        if (to != address(0)) {
-            (newDecayPeriod,) = _decayPeriod.updateBalance(
-                to,
-                _decayPeriod.votes[to],
-                balanceTo,
-                balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
-                _factory.decayPeriod
-            );
-        }
-
-        if (oldDecayPeriod != newDecayPeriod) {
-            emit DecayPeriodUpdate(newDecayPeriod);
-        }
     }
 
     function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
