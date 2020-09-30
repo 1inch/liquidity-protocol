@@ -61,7 +61,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
         this.WETH = await Token.new('WETH', 'WETH', 18);
-        while (this.WETH.address > this.DAI.address) {
+        while (this.WETH.address.toLowerCase() > this.DAI.address.toLowerCase()) {
             this.WETH = await Token.new('WETH', 'WETH', 18);
         }
     });
