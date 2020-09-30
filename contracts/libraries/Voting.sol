@@ -2,22 +2,71 @@
 
 pragma solidity ^0.6.12;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./Vote.sol";
+
 
 library Voting {
-    function get(mapping(address => uint256) storage votes, address voter, function() external view returns(uint256) defaultGetter) internal view returns(uint256, bool) {
-        uint256 vote = votes[voter];
-        if (vote == 0) {
-            return (defaultGetter(), true);
-        } else {
-            return (vote - 1, false);
+    using SafeMath for uint256;
+    using Vote for Vote.Data;
+
+    struct Data {
+        uint256 result;
+        mapping(address => Vote.Data) votes;
+    }
+
+    function updateVote(
+        Voting.Data storage self,
+        address user,
+        Vote.Data memory oldVote,
+        Vote.Data memory newVote,
+        uint256 balance,
+        uint256 totalSupply,
+        function() external view returns(uint256) defaultVoteFn
+    ) internal returns(uint256 newResult, bool changed) {
+        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, totalSupply, defaultVoteFn);
+    }
+
+    function updateBalance(
+        Voting.Data storage self,
+        address user,
+        Vote.Data memory vote,
+        uint256 oldBalance,
+        uint256 newBalance,
+        uint256 oldTotalSupply,
+        uint256 newTotalSupply,
+        function() external view returns(uint256) defaultVoteFn
+    ) internal returns(uint256 newResult, bool changed) {
+        return _update(self, user, vote, vote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVoteFn);
+    }
+
+    function _update(
+        Voting.Data storage self,
+        address user,
+        Vote.Data memory oldVote,
+        Vote.Data memory newVote,
+        uint256 oldBalance,
+        uint256 newBalance,
+        uint256 oldTotalSupply,
+        uint256 newTotalSupply,
+        function() external view returns(uint256) defaultVoteFn
+    ) private returns(uint256 newResult, bool changed) {
+        uint256 defaultVote = (newVote.isDefault() || oldVote.isDefault()) ? defaultVoteFn() : 0;
+
+        uint256 oldResult = self.result;
+        newResult = oldResult;
+        newResult = newResult.mul(oldTotalSupply);
+        newResult = newResult.add(newBalance.mul(newVote.get(defaultVote)));
+        newResult = newResult.sub(oldBalance.mul(oldVote.get(defaultVote)));
+        newResult = newResult.div(newTotalSupply);
+
+        if (newResult != oldResult) {
+            self.result = newResult;
+            changed = true;
         }
-    }
 
-    function set(mapping(address => uint256) storage votes, address voter, uint256 vote) internal returns(uint256) {
-        votes[voter] = vote + 1;
-    }
-
-    function discard(mapping(address => uint256) storage votes, address voter) internal returns(uint256) {
-        votes[voter] = 0;
+        if (!newVote.eq(oldVote)) {
+            self.votes[user] = newVote;
+        }
     }
 }
