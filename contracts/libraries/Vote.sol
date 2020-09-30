@@ -24,14 +24,6 @@ library Vote {
         });
     }
 
-    function set(Data storage self, uint256 value) internal {
-        self.value = value + 1;
-    }
-
-    function discard(Data storage self) internal {
-        self.value = 0;
-    }
-
     function isDefault(Data memory self) internal pure returns(bool) {
         return self.value == 0;
     }
