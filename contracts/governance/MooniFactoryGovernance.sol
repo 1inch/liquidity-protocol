@@ -28,10 +28,10 @@ contract MooniFactoryGovernance is IMooniFactory, Ownable, MooniswapConstants {
         address governanceFeeReceiver
     );
 
-    uint256 public override fee = 0;
-    uint256 public override decayPeriod = 5 minutes;
-    uint256 public override referralShare = 0.05e18;
-    uint256 public override governanceShare = 0;
+    uint256 public override fee = _DEFAULT_FEE;
+    uint256 public override decayPeriod = _DEFAULT_DECAY_PERIOD;
+    uint256 public override referralShare = _DEFAULT_REFERRAL_SHARE;
+    uint256 public override governanceShare = _DEFAULT_GOVERNANCE_SHARE;
     address public override governanceFeeReceiver = address(0);
 
 

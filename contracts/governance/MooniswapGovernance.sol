@@ -30,6 +30,8 @@ contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
         require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
 
         _factory = IMooniFactory(msg.sender);
+        _fee.result = _DEFAULT_FEE;
+        _decayPeriod.result = _DEFAULT_DECAY_PERIOD;
     }
 
     function factory() public view returns(IMooniFactory) {
