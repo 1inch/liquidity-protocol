@@ -37,7 +37,8 @@ library Voting {
         uint256 newTotalSupply,
         function() external view returns(uint256) defaultVoteFn
     ) internal returns(uint256 newResult, bool changed) {
-        return _update(self, user, vote, vote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVoteFn);
+        Vote.Data memory newVote = newBalance == 0 ? Vote.init() : oldVote;
+        return _update(self, user, vote, newVote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVoteFn);
     }
 
     function _update(
