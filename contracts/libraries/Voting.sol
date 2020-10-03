@@ -22,23 +22,23 @@ library Voting {
         Vote.Data memory newVote,
         uint256 balance,
         uint256 totalSupply,
-        function() external view returns(uint256) defaultVoteFn
+        uint256 defaultVote
     ) internal returns(uint256 newResult, bool changed) {
-        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, totalSupply, defaultVoteFn);
+        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, totalSupply, defaultVote);
     }
 
     function updateBalance(
         Voting.Data storage self,
         address user,
-        Vote.Data memory vote,
+        Vote.Data memory oldVote,
         uint256 oldBalance,
         uint256 newBalance,
         uint256 oldTotalSupply,
         uint256 newTotalSupply,
-        function() external view returns(uint256) defaultVoteFn
+        uint256 defaultVote
     ) internal returns(uint256 newResult, bool changed) {
         Vote.Data memory newVote = newBalance == 0 ? Vote.init() : oldVote;
-        return _update(self, user, vote, newVote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVoteFn);
+        return _update(self, user, oldVote, newVote, oldBalance, newBalance, oldTotalSupply, newTotalSupply, defaultVote);
     }
 
     function _update(
@@ -50,10 +50,8 @@ library Voting {
         uint256 newBalance,
         uint256 oldTotalSupply,
         uint256 newTotalSupply,
-        function() external view returns(uint256) defaultVoteFn
+        uint256 defaultVote
     ) private returns(uint256 newResult, bool changed) {
-        uint256 defaultVote = (newVote.isDefault() || oldVote.isDefault()) ? defaultVoteFn() : 0;
-
         uint256 oldResult = self.result;
         newResult = oldResult;
         newResult = newResult.mul(oldTotalSupply);
