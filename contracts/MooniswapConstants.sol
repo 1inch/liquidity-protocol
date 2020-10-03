@@ -9,7 +9,7 @@ contract MooniswapConstants {
     uint256 internal constant _MIN_DECAY_PERIOD = 15 seconds;
 
     uint256 internal constant _MAX_FEE = 0.1e18; // 10%
-    uint256 internal constant _MAX_SHARE = 0.5e18; // 50%
+    uint256 internal constant _MAX_SHARE = 0.25e18; // 25%
     uint256 internal constant _MAX_DECAY_PERIOD = 1 hours;
 
     uint256 internal constant _DEFAULT_FEE = 0.00015e18; // 0.15%
