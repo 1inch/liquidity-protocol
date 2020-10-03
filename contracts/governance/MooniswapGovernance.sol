@@ -197,7 +197,7 @@ contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
             : 0;
 
         if (from != address(0)) {
-            _decayPeriod.updateBalance(
+            (newDecayPeriod,) = _decayPeriod.updateBalance(
                 from,
                 _decayPeriod.votes[from],
                 balanceFrom,
