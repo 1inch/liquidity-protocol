@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
-import "./MooniswapGovernance.sol";
+import "./governance/MooniswapGovernance.sol";
 
 
 contract Mooniswap is MooniswapGovernance, Ownable {

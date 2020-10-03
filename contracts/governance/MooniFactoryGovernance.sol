@@ -3,8 +3,8 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IMooniFactory.sol";
-import "./MooniswapConstants.sol";
+import "../interfaces/IMooniFactory.sol";
+import "../MooniswapConstants.sol";
 
 
 contract MooniFactoryGovernance is IMooniFactory, Ownable, MooniswapConstants {

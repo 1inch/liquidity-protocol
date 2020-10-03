@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 
 import "./libraries/UniERC20.sol";
 import "./Mooniswap.sol";
-import "./MooniFactoryGovernance.sol";
+import "./governance/MooniFactoryGovernance.sol";
 
 
 contract MooniFactory is MooniFactoryGovernance {
