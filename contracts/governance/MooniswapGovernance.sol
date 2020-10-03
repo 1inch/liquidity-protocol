@@ -71,6 +71,7 @@ contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
 
     function decayPeriodVote(uint256 vote) external nonReentrant {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
+        require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
         (uint256 newDecayPeriod, bool decayPeriodChanged) = _decayPeriod.updateVote(
             msg.sender,

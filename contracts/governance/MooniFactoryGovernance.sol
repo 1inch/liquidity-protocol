@@ -42,12 +42,14 @@ contract MooniFactoryGovernance is IMooniFactory, Ownable, MooniswapConstants {
     }
 
     function setDecayPeriod(uint256 newDecayPeriod) external onlyOwner {
+        require(newDecayPeriod >= _MIN_DECAY_PERIOD, "Factory: decay period is small");
         require(newDecayPeriod <= _MAX_DECAY_PERIOD, "Factory: decay period is too big");
         decayPeriod = newDecayPeriod;
         emit DecayPeriodUpdate(newDecayPeriod);
     }
 
     function setReferralShare(uint256 newReferralShare) external onlyOwner {
+        require(newReferralShare >= _MIN_REFERRAL_SHARE, "Factory: ref share is too small");
         require(newReferralShare <= _MAX_SHARE, "Factory: ref share is too big");
         referralShare = newReferralShare;
         emit ReferralShareUpdate(newReferralShare);
