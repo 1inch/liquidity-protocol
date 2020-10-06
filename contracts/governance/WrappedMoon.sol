@@ -8,6 +8,7 @@ import "../MooniFactory.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
 
+
 contract WrappedMoon is ERC20, MooniswapConstants {
     // TODO: add permit
 
@@ -21,7 +22,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
     Voting.Data private _decayPeriod;
     Voting.Data private _referralShare;
     Voting.Data private _governanceShare;
-    
+
     constructor(IERC20 _moonToken, MooniFactory _mooniFactory) public ERC20("Wrapped MOON Token", "wMOON") {
         moonToken = _moonToken;
         mooniFactory = _mooniFactory;

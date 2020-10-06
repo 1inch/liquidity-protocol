@@ -2,6 +2,7 @@
 
 pragma solidity ^0.6.0;
 
+
 contract MooniswapConstants {
     uint256 internal constant _FEE_DENOMINATOR = 1e18;
 
