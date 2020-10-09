@@ -59,7 +59,13 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
-    constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public MooniswapGovernance(name, symbol) {
+    constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol)
+        public
+        ERC20(name, symbol)
+    {
+        require(bytes(name).length > 0, "Mooniswap: name is empty");
+        require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
+
         require(_token0 != _token1, "Mooniswap: duplicate tokens");
         token0 = _token0;
         token1 = _token1;
