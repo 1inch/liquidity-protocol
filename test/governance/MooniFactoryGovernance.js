@@ -1,15 +1,6 @@
-const { ether, expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
+const { ether, expectRevert } = require('@openzeppelin/test-helpers');
 const constants = require('@openzeppelin/test-helpers/src/constants');
 const { expect } = require('chai');
-
-const money = {
-    ether,
-    eth: ether,
-    zero: ether('0'),
-    oneWei: ether('0').addn(1),
-    weth: ether,
-    dai: ether,
-};
 
 const MooniFactoryGovernance = artifacts.require('MooniFactoryGovernance');
 
@@ -21,18 +12,18 @@ contract('MooniFactoryGovernance', function ([_, wallet1]) {
 
     describe('fee', async function () {
         it('should correctly set fee', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await this.mooniFactoryGovernance.setFee(ether('0.1'));
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(ether('0.1'));
         });
 
         it('should reject big fee', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.mooniFactoryGovernance.setFee(ether('0.2')),
                 "Factory: fee is too high"
             );
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
         });
     });
 
@@ -90,18 +81,18 @@ contract('MooniFactoryGovernance', function ([_, wallet1]) {
 
     describe('governance share', async function() {
         it('should correctly set governance share', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await this.mooniFactoryGovernance.setGovernanceShare(ether('0.1'));
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.1'));
         });
 
         it('should reject big governance share', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.mooniFactoryGovernance.setGovernanceShare(ether('0.4')),
                 "Factory: gov share is too big"
             );
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
     });
 

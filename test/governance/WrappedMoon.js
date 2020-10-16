@@ -1,15 +1,6 @@
 const { ether, expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
-const money = {
-    ether,
-    eth: ether,
-    zero: ether('0'),
-    oneWei: ether('0').addn(1),
-    weth: ether,
-    dai: ether,
-};
-
 const MooniFactoryGovernance = artifacts.require('MooniFactoryGovernance');
 const MoonToken = artifacts.require('MoonToken');
 const WrappedMoon = artifacts.require('WrappedMoon');
@@ -28,32 +19,32 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
 
     describe('fee', async function () {
         it('should correctly vote for fee', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await this.wrappedMoon.feeVote(ether('0.1'));
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(ether('0.1'));
         });
 
         it('should reject big fee', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.wrappedMoon.feeVote(ether('0.2')),
                 "Fee vote is too high"
             );
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
         });
 
         it('should discard fee', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await this.wrappedMoon.feeVote(ether('0.1'));
             await this.wrappedMoon.discardFeeVote();
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
         });
 
         it('should reset fee vote on transfer', async function () {
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await this.wrappedMoon.feeVote(ether('0.1'));
             await this.wrappedMoon.transfer(wallet1, ether('1'));
-            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
         });
     });
 
@@ -139,32 +130,32 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
 
     describe('governance share', async function() {
         it('should correctly vote for governance share', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await this.wrappedMoon.governanceShareVote(ether('0.1'));
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.1'));
         });
 
         it('should reject big governance share', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.wrappedMoon.governanceShareVote(ether('0.4')),
                 "Governance share vote is too high"
             );
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
 
         it('should discard governance share', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await this.wrappedMoon.governanceShareVote(ether('0.2'));
             await this.wrappedMoon.discardGovernanceShareVote();
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
 
         it('should reset governance share vote on transfer', async function () {
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await this.wrappedMoon.governanceShareVote(ether('0.2'));
             await this.wrappedMoon.transfer(wallet1, ether('1'));
-            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(money.zero);
+            expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
     });
 
