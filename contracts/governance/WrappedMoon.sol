@@ -124,7 +124,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
     }
 
     function discardReferralShareVote() external {
-        (uint256 newReferralShare, bool referralShareChanged) = _decayPeriod.updateVote(
+        (uint256 newReferralShare, bool referralShareChanged) = _referralShare.updateVote(
             msg.sender,
             _referralShare.votes[msg.sender],
             Vote.init(),
@@ -134,12 +134,12 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         );
 
         if (referralShareChanged) {
-            mooniFactory.setDecayPeriod(newReferralShare);
+            mooniFactory.setReferralShare(newReferralShare);
         }
     }
 
     function governanceShareVote(uint256 vote) external {
-        require(vote <= _MAX_SHARE, "Referral share vote is too high");
+        require(vote <= _MAX_SHARE, "Gov share vote is too high");
 
         (uint256 newGovernanceShare, bool governanceShareChanged) = _governanceShare.updateVote(
             msg.sender,
@@ -151,7 +151,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         );
 
         if (governanceShareChanged) {
-            mooniFactory.setReferralShare(newGovernanceShare);
+            mooniFactory.setGovernanceShare(newGovernanceShare);
         }
     }
 
@@ -166,7 +166,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         );
 
         if (governanceShareChanged) {
-            mooniFactory.setReferralShare(newGovernanceShare);
+            mooniFactory.setGovernanceShare(newGovernanceShare);
         }
     }
 

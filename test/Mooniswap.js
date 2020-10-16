@@ -1,48 +1,7 @@
 const { constants, time, ether, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
-const money = {
-    ether,
-    eth: ether,
-    zero: ether('0'),
-    oneWei: ether('0').addn(1),
-    weth: ether,
-    dai: ether,
-};
-
-async function trackReceivedToken (token, wallet, txPromise) {
-    const preBalance = web3.utils.toBN(
-        (token === constants.ZERO_ADDRESS)
-            ? await web3.eth.getBalance(wallet)
-            : await token.balanceOf(wallet),
-    );
-
-    let txResult = await txPromise();
-    if (txResult.receipt) {
-        // Fix coverage since testrpc-sc gives: { tx: ..., receipt: ...}
-        txResult = txResult.receipt;
-    }
-    let txFees = web3.utils.toBN('0');
-    if (wallet.toLowerCase() === txResult.from.toLowerCase() && token === constants.ZERO_ADDRESS) {
-        const receipt = await web3.eth.getTransactionReceipt(txResult.transactionHash);
-        const tx = await web3.eth.getTransaction(receipt.transactionHash);
-        txFees = web3.utils.toBN(receipt.gasUsed).mul(web3.utils.toBN(tx.gasPrice));
-    }
-
-    const postBalance = web3.utils.toBN(
-        (token === constants.ZERO_ADDRESS)
-            ? await web3.eth.getBalance(wallet)
-            : await token.balanceOf(wallet),
-    );
-
-    return postBalance.sub(preBalance).add(txFees);
-}
-
-async function timeIncreaseTo (seconds) {
-    const delay = 1000 - new Date().getMilliseconds();
-    await new Promise(resolve => setTimeout(resolve, delay));
-    await time.increaseTo(seconds);
-}
+const { trackReceivedToken, timeIncreaseTo } = require('./helpers/utils.js');
 
 async function checkBalances (mooniswap, token, expectedBalance, expectedAdditionBalance, expectedRemovalBalance) {
     const balance = await token.balanceOf(mooniswap.address);
@@ -52,6 +11,15 @@ async function checkBalances (mooniswap, token, expectedBalance, expectedAdditio
     expect(additionBalance).to.be.bignumber.equal(expectedAdditionBalance);
     expect(removalBalance).to.be.bignumber.equal(expectedRemovalBalance);
 }
+
+const money = {
+    ether,
+    eth: ether,
+    zero: ether('0'),
+    oneWei: ether('0').addn(1),
+    weth: ether,
+    dai: ether,
+};
 
 const MooniFactory = artifacts.require('MooniFactory');
 const Mooniswap = artifacts.require('Mooniswap');
