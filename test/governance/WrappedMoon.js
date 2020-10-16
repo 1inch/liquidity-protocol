@@ -138,7 +138,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.wrappedMoon.governanceShareVote(ether('0.4')),
-                'Governance share vote is too high',
+                'Gov share vote is too high',
             );
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
