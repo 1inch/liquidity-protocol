@@ -5,7 +5,6 @@ const MooniFactoryGovernance = artifacts.require('MooniFactoryGovernance');
 const MoonToken = artifacts.require('MoonToken');
 const WrappedMoon = artifacts.require('WrappedMoon');
 
-
 contract('WrappedMoon', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
         this.moonToken = await MoonToken.new();
@@ -28,7 +27,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.wrappedMoon.feeVote(ether('0.2')),
-                "Fee vote is too high"
+                'Fee vote is too high',
             );
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal('0');
         });
@@ -48,7 +47,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe('decay period', async function() {
+    describe('decay period', async function () {
         it('should correctly vote for decay period', async function () {
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('300');
             await this.wrappedMoon.decayPeriodVote('120');
@@ -59,7 +58,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('300');
             await expectRevert(
                 this.wrappedMoon.decayPeriodVote('4000'),
-                "Decay period vote is too high"
+                'Decay period vote is too high',
             );
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('300');
         });
@@ -68,7 +67,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('300');
             await expectRevert(
                 this.wrappedMoon.decayPeriodVote('10'),
-                "Decay period vote is too low"
+                'Decay period vote is too low',
             );
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('300');
         });
@@ -88,7 +87,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe('referral share', async function() {
+    describe('referral share', async function () {
         it('should correctly vote for referral share', async function () {
             expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.05'));
             await this.wrappedMoon.referralShareVote(ether('0.1'));
@@ -99,7 +98,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.05'));
             await expectRevert(
                 this.wrappedMoon.referralShareVote(ether('0.4')),
-                "Referral share vote is too high"
+                'Referral share vote is too high',
             );
             expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.05'));
         });
@@ -108,7 +107,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.05'));
             await expectRevert(
                 this.wrappedMoon.referralShareVote('10000'),
-                "Referral share vote is too low"
+                'Referral share vote is too low',
             );
             expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.05'));
         });
@@ -128,7 +127,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe('governance share', async function() {
+    describe('governance share', async function () {
         it('should correctly vote for governance share', async function () {
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await this.wrappedMoon.governanceShareVote(ether('0.1'));
@@ -139,7 +138,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
             await expectRevert(
                 this.wrappedMoon.governanceShareVote(ether('0.4')),
-                "Governance share vote is too high"
+                'Governance share vote is too high',
             );
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal('0');
         });
@@ -159,8 +158,8 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe('transfers', async function() {
-        it('3 users', async function() {
+    describe('transfers', async function () {
+        it('3 users', async function () {
             await this.moonToken.mint(ether('1'), wallet1);
             await this.moonToken.approve(this.wrappedMoon.address, ether('1'), { from: wallet1 });
             await this.wrappedMoon.stake(ether('1'), { from: wallet1 });
