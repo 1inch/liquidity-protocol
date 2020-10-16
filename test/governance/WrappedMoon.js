@@ -15,7 +15,7 @@ const MoonToken = artifacts.require('MoonToken');
 const WrappedMoon = artifacts.require('WrappedMoon');
 
 
-contract.only('WrappedMoon', function ([_, wallet1, wallet2]) {
+contract('WrappedMoon', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
         this.moonToken = await MoonToken.new();
         this.mooniFactoryGovernance = await MooniFactoryGovernance.new();
@@ -168,7 +168,7 @@ contract.only('WrappedMoon', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe.only('transfers', async function() {
+    describe('transfers', async function() {
         it('3 users', async function() {
             await this.moonToken.mint(ether('1'), wallet1);
             await this.moonToken.approve(this.wrappedMoon.address, ether('1'), { from: wallet1 });
