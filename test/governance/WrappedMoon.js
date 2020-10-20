@@ -159,7 +159,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
     });
 
     describe('transfers', async function () {
-        it.only('3 users', async function () {
+        it('3 users', async function () {
             await this.moonToken.mint(ether('1'), wallet1);
             await this.moonToken.approve(this.wrappedMoon.address, ether('1'), { from: wallet1 });
             await this.wrappedMoon.stake(ether('1'), { from: wallet1 });
