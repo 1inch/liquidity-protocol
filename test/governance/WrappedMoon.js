@@ -159,7 +159,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
     });
 
     describe('transfers', async function () {
-        it('3 users', async function () {
+        it.only('3 users', async function () {
             await this.moonToken.mint(ether('1'), wallet1);
             await this.moonToken.approve(this.wrappedMoon.address, ether('1'), { from: wallet1 });
             await this.wrappedMoon.stake(ether('1'), { from: wallet1 });
@@ -178,7 +178,7 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
 
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(ether('0.03'));
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('160');
-            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.04').subn(1));
+            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.04'));
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.07'));
 
             await this.wrappedMoon.feeVote(ether('0.09'));
@@ -188,14 +188,14 @@ contract('WrappedMoon', function ([_, wallet1, wallet2]) {
 
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(ether('0.06'));
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('260');
-            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.1').subn(1));
+            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.1'));
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.14'));
 
             await this.wrappedMoon.transfer(wallet1, ether('1'));
 
             expect(await this.mooniFactoryGovernance.fee()).to.be.bignumber.equal(ether('0.05'));
             expect(await this.mooniFactoryGovernance.decayPeriod()).to.be.bignumber.equal('100');
-            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal('33333333333333332');
+            expect(await this.mooniFactoryGovernance.referralShare()).to.be.bignumber.equal('33333333333333333');
             expect(await this.mooniFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.11'));
         });
     });

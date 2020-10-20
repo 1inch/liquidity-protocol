@@ -26,6 +26,10 @@ contract WrappedMoon is ERC20, MooniswapConstants {
     constructor(IERC20 _moonToken, MooniFactory _mooniFactory) public ERC20("Wrapped MOON Token", "wMOON") {
         moonToken = _moonToken;
         mooniFactory = _mooniFactory;
+        _fee.result = _DEFAULT_FEE;
+        _decayPeriod.result = _DEFAULT_DECAY_PERIOD;
+        _referralShare.result = _DEFAULT_REFERRAL_SHARE;
+        _governanceShare.result = _DEFAULT_GOVERNANCE_SHARE;
     }
 
     function stake(uint256 amount) external {
@@ -173,15 +177,14 @@ contract WrappedMoon is ERC20, MooniswapConstants {
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         uint256 balanceFrom = (from != address(0)) ? balanceOf(from) : 0;
         uint256 balanceTo = (from != address(0)) ? balanceOf(to) : 0;
-        uint256 totalSupplyBefore = totalSupply();
-        uint256 totalSupplyAfter = totalSupplyBefore
+        uint256 newTotalSupply = totalSupply()
             .add(from == address(0) ? amount : 0)
             .sub(to == address(0) ? amount : 0);
 
-        _updateFeeOnTransfer(from, to, amount, balanceFrom, balanceTo, totalSupplyBefore, totalSupplyAfter);
-        _updateDecayPeriodOnTransfer(from, to, amount, balanceFrom, balanceTo, totalSupplyBefore, totalSupplyAfter);
-        _updateReferralShareOnTransfer(from, to, amount, balanceFrom, balanceTo, totalSupplyBefore, totalSupplyAfter);
-        _updateGovernanceShareOnTransfer(from, to, amount, balanceFrom, balanceTo, totalSupplyBefore, totalSupplyAfter);
+        _updateFeeOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
+        _updateDecayPeriodOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
+        _updateReferralShareOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
+        _updateGovernanceShareOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
     }
 
     function _updateFeeOnTransfer(
@@ -190,8 +193,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         uint256 amount,
         uint256 balanceFrom,
         uint256 balanceTo,
-        uint256 totalSupplyBefore,
-        uint256 totalSupplyAfter
+        uint256 newTotalSupply
     ) private {
         uint256 oldValue = _fee.result;
         uint256 newValue;
@@ -202,8 +204,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _fee.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_FEE
             );
         }
@@ -214,8 +215,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _fee.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_FEE
             );
         }
@@ -231,8 +231,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         uint256 amount,
         uint256 balanceFrom,
         uint256 balanceTo,
-        uint256 totalSupplyBefore,
-        uint256 totalSupplyAfter
+        uint256 newTotalSupply
     ) private {
         uint256 oldValue = _decayPeriod.result;
         uint256 newValue;
@@ -243,8 +242,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _decayPeriod.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_DECAY_PERIOD
             );
         }
@@ -255,8 +253,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _decayPeriod.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_DECAY_PERIOD
             );
         }
@@ -272,8 +269,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         uint256 amount,
         uint256 balanceFrom,
         uint256 balanceTo,
-        uint256 totalSupplyBefore,
-        uint256 totalSupplyAfter
+        uint256 newTotalSupply
     ) private {
         uint256 oldValue = _referralShare.result;
         uint256 newValue;
@@ -284,8 +280,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _referralShare.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_REFERRAL_SHARE
             );
         }
@@ -296,8 +291,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _referralShare.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_REFERRAL_SHARE
             );
         }
@@ -313,8 +307,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
         uint256 amount,
         uint256 balanceFrom,
         uint256 balanceTo,
-        uint256 totalSupplyBefore,
-        uint256 totalSupplyAfter
+        uint256 newTotalSupply
     ) private {
         uint256 oldValue = _governanceShare.result;
         uint256 newValue;
@@ -325,8 +318,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _governanceShare.votes[from],
                 balanceFrom,
                 balanceFrom.sub(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_GOVERNANCE_SHARE
             );
         }
@@ -337,8 +329,7 @@ contract WrappedMoon is ERC20, MooniswapConstants {
                 _governanceShare.votes[to],
                 balanceTo,
                 balanceTo.add(amount),
-                totalSupplyBefore,
-                totalSupplyAfter,
+                newTotalSupply,
                 _DEFAULT_GOVERNANCE_SHARE
             );
         }
