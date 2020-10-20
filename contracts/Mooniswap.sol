@@ -91,6 +91,8 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             return token0;
         } else if (i == 1) {
             return token1;
+        } else {
+            revert("Pool has two tokens");
         }
     }
 
