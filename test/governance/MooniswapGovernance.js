@@ -7,7 +7,6 @@ const Mooniswap = artifacts.require('Mooniswap');
 const MooniFactory = artifacts.require('MooniFactory');
 const Token = artifacts.require('TokenMock');
 
-
 contract('MooniswapGovernance', function ([_, wallet1]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
