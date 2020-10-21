@@ -9,7 +9,7 @@ import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
 
 
-contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
+abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
 
@@ -25,10 +25,7 @@ contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
     Voting.Data private _fee;
     Voting.Data private _decayPeriod;
 
-    constructor(string memory name, string memory symbol) internal ERC20(name, symbol) {
-        require(bytes(name).length > 0, "Mooniswap: name is empty");
-        require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
-
+    constructor() internal {
         _factory = IMooniFactory(msg.sender);
         _fee.result = _DEFAULT_FEE;
         _decayPeriod.result = _DEFAULT_DECAY_PERIOD;
