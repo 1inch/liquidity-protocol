@@ -45,6 +45,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         address indexed sender,
         address indexed receiver,
         address indexed srcToken,
+        address dstToken,
         uint256 amount,
         uint256 result,
         uint256 srcBalance,
@@ -248,7 +249,7 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
             }
         }
 
-        emit Swapped(msg.sender, receiver, address(src), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
+        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
