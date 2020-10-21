@@ -21,12 +21,12 @@
         "eslint-plugin-promise": "^4.0.1",
         "eslint-plugin-standard": "^4.0.0",
         "eth-gas-reporter": "^0.2.17",
-        "ganache-cli": "^6.9.1",
+        "ganache-cli": "^6.10.1",
         "@openzeppelin/test-helpers": "^0.5.6",
         "solc": "^0.6.12",
-        "solidity-coverage": "^0.7.9",
-        "solhint": "^3.0.0",
-        "truffle": "^5.1.35",
+        "solidity-coverage": "^0.7.10",
+        "solhint": "^3.2.0",
+        "truffle": "^5.1.41",
         "truffle-flattener": "^1.4.4"
     },
     "scripts": {

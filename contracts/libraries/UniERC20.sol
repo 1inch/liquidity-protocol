@@ -33,16 +33,16 @@ library UniERC20 {
         }
     }
 
-    function uniTransferFromSenderToThis(IERC20 token, uint256 amount) internal {
+    function uniTransferFrom(IERC20 token, address payable from, address to, uint256 amount) internal {
         if (amount > 0) {
             if (isETH(token)) {
                 require(msg.value >= amount, "UniERC20: not enough value");
                 if (msg.value > amount) {
                     // Return remainder if exist
-                    msg.sender.transfer(msg.value.sub(amount));
+                    from.transfer(msg.value.sub(amount));
                 }
             } else {
-                token.safeTransferFrom(msg.sender, address(this), amount);
+                token.safeTransferFrom(from, to, amount);
             }
         }
     }
