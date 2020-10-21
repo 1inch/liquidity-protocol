@@ -82,8 +82,10 @@ contract Mooniswap is ERC20, ReentrancyGuard, Ownable {
         return factory().fee();
     }
 
-    function getTokens() external view returns(IERC20[2] memory) {
-        return [token0, token1];
+    function getTokens() external view returns(IERC20[] memory tokens) {
+        tokens = new IERC20[](2);
+        tokens[0] = token0;
+        tokens[1] = token1;
     }
 
     function tokens(uint256 i) external view returns(IERC20) {
