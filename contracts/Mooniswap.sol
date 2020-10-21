@@ -43,6 +43,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         address indexed sender,
         address indexed receiver,
         address indexed srcToken,
+        address dstToken,
         uint256 amount,
         uint256 result,
         uint256 srcBalance,
@@ -67,8 +68,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         token1 = _token1;
     }
 
-    function getTokens() external view returns(IERC20[2] memory) {
-        return [token0, token1];
+    function getTokens() external view returns(IERC20[] memory tokens) {
+        tokens = new IERC20[](2);
+        tokens[0] = token0;
+        tokens[1] = token1;
     }
 
     function tokens(uint256 i) external view returns(IERC20) {
@@ -76,6 +79,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             return token0;
         } else if (i == 1) {
             return token1;
+        } else {
+            revert("Pool has two tokens");
         }
     }
 
@@ -106,7 +111,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         if (totalSupply == 0) {
             fairSupply = _BASE_SUPPLY.mul(99);
             _mint(address(this), _BASE_SUPPLY); // Donate up to 1%
-            
+
             for (uint i = 0; i < maxAmounts.length; i++) {
                 fairSupply = Math.max(fairSupply, maxAmounts[i]);
 
@@ -224,9 +229,9 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             uint256 invariantRatio = uint256(1e36);
             invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
             invariantRatio = invariantRatio.mul(balances.dst.sub(result)).div(balances.dst);
-            invariantRatio = invariantRatio.sqrt();
-            if (invariantRatio > 1e18) {
+            if (invariantRatio > 1e36) {
                 // calculate share only if invariant increased
+                invariantRatio = invariantRatio.sqrt();
                 uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
                 uint256 referralShare = invIncrease.mul(factory().referralShare()).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
@@ -239,7 +244,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             }
         }
 
-        emit Swapped(msg.sender, receiver, address(src), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
+        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
