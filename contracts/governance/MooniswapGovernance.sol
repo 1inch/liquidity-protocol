@@ -16,18 +16,14 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     event FeeUpdate(uint256 fee);
     event DecayPeriodUpdate(uint256 decayPeriod);
 
-    IMooniFactory private immutable _factory;
+    IMooniFactory public immutable factory;
     Voting.Data private _fee;
     Voting.Data private _decayPeriod;
 
     constructor() internal {
-        _factory = IMooniFactory(msg.sender);
+        factory = IMooniFactory(msg.sender);
         _fee.result = _DEFAULT_FEE;
         _decayPeriod.result = _DEFAULT_DECAY_PERIOD;
-    }
-
-    function factory() public view returns(IMooniFactory) {
-        return _factory;
     }
 
     function fee() public view returns(uint256) {
@@ -39,11 +35,11 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     }
 
     function feeVotes(address user) public view returns(uint256) {
-        return _fee.votes[user].get(_factory.fee);
+        return _fee.votes[user].get(factory.fee);
     }
 
     function decayPeriodVotes(address user) public view returns(uint256) {
-        return _decayPeriod.votes[user].get(_factory.decayPeriod);
+        return _decayPeriod.votes[user].get(factory.decayPeriod);
     }
 
     function feeVote(uint256 vote) external nonReentrant {
@@ -57,7 +53,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             Vote.init(vote),
             balanceOf(msg.sender),
             totalSupply(),
-            oldVote.isDefault() ? _factory.fee() : 0
+            oldVote.isDefault() ? factory.fee() : 0
         );
 
         if (changed) {
@@ -77,7 +73,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             Vote.init(vote),
             balanceOf(msg.sender),
             totalSupply(),
-            oldVote.isDefault() ? _factory.decayPeriod() : 0
+            oldVote.isDefault() ? factory.decayPeriod() : 0
         );
 
         if (decayPeriodChanged) {
@@ -92,7 +88,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             Vote.init(),
             balanceOf(msg.sender),
             totalSupply(),
-            _factory.fee()
+            factory.fee()
         );
 
         if (feeChanged) {
@@ -107,7 +103,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             Vote.init(),
             balanceOf(msg.sender),
             totalSupply(),
-            _factory.decayPeriod()
+            factory.decayPeriod()
         );
 
         if (decayPeriodChanged) {
@@ -137,7 +133,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 oldFee = _fee.result;
         uint256 newFee;
         uint256 defaultFee = (_fee.votes[from].isDefault() || balanceFrom == amount || _fee.votes[to].isDefault())
-            ? _factory.fee()
+            ? factory.fee()
             : 0;
 
         if (from != address(0)) {
@@ -178,7 +174,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 oldDecayPeriod = _decayPeriod.result;
         uint256 newDecayPeriod;
         uint256 defaultDecayPeriod = (_decayPeriod.votes[from].isDefault() || balanceFrom == amount || _decayPeriod.votes[to].isDefault())
-            ? _factory.decayPeriod()
+            ? factory.decayPeriod()
             : 0;
 
         if (from != address(0)) {

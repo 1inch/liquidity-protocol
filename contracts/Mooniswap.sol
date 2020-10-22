@@ -233,13 +233,13 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 // calculate share only if invariant increased
                 invariantRatio = invariantRatio.sqrt();
                 uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
-                uint256 referralShare = invIncrease.mul(factory().referralShare()).div(_FEE_DENOMINATOR);
+                uint256 referralShare = invIncrease.mul(factory.referralShare()).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
                 }
-                uint256 governanceShare = invIncrease.mul(factory().governanceShare()).div(_FEE_DENOMINATOR);
+                uint256 governanceShare = invIncrease.mul(factory.governanceShare()).div(_FEE_DENOMINATOR);
                 if (governanceShare > 0) {
-                    _mint(factory().governanceFeeReceiver(), governanceShare);
+                    _mint(factory.governanceFeeReceiver(), governanceShare);
                 }
             }
         }
