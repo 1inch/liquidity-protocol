@@ -13,13 +13,8 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     using Vote for Vote.Data;
     using Voting for Voting.Data;
 
-    event FeeUpdate(
-        uint256 fee
-    );
-
-    event DecayPeriodUpdate(
-        uint256 decayPeriod
-    );
+    event FeeUpdate(uint256 fee);
+    event DecayPeriodUpdate(uint256 decayPeriod);
 
     IMooniFactory private immutable _factory;
     Voting.Data private _fee;
