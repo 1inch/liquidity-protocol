@@ -130,11 +130,15 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 balanceTo,
         uint256 newTotalSupply
     ) private {
+        bool defaultFrom = (from == address(0)) || _fee.votes[from].isDefault();
+        bool defaultTo = (to == address(0)) || _fee.votes[to].isDefault();
+        if (defaultFrom && defaultTo) {
+            return;
+        }
+
         uint256 oldFee = _fee.result;
         uint256 newFee;
-        uint256 defaultFee = (_fee.votes[from].isDefault() || balanceFrom == amount || _fee.votes[to].isDefault())
-            ? factory.fee()
-            : 0;
+        uint256 defaultFee = (defaultFrom || defaultTo || balanceFrom == amount) ? factory.fee() : 0;
 
         if (from != address(0)) {
             (newFee,) = _fee.updateBalance(
@@ -171,11 +175,15 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 balanceTo,
         uint256 newTotalSupply
     ) private {
+        bool defaultFrom = (from == address(0)) || _fee.votes[from].isDefault();
+        bool defaultTo = (to == address(0)) || _fee.votes[to].isDefault();
+        if (defaultFrom && defaultTo) {
+            return;
+        }
+
         uint256 oldDecayPeriod = _decayPeriod.result;
         uint256 newDecayPeriod;
-        uint256 defaultDecayPeriod = (_decayPeriod.votes[from].isDefault() || balanceFrom == amount || _decayPeriod.votes[to].isDefault())
-            ? factory.decayPeriod()
-            : 0;
+        uint256 defaultDecayPeriod = (defaultFrom || defaultTo || balanceFrom == amount) ? factory.decayPeriod() : 0;
 
         if (from != address(0)) {
             (newDecayPeriod,) = _decayPeriod.updateBalance(
