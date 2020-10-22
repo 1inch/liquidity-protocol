@@ -60,7 +60,7 @@ contract GovernanceFeeReceiver {
     }
 
     function _validateSpread(Mooniswap mooniswap) view private {
-        IERC20[2] memory tokens = mooniswap.getTokens();
+        IERC20[] memory tokens = mooniswap.getTokens();
 
         uint256 buyPrice;
         uint256 sellPrice;
