@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
@@ -60,7 +62,17 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
-    constructor(IERC20 _token0, IERC20 _token1, string memory name, string memory symbol) public ERC20(name, symbol) {
+    constructor(
+        IERC20 _token0,
+        IERC20 _token1,
+        string memory name,
+        string memory symbol,
+        IMooniswapFactoryGovernance _mooniswapFactoryGovernance
+    )
+        public
+        ERC20(name, symbol)
+        MooniswapGovernance(_mooniswapFactoryGovernance)
+    {
         require(bytes(name).length > 0, "Mooniswap: name is empty");
         require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
         require(_token0 != _token1, "Mooniswap: duplicate tokens");
@@ -145,10 +157,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 fairSupply = Math.min(fairSupply, totalSupply.mul(confirmed).div(realBalances[i]));
             }
 
-            uint256 __decayPeriod = decayPeriod();  // gas savings
+            uint256 _decayPeriod = decayPeriod();  // gas savings
             for (uint i = 0; i < maxAmounts.length; i++) {
-                virtualBalancesForRemoval[_tokens[i]].scale(__decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
-                virtualBalancesForAddition[_tokens[i]].scale(__decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForRemoval[_tokens[i]].scale(_decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForAddition[_tokens[i]].scale(_decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
             }
         }
 
@@ -166,7 +178,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
-        uint256 __decayPeriod = decayPeriod();  // gas savings
+        uint256 _decayPeriod = decayPeriod();  // gas savings
         _burn(msg.sender, amount);
 
         for (uint i = 0; i < _tokens.length; i++) {
@@ -177,8 +189,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             token.uniTransfer(target, value);
             require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
 
-            virtualBalancesForAddition[token].scale(__decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
-            virtualBalancesForRemoval[token].scale(__decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForAddition[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForRemoval[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
         }
 
         emit Withdrawn(msg.sender, target, amount);
@@ -196,35 +208,49 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             src: src.uniBalanceOf(address(this)).sub(src.isETH() ? msg.value : 0),
             dst: dst.uniBalanceOf(address(this))
         });
-
-        uint256 __decayPeriod = decayPeriod();  // gas savings
         uint256 confirmed;
-        {  // stack too deep
-            // catch possible airdrops and external balance changes for deflationary tokens
-            uint256 srcAdditionBalance = virtualBalancesForAddition[src].current(__decayPeriod, balances.src);
-            srcAdditionBalance = Math.max(srcAdditionBalance, balances.src);
-            uint256 dstRemovalBalance = virtualBalancesForRemoval[dst].current(__decayPeriod, balances.dst);
-            dstRemovalBalance = Math.min(dstRemovalBalance, balances.dst);
+        (confirmed, result) = _doTransfers(src, dst, amount, minReturn, receiver, balances);
+        _mintRewards(confirmed, result, referral, balances);
+        _emitSwapped(receiver, src, dst, confirmed, result, balances, referral);
 
-            src.uniTransferFrom(msg.sender, address(this), amount);
-            confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
-            result = _getReturn(src, dst, confirmed, srcAdditionBalance, dstRemovalBalance);
-            require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
-            dst.uniTransfer(receiver, result);
+        // Overflow of uint128 is desired
+        volumes[src].confirmed += uint128(confirmed);
+        volumes[src].result += uint128(result);
+    }
 
-            // Update virtual balances to the same direction only at imbalanced state
-            if (srcAdditionBalance != balances.src) {
-                virtualBalancesForAddition[src].set(srcAdditionBalance.add(confirmed));
-            }
-            if (dstRemovalBalance != balances.dst) {
-                virtualBalancesForRemoval[dst].set(dstRemovalBalance.sub(result));
-            }
+    function _emitSwapped(address receiver, IERC20 src, IERC20 dst, uint256 confirmed, uint256 result, Balances memory balances, address referral) private {
+        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
+    }
+
+    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances) private returns(uint256 confirmed, uint256 result) {
+        uint256 _decayPeriod = decayPeriod();
+        uint256 srcAdditionBalance = virtualBalancesForAddition[src].current(_decayPeriod, balances.src);
+        srcAdditionBalance = Math.max(srcAdditionBalance, balances.src);
+        uint256 dstRemovalBalance = virtualBalancesForRemoval[dst].current(_decayPeriod, balances.dst);
+        dstRemovalBalance = Math.min(dstRemovalBalance, balances.dst);
+
+        src.uniTransferFrom(msg.sender, address(this), amount);
+        confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
+        result = _getReturn(src, dst, confirmed, srcAdditionBalance, dstRemovalBalance);
+        require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
+        dst.uniTransfer(receiver, result);
+
+        // Update virtual balances to the same direction only at imbalanced state
+        if (srcAdditionBalance != balances.src) {
+            virtualBalancesForAddition[src].set(srcAdditionBalance.add(confirmed));
         }
-
+        if (dstRemovalBalance != balances.dst) {
+            virtualBalancesForRemoval[dst].set(dstRemovalBalance.sub(result));
+        }
         // Update virtual balances to the opposite direction
-        virtualBalancesForRemoval[src].update(__decayPeriod, balances.src);
-        virtualBalancesForAddition[dst].update(__decayPeriod, balances.dst);
+        virtualBalancesForRemoval[src].update(_decayPeriod, balances.src);
+        virtualBalancesForAddition[dst].update(_decayPeriod, balances.dst);
+    }
 
+    function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
+        IMooniswapFactoryGovernance.GovernanceParameters memory parameters = mooniswapFactoryGovernance.parameters();
+
+        // TODO: should always mint governance share
         if (referral != address(0)) {
             uint256 invariantRatio = uint256(1e36);
             invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -233,22 +259,28 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 // calculate share only if invariant increased
                 invariantRatio = invariantRatio.sqrt();
                 uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
-                uint256 referralShare = invIncrease.mul(factory.referralShare()).div(_FEE_DENOMINATOR);
+
+                uint256 referralShare = invIncrease.mul(parameters.referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
                 }
-                uint256 governanceShare = invIncrease.mul(factory.governanceShare()).div(_FEE_DENOMINATOR);
+
+                uint256 governanceShare = invIncrease.mul(parameters.governanceShare).div(_FEE_DENOMINATOR);
                 if (governanceShare > 0) {
-                    _mint(factory.governanceFeeReceiver(), governanceShare);
+                    _mint(parameters.governanceFeeReceiver, governanceShare);
                 }
             }
         }
+    }
 
-        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
-
-        // Overflow of uint128 is desired
-        volumes[src].confirmed += uint128(confirmed);
-        volumes[src].result += uint128(result);
+    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
+        if (src > dst) {
+            (src, dst) = (dst, src);
+        }
+        if (amount > 0 && src == token0 && dst == token1) {
+            uint256 taxedAmount = amount.sub(amount.mul(fee()).div(_FEE_DENOMINATOR));
+            return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
+        }
     }
 
     function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner {
@@ -260,15 +292,5 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         require(token0.uniBalanceOf(address(this)) >= balance0, "Mooniswap: access denied");
         require(token1.uniBalanceOf(address(this)) >= balance1, "Mooniswap: access denied");
         require(balanceOf(address(this)) >= _BASE_SUPPLY, "Mooniswap: access denied");
-    }
-
-    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
-        if (src > dst) {
-            (src, dst) = (dst, src);
-        }
-        if (amount > 0 && src == token0 && dst == token1) {
-            uint256 taxedAmount = amount.sub(amount.mul(fee()).div(_FEE_DENOMINATOR));
-            return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
-        }
     }
 }

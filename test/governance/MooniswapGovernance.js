@@ -4,15 +4,17 @@ const { expect } = require('chai');
 const { timeIncreaseTo } = require('../helpers/utils.js');
 
 const Mooniswap = artifacts.require('Mooniswap');
-const MooniFactory = artifacts.require('MooniFactory');
+const MooniswapFactory = artifacts.require('MooniswapFactory');
+const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 const Token = artifacts.require('TokenMock');
 
-contract('MooniswapGovernance', function ([_, wallet1]) {
+contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
-        this.mooniFactory = await MooniFactory.new(_);
-        await this.mooniFactory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
-        this.mooniswap = await Mooniswap.at(await this.mooniFactory.pools(constants.ZERO_ADDRESS, this.DAI.address));
+        this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
+        this.factory = await MooniswapFactory.new(_, this.governance.address);
+        await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
+        this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
         await this.DAI.mint(_, ether('270'));
         await this.DAI.approve(this.mooniswap.address, ether('270'));
 
@@ -91,6 +93,38 @@ contract('MooniswapGovernance', function ([_, wallet1]) {
             await this.mooniswap.decayPeriodVote('120');
             await this.mooniswap.transfer(wallet1, ether('270'));
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('300');
+        });
+    });
+
+    describe('multi-user', async function () {
+        it('3 users', async function () {
+            await this.DAI.mint(wallet1, ether('270'));
+            await this.DAI.approve(this.mooniswap.address, ether('270'), { from: wallet1 });
+            await this.mooniswap.deposit([ether('1'), ether('270')], ['0', '0'], { value: ether('1'), from: wallet1 });
+            expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal('270000000000000001000');
+            await this.mooniswap.feeVote(ether('0.06'), { from: wallet1 });
+            await this.mooniswap.decayPeriodVote('120', { from: wallet1 });
+
+            await this.DAI.mint(wallet2, ether('270'));
+            await this.DAI.approve(this.mooniswap.address, ether('270'), { from: wallet2 });
+            await this.mooniswap.deposit([ether('1'), ether('270')], ['0', '0'], { value: ether('1'), from: wallet2 });
+            expect(await this.mooniswap.balanceOf(wallet2)).to.be.bignumber.equal('270000000000000001000');
+            await this.mooniswap.feeVote(ether('0.03'), { from: wallet2 });
+            await this.mooniswap.decayPeriodVote('60', { from: wallet2 });
+
+            expect(await this.mooniswap.fee()).to.be.bignumber.equal(ether('0.03'));
+            expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('160');
+
+            await this.mooniswap.feeVote(ether('0.09'));
+            await this.mooniswap.decayPeriodVote('600');
+
+            expect(await this.mooniswap.fee()).to.be.bignumber.equal('59999999999999999');
+            expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('259');
+
+            await this.mooniswap.transfer(wallet1, ether('270'));
+
+            expect(await this.mooniswap.fee()).to.be.bignumber.equal('49999999999999999');
+            expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('100');
         });
     });
 });
