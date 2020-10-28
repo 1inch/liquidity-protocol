@@ -108,14 +108,12 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     ) private {
         Vote.Data memory voteFrom = _fee.votes[from];
         Vote.Data memory voteTo = _fee.votes[to];
-        bool defaultFrom = (from == address(0)) || voteFrom.isDefault();
-        bool defaultTo = (to == address(0)) || voteTo.isDefault();
 
-        if (defaultFrom && defaultTo) {
+        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
             return;
         }
 
-        uint256 defaultFee = (defaultFrom || defaultTo || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultFee() : 0;
+        uint256 defaultFee = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultFee() : 0;
         uint256 oldFee = _fee.result;
         uint256 newFee;
 
@@ -142,14 +140,12 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     ) private {
         Vote.Data memory voteFrom = _decayPeriod.votes[from];
         Vote.Data memory voteTo = _decayPeriod.votes[to];
-        bool defaultFrom = (from == address(0)) || voteFrom.isDefault();
-        bool defaultTo = (to == address(0)) || voteTo.isDefault();
 
-        if (defaultFrom && defaultTo) {
+        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
             return;
         }
 
-        uint256 defaultDecayPeriod = (defaultFrom || defaultTo || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0;
+        uint256 defaultDecayPeriod = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0;
         uint256 oldDecayPeriod = _decayPeriod.result;
         uint256 newDecayPeriod;
 
