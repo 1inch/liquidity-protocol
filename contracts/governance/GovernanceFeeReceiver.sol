@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
@@ -19,11 +20,11 @@ contract GovernanceFeeReceiver {
     uint256 private constant _MAX_LIQUIDITY_SHARE = 100;
 
     IERC20 public immutable moonToken;
-    address public immutable wrappedMoon;
+    IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
 
-    constructor(IERC20 _moonToken, address _wrappedMoon) public {
+    constructor(IERC20 _moonToken, IMooniswapFactoryGovernance _mooniswapFactoryGovernance) public {
         moonToken = _moonToken;
-        wrappedMoon = _wrappedMoon;
+        mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
     }
 
     modifier validSpread(Mooniswap mooniswap) {
@@ -56,7 +57,7 @@ contract GovernanceFeeReceiver {
             amount = Mooniswap(address(path[i])).swap(path[i-1], path[i+1], amount, 0, address(this));
         }
 
-        moonToken.transfer(wrappedMoon, amount);
+        moonToken.transfer(mooniswapFactoryGovernance.governanceFeeReceiver(), amount);
     }
 
     function _validateSpread(Mooniswap mooniswap) view private {
