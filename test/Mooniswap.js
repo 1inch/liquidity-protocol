@@ -24,7 +24,7 @@ const money = {
 const MooniswapFactory = artifacts.require('MooniswapFactory');
 const Mooniswap = artifacts.require('Mooniswap');
 const Token = artifacts.require('TokenMock');
-const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance')
+const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 
 contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
@@ -130,7 +130,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
             await this.WETH.approve(this.mooniswap.address, new BN('1000000000000'), { from: wallet2 });
 
             await this.WETH.mint(_, '1');
-            await this.WETH.approve(this.governance.address, '1')
+            await this.WETH.approve(this.governance.address, '1');
             await this.governance.stake('1');
             await this.governance.defaultFeeVote(money.weth('0.003'));
         });
