@@ -250,21 +250,22 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
         IMooniswapFactoryGovernance.GovernanceParameters memory parameters = mooniswapFactoryGovernance.parameters();
 
-        // TODO: should always mint governance share
-        if (referral != address(0)) {
-            uint256 invariantRatio = uint256(1e36);
-            invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
-            invariantRatio = invariantRatio.mul(balances.dst.sub(result)).div(balances.dst);
-            if (invariantRatio > 1e36) {
-                // calculate share only if invariant increased
-                invariantRatio = invariantRatio.sqrt();
-                uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
+        uint256 invariantRatio = uint256(1e36);
+        invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
+        invariantRatio = invariantRatio.mul(balances.dst.sub(result)).div(balances.dst);
+        if (invariantRatio > 1e36) {
+            // calculate share only if invariant increased
+            invariantRatio = invariantRatio.sqrt();
+            uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
+            if (referral != address(0)) {
                 uint256 referralShare = invIncrease.mul(parameters.referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
                 }
+            }
 
+            if (parameters.governanceFeeReceiver != address(0)) {
                 uint256 governanceShare = invIncrease.mul(parameters.governanceShare).div(_FEE_DENOMINATOR);
                 if (governanceShare > 0) {
                     _mint(parameters.governanceFeeReceiver, governanceShare);
