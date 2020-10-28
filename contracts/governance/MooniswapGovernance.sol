@@ -106,13 +106,16 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 balanceTo,
         uint256 newTotalSupply
     ) private {
-        uint256 oldFee = _fee.result;
-        uint256 newFee;
         Vote.Data memory voteFrom = _fee.votes[from];
         Vote.Data memory voteTo = _fee.votes[to];
-        uint256 defaultFee = (voteFrom.isDefault() || balanceFrom == amount || voteTo.isDefault())
-            ? mooniswapFactoryGovernance.defaultFee()
-            : 0;
+
+        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
+            return;
+        }
+
+        uint256 defaultFee = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultFee() : 0;
+        uint256 oldFee = _fee.result;
+        uint256 newFee;
 
         if (from != address(0)) {
             (newFee,) = _fee.updateBalance(from, voteFrom, balanceFrom, balanceFrom.sub(amount), newTotalSupply, defaultFee);
@@ -135,13 +138,16 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 balanceTo,
         uint256 newTotalSupply
     ) private {
-        uint256 oldDecayPeriod = _decayPeriod.result;
-        uint256 newDecayPeriod;
         Vote.Data memory voteFrom = _decayPeriod.votes[from];
         Vote.Data memory voteTo = _decayPeriod.votes[to];
-        uint256 defaultDecayPeriod = (voteFrom.isDefault() || balanceFrom == amount || voteTo.isDefault())
-            ? mooniswapFactoryGovernance.defaultDecayPeriod()
-            : 0;
+
+        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
+            return;
+        }
+
+        uint256 defaultDecayPeriod = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0;
+        uint256 oldDecayPeriod = _decayPeriod.result;
+        uint256 newDecayPeriod;
 
         if (from != address(0)) {
             (newDecayPeriod,) = _decayPeriod.updateBalance(from, voteFrom, balanceFrom, balanceFrom.sub(amount), newTotalSupply, defaultDecayPeriod);
