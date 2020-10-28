@@ -1,17 +1,19 @@
-const { expectRevert } = require('@openzeppelin/test-helpers');
+const { constants, expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 const Mooniswap = artifacts.require('Mooniswap');
-const MooniFactory = artifacts.require('MooniFactory');
+const MooniswapFactory = artifacts.require('MooniswapFactory');
+const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 const TokenWithBytes32SymbolMock = artifacts.require('TokenWithBytes32SymbolMock');
 const TokenWithStringSymbolMock = artifacts.require('TokenWithStringSymbolMock');
 const TokenWithBytes32CAPSSymbolMock = artifacts.require('TokenWithBytes32CAPSSymbolMock');
 const TokenWithStringCAPSSymbolMock = artifacts.require('TokenWithStringCAPSSymbolMock');
 const TokenWithNoSymbolMock = artifacts.require('TokenWithNoSymbolMock');
 
-contract('MooniFactory', function ([_, wallet1, wallet2]) {
+contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
-        this.factory = await MooniFactory.new(wallet1);
+        this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
+        this.factory = await MooniswapFactory.new(wallet1, this.governance.address);
     });
 
     describe('Symbol', async function () {
