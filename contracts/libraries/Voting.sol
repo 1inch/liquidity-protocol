@@ -55,7 +55,7 @@ library Voting {
         uint256 newScaledResult = oldScaledResult
             .add(newBalance.mul(newVote.get(defaultVote)))
             .sub(oldBalance.mul(oldVote.get(defaultVote)));
-        newResult = newScaledResult.div(newTotalSupply);
+        newResult = newTotalSupply == 0 ? defaultVote : newScaledResult.div(newTotalSupply);
 
         if (newScaledResult != oldScaledResult) {
             self._scaledResult = newScaledResult;
