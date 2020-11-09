@@ -32,12 +32,10 @@ contract GovernanceFeeReceiver {
         _;
     }
 
-    // solhint-disable-next-line visibility-modifier-order
-    function unwrapLPTokens(Mooniswap mooniswap, uint256 amount, uint256[] memory minReturns) validSpread(mooniswap) external {
+    function unwrapLPTokens(Mooniswap mooniswap, uint256 amount, uint256[] memory minReturns) external validSpread(mooniswap) {
         mooniswap.withdraw(amount, minReturns);
     }
 
-    // solhint-disable-next-line visibility-modifier-order
     function swap(IERC20[] memory path) external {
         require(path[path.length - 1] == moonToken, "should swap to moon token");
 
@@ -60,7 +58,7 @@ contract GovernanceFeeReceiver {
         moonToken.transfer(mooniswapFactoryGovernance.governanceFeeReceiver(), amount);
     }
 
-    function _validateSpread(Mooniswap mooniswap) view private {
+    function _validateSpread(Mooniswap mooniswap) private view {
         IERC20[] memory tokens = mooniswap.getTokens();
 
         uint256 buyPrice;
