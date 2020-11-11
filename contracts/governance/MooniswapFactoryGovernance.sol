@@ -8,9 +8,10 @@ import "../interfaces/IGovernanceModule.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
+import "../utils/BalanceAccounting.sol";
 
 
-contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants, Ownable {
+contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants, BalanceAccounting, Ownable {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
     using SafeMath for uint256;
@@ -29,10 +30,7 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
 
     address public immutable governanceMothership;
 
-    mapping (address => uint256) private _balances;
-    uint256 private _totalSupply;
-
-    modifier onlyGovernance() {
+    modifier onlyMothership() {
         require(msg.sender == governanceMothership, "Access restricted to governance");
 
         _;
@@ -45,14 +43,6 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
         _defaultDecayPeriod.result = _DEFAULT_DECAY_PERIOD;
         _referralShare.result = _DEFAULT_REFERRAL_SHARE;
         _governanceShare.result = _DEFAULT_GOVERNANCE_SHARE;
-    }
-
-    function balanceOf(address account) public view returns(uint256) {
-        return _balances[account];
-    }
-
-    function totalSupply() public view returns(uint256) {
-        return _totalSupply;
     }
 
     function parameters() external view override returns(GovernanceParameters memory) {
@@ -141,11 +131,16 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
         _updateVote(_governanceShare, msg.sender, Vote.init(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareUpdate);
     }
 
-    function notifyStakeChanged(address account, uint256 newBalance) external override onlyGovernance {
-        uint256 balance = _balances[account];
-        uint256 newTotalSupply = _totalSupply.sub(balance).add(newBalance);
-        _balances[account] = newBalance;
-        _totalSupply = newTotalSupply;
+    function notifyStakeChanged(address account, uint256 newBalance) external override onlyMothership {
+        uint256 balance = balanceOf(account);
+        if (newBalance > balance) {
+            _mint(account, newBalance.sub(balance));
+        } else if (newBalance < balance) {
+            _burn(account, balance.sub(newBalance));
+        } else {
+            return;
+        }
+        uint256 newTotalSupply = totalSupply();
 
         _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitDefaultFeeUpdate);
         _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodUpdate);

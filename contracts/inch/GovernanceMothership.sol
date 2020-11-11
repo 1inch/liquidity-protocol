@@ -6,10 +6,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
-import "./IGovernanceModule.sol";
+import "../interfaces/IGovernanceModule.sol";
+import "../utils/BalanceAccounting.sol";
 
 
-contract GovernanceMothership is Ownable {
+contract GovernanceMothership is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -18,50 +19,33 @@ contract GovernanceMothership is Ownable {
 
     IERC20 public immutable inchToken;
 
-    mapping (address => uint256) private _balances;
-    uint256 private _totalSupply;
     EnumerableSet.AddressSet private _modules;
 
     constructor(IERC20 _inchToken) public {
         inchToken = _inchToken;
     }
 
-    function balanceOf(address account) public view returns(uint256) {
-        return _balances[account];
-    }
-
-    function totalSupply() public view returns(uint256) {
-        return _totalSupply;
-    }
-
     function stake(uint256 amount) external {
         require(amount > 0, "Empty stake is not allowed");
 
-        uint256 newBalance = _balances[msg.sender].add(amount);
-        _balances[msg.sender] = newBalance;
-        _totalSupply = _totalSupply.add(amount);
         inchToken.transferFrom(msg.sender, address(this), amount);
-
-        _notifyFor(msg.sender, newBalance);
+        _mint(msg.sender, amount);
+        _notifyFor(msg.sender, balanceOf(msg.sender));
     }
 
     function unstake(uint256 amount) external {
         require(amount > 0, "Empty unstake is not allowed");
 
-        uint256 newBalance = _balances[msg.sender].sub(amount);
-        _balances[msg.sender] = newBalance;
-        _totalSupply = _totalSupply.sub(amount);
-        inchToken.transfer(msg.sender, amount);
-
-        _notifyFor(msg.sender, newBalance);
+        _burn(msg.sender, amount);
+        _notifyFor(msg.sender, balanceOf(msg.sender));
     }
 
     function notify() external {
-        _notifyFor(msg.sender, _balances[msg.sender]);
+        _notifyFor(msg.sender, balanceOf(msg.sender));
     }
 
     function notifyFor(address account) external {
-        _notifyFor(account, _balances[account]);
+        _notifyFor(account, balanceOf(msg.sender));
     }
 
     function addModule(address module) external onlyOwner {
