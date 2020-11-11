@@ -1,4 +1,4 @@
-const { constants, expectRevert } = require('@openzeppelin/test-helpers');
+const { expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
 const Mooniswap = artifacts.require('Mooniswap');
