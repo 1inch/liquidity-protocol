@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
@@ -35,12 +34,8 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.result = _DEFAULT_GOVERNANCE_SHARE;
     }
 
-    function parameters() external view override returns(GovernanceParameters memory) {
-        return GovernanceParameters({
-            referralShare: _referralShare.result,
-            governanceShare: _governanceShare.result,
-            governanceFeeReceiver: governanceFeeReceiver
-        });
+    function parameters() external view override returns(uint256, uint256, address) {
+        return (_referralShare.result, _governanceShare.result, governanceFeeReceiver);
     }
 
     function defaultFee() external view override returns(uint256) {

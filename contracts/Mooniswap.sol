@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
@@ -247,7 +246,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
-        IMooniswapFactoryGovernance.GovernanceParameters memory parameters = mooniswapFactoryGovernance.parameters();
+        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver) = mooniswapFactoryGovernance.parameters();
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -258,16 +257,16 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
             if (referral != address(0)) {
-                uint256 referralShare = invIncrease.mul(parameters.referralShare).div(_FEE_DENOMINATOR);
+                referralShare = invIncrease.mul(referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     _mint(referral, referralShare);
                 }
             }
 
-            if (parameters.governanceFeeReceiver != address(0)) {
-                uint256 governanceShare = invIncrease.mul(parameters.governanceShare).div(_FEE_DENOMINATOR);
+            if (governanceFeeReceiver != address(0)) {
+                governanceShare = invIncrease.mul(governanceShare).div(_FEE_DENOMINATOR);
                 if (governanceShare > 0) {
-                    _mint(parameters.governanceFeeReceiver, governanceShare);
+                    _mint(governanceFeeReceiver, governanceShare);
                 }
             }
         }
