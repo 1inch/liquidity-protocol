@@ -4,14 +4,14 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/IGovernanceModule.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
 import "../utils/BalanceAccounting.sol";
+import "./BaseGovernanceModule.sol";
 
 
-contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants, BalanceAccounting, Ownable {
+contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, MooniswapConstants, BalanceAccounting, Ownable {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
     using SafeMath for uint256;
@@ -28,17 +28,7 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
     Voting.Data private _governanceShare;
     address public override governanceFeeReceiver;
 
-    address public immutable governanceMothership;
-
-    modifier onlyMothership() {
-        require(msg.sender == governanceMothership, "Access restricted to governance");
-
-        _;
-    }
-
-    constructor(address _governanceMothership) public {
-        governanceMothership = _governanceMothership;
-
+    constructor(address _mothership) public BaseGovernanceModule(_mothership) {
         _defaultFee.result = _DEFAULT_FEE;
         _defaultDecayPeriod.result = _DEFAULT_DECAY_PERIOD;
         _referralShare.result = _DEFAULT_REFERRAL_SHARE;
