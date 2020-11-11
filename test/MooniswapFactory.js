@@ -16,7 +16,7 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
         this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
         this.deployer = await MooniswapDeployer.new();
         this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, this.governance.address);
-});
+    });
 
     describe('Symbol', async function () {
         it('should handle bytes32 symbol', async function () {
