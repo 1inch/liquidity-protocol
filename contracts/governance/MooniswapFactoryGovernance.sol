@@ -4,14 +4,13 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IGovernanceModule.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
 
 
-contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants {
+contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants, Ownable {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
     using SafeMath for uint256;
@@ -28,7 +27,7 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
     Voting.Data private _governanceShare;
     address public override governanceFeeReceiver;
 
-    address public governanceMothership;
+    address public immutable governanceMothership;
 
     mapping (address => uint256) private _balances;
     uint256 private _totalSupply;
@@ -96,8 +95,9 @@ contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGover
         return _governanceShare.votes[user].get(_DEFAULT_GOVERNANCE_SHARE);
     }
 
-    function setGovernanceFeeReceiver(address /* governanceFeeReceiver */) external pure {
-        revert("Not implemented");
+    function setGovernanceFeeReceiver(address newGovernanceFeeReceiver) external onlyOwner {
+        governanceFeeReceiver = newGovernanceFeeReceiver;
+        emit GovernanceFeeReceiverUpdate(newGovernanceFeeReceiver);
     }
 
     function defaultFeeVote(uint256 vote) external {
