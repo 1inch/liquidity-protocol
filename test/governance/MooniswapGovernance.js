@@ -9,7 +9,7 @@ const MooniswapFactory = artifacts.require('MooniswapFactory');
 const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 const Token = artifacts.require('TokenMock');
 
-contract.only('MooniswapGovernance', function ([_, wallet1, wallet2]) {
+contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
         this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
