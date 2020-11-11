@@ -4,6 +4,8 @@ pragma solidity ^0.6.0;
 
 import "./libraries/UniERC20.sol";
 import "./Mooniswap.sol";
+import "./interfaces/IMooniswapDeployer.sol";
+
 
 contract MooniswapFactory {
     using UniERC20 for IERC20;
@@ -14,14 +16,16 @@ contract MooniswapFactory {
         address indexed token2
     );
 
+    IMooniswapDeployer public immutable mooniswapDeployer;
     address public immutable poolOwner;
     IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
 
-    constructor (address _poolOwner, IMooniswapFactoryGovernance _mooniswapFactoryGovernance) public {
+    constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, IMooniswapFactoryGovernance _mooniswapFactoryGovernance) public {
         poolOwner = _poolOwner;
+        mooniswapDeployer = _mooniswapDeployer;
         mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
     }
 
@@ -38,15 +42,15 @@ contract MooniswapFactory {
         string memory symbol1 = token1.uniSymbol();
         string memory symbol2 = token2.uniSymbol();
 
-        pool = new Mooniswap(
+        pool = mooniswapDeployer.deploy(
             token1,
             token2,
             string(abi.encodePacked("Mooniswap V2 (", symbol1, "-", symbol2, ")")),
             string(abi.encodePacked("MOON-V2-", symbol1, "-", symbol2)),
-            mooniswapFactoryGovernance
+            mooniswapFactoryGovernance,
+            poolOwner
         );
 
-        pool.transferOwnership(poolOwner);
         pools[token1][token2] = pool;
         pools[token2][token1] = pool;
         allPools.push(pool);

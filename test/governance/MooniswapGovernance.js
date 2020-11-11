@@ -4,15 +4,17 @@ const { expect } = require('chai');
 const { timeIncreaseTo } = require('../helpers/utils.js');
 
 const Mooniswap = artifacts.require('Mooniswap');
+const MooniswapDeployer = artifacts.require('MooniswapDeployer');
 const MooniswapFactory = artifacts.require('MooniswapFactory');
 const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 const Token = artifacts.require('TokenMock');
 
-contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
+contract.only('MooniswapGovernance', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await Token.new('DAI', 'DAI', 18);
         this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
-        this.factory = await MooniswapFactory.new(_, this.governance.address);
+        this.deployer = await MooniswapDeployer.new();
+        this.factory = await MooniswapFactory.new(_, this.deployer.address, this.governance.address);
         await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
         this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
         await this.DAI.mint(_, ether('270'));

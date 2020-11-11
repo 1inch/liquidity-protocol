@@ -21,6 +21,7 @@ const money = {
     dai: ether,
 };
 
+const MooniswapDeployer = artifacts.require('MooniswapDeployer');
 const MooniswapFactory = artifacts.require('MooniswapFactory');
 const Mooniswap = artifacts.require('Mooniswap');
 const Token = artifacts.require('TokenMock');
@@ -70,7 +71,8 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     describe('Raw ETH support', async function () {
         beforeEach(async function () {
             this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
-            this.factory = await MooniswapFactory.new(wallet1, this.governance.address);
+            this.deployer = await MooniswapDeployer.new();
+            this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, this.governance.address);
             await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
             await this.DAI.mint(wallet1, money.dai('270'));
@@ -119,7 +121,8 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     describe('Referral', async function () {
         beforeEach(async function () {
             this.governance = await MooniswapFactoryGovernance.new(this.WETH.address);
-            this.factory = await MooniswapFactory.new(wallet1, this.governance.address);
+            this.deployer = await MooniswapDeployer.new();
+            this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, this.governance.address);
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, new BN('1000'));
@@ -146,7 +149,8 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     describe('Actions', async function () {
         beforeEach(async function () {
             this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
-            this.factory = await MooniswapFactory.new(wallet1, this.governance.address);
+            this.deployer = await MooniswapDeployer.new();
+            this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, this.governance.address);
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, money.weth('1'));
