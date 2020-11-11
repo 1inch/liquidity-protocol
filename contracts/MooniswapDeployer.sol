@@ -10,7 +10,6 @@ contract MooniswapDeployer {
         IERC20 token2,
         string calldata name,
         string calldata symbol,
-        IMooniswapFactoryGovernance mooniswapFactoryGovernance,
         address poolOwner
     ) public returns(Mooniswap pool) {
         pool = new Mooniswap(
@@ -18,7 +17,7 @@ contract MooniswapDeployer {
             token2,
             name,
             symbol,
-            mooniswapFactoryGovernance
+            IMooniswapFactoryGovernance(msg.sender)
         );
 
         pool.transferOwnership(poolOwner);

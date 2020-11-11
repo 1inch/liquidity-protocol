@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
+import "./interfaces/IMooniswapDeployer.sol";
 import "./libraries/UniERC20.sol";
 import "./Mooniswap.sol";
-import "./interfaces/IMooniswapDeployer.sol";
+import "./governance/MooniswapFactoryGovernance.sol";
 
 
-contract MooniswapFactory {
+contract MooniswapFactory is MooniswapFactoryGovernance {
     using UniERC20 for IERC20;
 
     event Deployed(
@@ -18,15 +20,13 @@ contract MooniswapFactory {
 
     IMooniswapDeployer public immutable mooniswapDeployer;
     address public immutable poolOwner;
-    IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
 
-    constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, IMooniswapFactoryGovernance _mooniswapFactoryGovernance) public {
+    constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
         poolOwner = _poolOwner;
         mooniswapDeployer = _mooniswapDeployer;
-        mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
     }
 
     function getAllPools() external view returns(Mooniswap[] memory) {
@@ -47,7 +47,6 @@ contract MooniswapFactory {
             token2,
             string(abi.encodePacked("Mooniswap V2 (", symbol1, "-", symbol2, ")")),
             string(abi.encodePacked("MOON-V2-", symbol1, "-", symbol2)),
-            mooniswapFactoryGovernance,
             poolOwner
         );
 

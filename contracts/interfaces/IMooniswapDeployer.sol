@@ -10,7 +10,6 @@ interface IMooniswapDeployer {
         IERC20 token2,
         string calldata name,
         string calldata symbol,
-        IMooniswapFactoryGovernance mooniswapFactoryGovernance,
         address poolOwner
     ) external returns(Mooniswap pool);
 }

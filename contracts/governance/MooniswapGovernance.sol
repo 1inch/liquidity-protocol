@@ -46,7 +46,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         require(vote <= _MAX_FEE, "Fee vote is too high");
 
         Vote.Data memory oldVote = _fee.votes[msg.sender];
-        _updateVote(_fee, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultFee() : 0, _feeUpdate);
+        _updateVote(_fee, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultFee() : 0, _emitFeeUpdate);
     }
 
     function decayPeriodVote(uint256 vote) external nonReentrant {
@@ -54,15 +54,15 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
         Vote.Data memory oldVote = _decayPeriod.votes[msg.sender];
-        _updateVote(_decayPeriod, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0, _decayPeriodUpdate);
+        _updateVote(_decayPeriod, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0, _emitDecayPeriodUpdate);
     }
 
     function discardFeeVote() external nonReentrant {
-        _updateVote(_fee, msg.sender, _fee.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultFee(), _feeUpdate);
+        _updateVote(_fee, msg.sender, _fee.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultFee(), _emitFeeUpdate);
     }
 
     function discardDecayPeriodVote() external nonReentrant {
-        _updateVote(_decayPeriod, msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultDecayPeriod(), _decayPeriodUpdate);
+        _updateVote(_decayPeriod, msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodUpdate);
     }
 
     function _updateVote(
@@ -79,11 +79,11 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         }
     }
 
-    function _feeUpdate(uint256 newFee) private {
+    function _emitFeeUpdate(uint256 newFee) private {
         emit FeeUpdate(newFee);
     }
 
-    function _decayPeriodUpdate(uint256 newDecayPeriod) private {
+    function _emitDecayPeriodUpdate(uint256 newDecayPeriod) private {
         emit DecayPeriodUpdate(newDecayPeriod);
     }
 
@@ -94,71 +94,55 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             .add(from == address(0) ? amount : 0)
             .sub(to == address(0) ? amount : 0);
 
-        _updateFeeOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
-        _updateDecayPeriodOnTransfer(from, to, amount, balanceFrom, balanceTo, newTotalSupply);
+        ParamsHelper memory params = ParamsHelper({
+            from: from,
+            to: to,
+            amount: amount,
+            balanceFrom: balanceFrom,
+            balanceTo: balanceTo,
+            newTotalSupply: newTotalSupply
+        });
+
+        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultFee, _emitFeeUpdate, _fee);
+        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultDecayPeriod, _emitDecayPeriodUpdate, _decayPeriod);
     }
 
-    function _updateFeeOnTransfer(
-        address from,
-        address to,
-        uint256 amount,
-        uint256 balanceFrom,
-        uint256 balanceTo,
-        uint256 newTotalSupply
-    ) private {
-        Vote.Data memory voteFrom = _fee.votes[from];
-        Vote.Data memory voteTo = _fee.votes[to];
+    struct ParamsHelper {
+        address from;
+        address to;
+        uint256 amount;
+        uint256 balanceFrom;
+        uint256 balanceTo;
+        uint256 newTotalSupply;
+    }
 
-        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
+    function _updateOnTransfer(
+        ParamsHelper memory params,
+        function() external view returns (uint256) defaultValueGetter,
+        function(uint256) internal emitEvent,
+        Voting.Data storage votingData
+    ) private {
+        Vote.Data memory voteFrom = votingData.votes[params.from];
+        Vote.Data memory voteTo = votingData.votes[params.to];
+
+        if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
             return;
         }
 
-        uint256 defaultFee = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultFee() : 0;
-        uint256 oldFee = _fee.result;
-        uint256 newFee;
+        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || params.balanceFrom == params.amount) ? defaultValueGetter() : 0;
+        uint256 oldValue = votingData.result;
+        uint256 newValue;
 
-        if (from != address(0)) {
-            (newFee,) = _fee.updateBalance(from, voteFrom, balanceFrom, balanceFrom.sub(amount), newTotalSupply, defaultFee);
+        if (params.from != address(0)) {
+            (newValue,) = votingData.updateBalance(params.from, voteFrom, params.balanceFrom, params.balanceFrom.sub(params.amount), params.newTotalSupply, defaultValue);
         }
 
-        if (to != address(0)) {
-            (newFee,) = _fee.updateBalance(to, voteTo, balanceTo, balanceTo.add(amount), newTotalSupply, defaultFee);
+        if (params.to != address(0)) {
+            (newValue,) = votingData.updateBalance(params.to, voteTo, params.balanceTo, params.balanceTo.add(params.amount), params.newTotalSupply, defaultValue);
         }
 
-        if (oldFee != newFee) {
-            emit FeeUpdate(newFee);
-        }
-    }
-
-    function _updateDecayPeriodOnTransfer(
-        address from,
-        address to,
-        uint256 amount,
-        uint256 balanceFrom,
-        uint256 balanceTo,
-        uint256 newTotalSupply
-    ) private {
-        Vote.Data memory voteFrom = _decayPeriod.votes[from];
-        Vote.Data memory voteTo = _decayPeriod.votes[to];
-
-        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
-            return;
-        }
-
-        uint256 defaultDecayPeriod = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0;
-        uint256 oldDecayPeriod = _decayPeriod.result;
-        uint256 newDecayPeriod;
-
-        if (from != address(0)) {
-            (newDecayPeriod,) = _decayPeriod.updateBalance(from, voteFrom, balanceFrom, balanceFrom.sub(amount), newTotalSupply, defaultDecayPeriod);
-        }
-
-        if (to != address(0)) {
-            (newDecayPeriod,) = _decayPeriod.updateBalance(to, voteTo, balanceTo, balanceTo.add(amount), newTotalSupply, defaultDecayPeriod);
-        }
-
-        if (oldDecayPeriod != newDecayPeriod) {
-            emit DecayPeriodUpdate(newDecayPeriod);
+        if (oldValue != newValue) {
+            emitEvent(newValue);
         }
     }
 }
