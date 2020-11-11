@@ -5,12 +5,13 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../interfaces/IGovernanceModule.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
 
 
-contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapConstants {
+contract MooniswapFactoryGovernance is IGovernanceModule, IMooniswapFactoryGovernance, MooniswapConstants {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
     using SafeMath for uint256;
@@ -140,7 +141,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapCon
         _updateVote(_governanceShare, msg.sender, Vote.init(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareUpdate);
     }
 
-    function notifyStakeChanged(address account, uint256 newBalance) external onlyGovernance {
+    function notifyStakeChanged(address account, uint256 newBalance) external override onlyGovernance {
         uint256 balance = _balances[account];
         uint256 newTotalSupply = _totalSupply.sub(balance).add(newBalance);
         _balances[account] = newBalance;
