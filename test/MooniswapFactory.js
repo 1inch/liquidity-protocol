@@ -4,7 +4,6 @@ const { expect } = require('chai');
 const Mooniswap = artifacts.require('Mooniswap');
 const MooniswapDeployer = artifacts.require('MooniswapDeployer');
 const MooniswapFactory = artifacts.require('MooniswapFactory');
-const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 const TokenWithBytes32SymbolMock = artifacts.require('TokenWithBytes32SymbolMock');
 const TokenWithStringSymbolMock = artifacts.require('TokenWithStringSymbolMock');
 const TokenWithBytes32CAPSSymbolMock = artifacts.require('TokenWithBytes32CAPSSymbolMock');
@@ -13,9 +12,8 @@ const TokenWithNoSymbolMock = artifacts.require('TokenWithNoSymbolMock');
 
 contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
     beforeEach(async function () {
-        this.governance = await MooniswapFactoryGovernance.new(constants.ZERO_ADDRESS);
         this.deployer = await MooniswapDeployer.new();
-        this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, this.governance.address);
+        this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, wallet1);
     });
 
     describe('Symbol', async function () {

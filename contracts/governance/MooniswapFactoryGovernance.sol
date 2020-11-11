@@ -8,10 +8,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/Voting.sol";
 import "../MooniswapConstants.sol";
-import "./InchBaseGovernance.sol";
 
 
-contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapConstants, InchBaseGovernance {
+contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapConstants {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
     using SafeMath for uint256;
@@ -28,11 +27,32 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapCon
     Voting.Data private _governanceShare;
     address public override governanceFeeReceiver;
 
-    constructor(IERC20 _inchToken) public InchBaseGovernance(_inchToken) {
+    address public governanceMothership;
+
+    mapping (address => uint256) private _balances;
+    uint256 private _totalSupply;
+
+    modifier onlyGovernance() {
+        require(msg.sender == governanceMothership, "Access restricted to governance");
+
+        _;
+    }
+
+    constructor(address _governanceMothership) public {
+        governanceMothership = _governanceMothership;
+
         _defaultFee.result = _DEFAULT_FEE;
         _defaultDecayPeriod.result = _DEFAULT_DECAY_PERIOD;
         _referralShare.result = _DEFAULT_REFERRAL_SHARE;
         _governanceShare.result = _DEFAULT_GOVERNANCE_SHARE;
+    }
+
+    function balanceOf(address account) public view returns(uint256) {
+        return _balances[account];
+    }
+
+    function totalSupply() public view returns(uint256) {
+        return _totalSupply;
     }
 
     function parameters() external view override returns(GovernanceParameters memory) {
@@ -81,80 +101,70 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapCon
 
     function defaultFeeVote(uint256 vote) external {
         require(vote <= _MAX_FEE, "Fee vote is too high");
-        _updateVote(_defaultFee, msg.sender, Vote.init(vote), _DEFAULT_FEE, _defaultFeeUpdate);
+        _updateVote(_defaultFee, msg.sender, Vote.init(vote), _DEFAULT_FEE, _emitDefaultFeeUpdate);
     }
 
    function discardDefaultFeeVote() external {
-       _updateVote(_defaultFee, msg.sender, Vote.init(), _DEFAULT_FEE, _defaultFeeUpdate);
+       _updateVote(_defaultFee, msg.sender, Vote.init(), _DEFAULT_FEE, _emitDefaultFeeUpdate);
     }
 
     function defaultDecayPeriodVote(uint256 vote) external {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
-        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(vote), _DEFAULT_DECAY_PERIOD, _defaultDecayPeriodUpdate);
+        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(vote), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodUpdate);
     }
 
     function discardDefaultDecayPeriodVote() external {
-        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(), _DEFAULT_DECAY_PERIOD, _defaultDecayPeriodUpdate);
+        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodUpdate);
     }
 
     function referralShareVote(uint256 vote) external {
         require(vote <= _MAX_SHARE, "Referral share vote is too high");
         require(vote >= _MIN_REFERRAL_SHARE, "Referral share vote is too low");
 
-        _updateVote(_referralShare, msg.sender, Vote.init(vote), _DEFAULT_REFERRAL_SHARE, _referralShareUpdate);
+        _updateVote(_referralShare, msg.sender, Vote.init(vote), _DEFAULT_REFERRAL_SHARE, _emitReferralShareUpdate);
     }
 
     function discardReferralShareVote() external {
-        _updateVote(_referralShare, msg.sender, Vote.init(), _DEFAULT_REFERRAL_SHARE, _referralShareUpdate);
+        _updateVote(_referralShare, msg.sender, Vote.init(), _DEFAULT_REFERRAL_SHARE, _emitReferralShareUpdate);
     }
 
     function governanceShareVote(uint256 vote) external {
         require(vote <= _MAX_SHARE, "Gov share vote is too high");
 
-        _updateVote(_governanceShare, msg.sender, Vote.init(vote), _DEFAULT_GOVERNANCE_SHARE, _governanceShareUpdate);
+        _updateVote(_governanceShare, msg.sender, Vote.init(vote), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareUpdate);
     }
 
     function discardGovernanceShareVote() external {
-        _updateVote(_governanceShare, msg.sender, Vote.init(), _DEFAULT_GOVERNANCE_SHARE, _governanceShareUpdate);
+        _updateVote(_governanceShare, msg.sender, Vote.init(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareUpdate);
     }
 
-    function _beforeStake(address account, uint256 amount) internal override {
-        uint256 balance = balanceOf(account);
-        uint256 newBalance = balance.add(amount);
-        uint256 newTotalSupply = totalSupply().add(amount);
+    function notifyStakeChanged(address account, uint256 newBalance) external onlyGovernance {
+        uint256 balance = _balances[account];
+        uint256 newTotalSupply = _totalSupply.sub(balance).add(newBalance);
+        _balances[account] = newBalance;
+        _totalSupply = newTotalSupply;
 
-        _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _defaultFeeUpdate);
-        _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _defaultDecayPeriodUpdate);
-        _updateBalance(_referralShare, account, balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _referralShareUpdate);
-        _updateBalance(_governanceShare, account, balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _governanceShareUpdate);
+        _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitDefaultFeeUpdate);
+        _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodUpdate);
+        _updateBalance(_referralShare, account, balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _emitReferralShareUpdate);
+        _updateBalance(_governanceShare, account, balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareUpdate);
     }
 
-    function _beforeUnstake(address account, uint256 amount) internal override {
-        uint256 balance = balanceOf(account);
-        uint256 newBalance = balance.sub(amount);
-        uint256 newTotalSupply = totalSupply().sub(amount);
-
-        _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _defaultFeeUpdate);
-        _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _defaultDecayPeriodUpdate);
-        _updateBalance(_referralShare, account, balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _referralShareUpdate);
-        _updateBalance(_governanceShare, account, balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _governanceShareUpdate);
-    }
-
-    function _defaultFeeUpdate(uint256 newDefaulFee) private {
+    function _emitDefaultFeeUpdate(uint256 newDefaulFee) private {
         emit DefaultFeeUpdate(newDefaulFee);
     }
 
-    function _defaultDecayPeriodUpdate(uint256 newDefaultDecayPeriod) private {
+    function _emitDefaultDecayPeriodUpdate(uint256 newDefaultDecayPeriod) private {
         emit DefaultDecayPeriodUpdate(newDefaultDecayPeriod);
     }
 
-    function _referralShareUpdate(uint256 newReferralShare) private {
+    function _emitReferralShareUpdate(uint256 newReferralShare) private {
         emit ReferralShareUpdate(newReferralShare);
     }
 
-    function _governanceShareUpdate(uint256 newGovernanceShare) private {
+    function _emitGovernanceShareUpdate(uint256 newGovernanceShare) private {
         emit GovernanceShareUpdate(newGovernanceShare);
     }
 
@@ -184,7 +194,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapCon
         address account,
         uint256 balance,
         uint256 newBalance,
-        uint256 totalSupply,
+        uint256 newTotalSupply,
         uint256 defaultValue,
         function(uint256) emitEvent
     ) private {
@@ -193,7 +203,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, MooniswapCon
             data.votes[account],
             balance,
             newBalance,
-            totalSupply,
+            newTotalSupply,
             defaultValue
         );
 

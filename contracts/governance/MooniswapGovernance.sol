@@ -94,38 +94,51 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             .add(from == address(0) ? amount : 0)
             .sub(to == address(0) ? amount : 0);
 
-        _updateOnTransfer(_fee, from, to, amount, balanceFrom, balanceTo, newTotalSupply, mooniswapFactoryGovernance.defaultFee, _emitFeeUpdate);
-        _updateOnTransfer(_decayPeriod, from, to, amount, balanceFrom, balanceTo, newTotalSupply, mooniswapFactoryGovernance.defaultDecayPeriod, _emitDecayPeriodUpdate);
+        ParamsHelper memory params = ParamsHelper({
+            from: from,
+            to: to,
+            amount: amount,
+            balanceFrom: balanceFrom,
+            balanceTo: balanceTo,
+            newTotalSupply: newTotalSupply
+        });
+
+        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultFee, _emitFeeUpdate, _fee);
+        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultDecayPeriod, _emitDecayPeriodUpdate, _decayPeriod);
+    }
+
+    struct ParamsHelper {
+        address from;
+        address to;
+        uint256 amount;
+        uint256 balanceFrom;
+        uint256 balanceTo;
+        uint256 newTotalSupply;
     }
 
     function _updateOnTransfer(
-        Voting.Data storage votingData,
-        address from,
-        address to,
-        uint256 amount,
-        uint256 balanceFrom,
-        uint256 balanceTo,
-        uint256 newTotalSupply,
+        ParamsHelper memory params,
         function() external view returns (uint256) defaultValueGetter,
-        function(uint256) internal emitEvent
+        function(uint256) internal emitEvent,
+        Voting.Data storage votingData
     ) private {
-        Vote.Data memory voteFrom = votingData.votes[from];
-        Vote.Data memory voteTo = votingData.votes[to];
+        Vote.Data memory voteFrom = votingData.votes[params.from];
+        Vote.Data memory voteTo = votingData.votes[params.to];
 
-        if (voteFrom.isDefault() && voteTo.isDefault() && from != address(0) && to != address(0)) {
+        if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
             return;
         }
 
-        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || balanceFrom == amount) ? defaultValueGetter() : 0;
+        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || params.balanceFrom == params.amount) ? defaultValueGetter() : 0;
         uint256 oldValue = votingData.result;
         uint256 newValue;
 
-        if (from != address(0)) {
-            (newValue,) = votingData.updateBalance(from, voteFrom, balanceFrom, balanceFrom.sub(amount), newTotalSupply, defaultValue);
+        if (params.from != address(0)) {
+            (newValue,) = votingData.updateBalance(params.from, voteFrom, params.balanceFrom, params.balanceFrom.sub(params.amount), params.newTotalSupply, defaultValue);
         }
 
-        if (to != address(0)) {
-            (newValue,) = votingData.updateBalance(to, voteTo, balanceTo, balanceTo.add(amount), newTotalSupply, defaultValue);
+        if (params.to != address(0)) {
+            (newValue,) = votingData.updateBalance(params.to, voteTo, params.balanceTo, params.balanceTo.add(params.amount), params.newTotalSupply, defaultValue);
         }
 
         if (oldValue != newValue) {
