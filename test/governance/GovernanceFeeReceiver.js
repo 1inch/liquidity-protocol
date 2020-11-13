@@ -1,4 +1,4 @@
-const { ether, time, expectRevert } = require('@openzeppelin/test-helpers');
+const { ether, time } = require('@openzeppelin/test-helpers');
 const constants = require('@openzeppelin/test-helpers/src/constants');
 const { expect } = require('chai');
 const { trackReceivedToken, timeIncreaseTo } = require('../helpers/utils.js');
@@ -10,11 +10,10 @@ const GovernanceFeeReceiver = artifacts.require('GovernanceFeeReceiver');
 const Rewards = artifacts.require('Rewards');
 const TokenMock = artifacts.require('TokenMock');
 
-
 contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await TokenMock.new('DAI', 'DAI', 18);
-        this.token = await TokenMock.new("INCH", "INCH", 18);
+        this.token = await TokenMock.new('INCH', 'INCH', 18);
         this.deployer = await MooniswapDeployer.new();
         this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, wallet1);
         this.rewards = await Rewards.new(this.token.address, wallet1);
@@ -33,15 +32,15 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
 
         await this.factory.deploy(constants.ZERO_ADDRESS, this.token.address);
-        this.token_mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.token.address));
+        this.tokenMooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.token.address));
 
         await this.DAI.mint(wallet1, ether('270'));
         await this.DAI.approve(this.mooniswap.address, ether('270'));
         await this.mooniswap.deposit([ether('1'), ether('270')], ['0', '0'], { value: ether('1'), from: wallet1 });
 
         await this.token.mint(wallet1, ether('100'));
-        await this.token.approve(this.token_mooniswap.address, ether('100'));
-        await this.token_mooniswap.deposit([ether('1'), ether('100')], ['0', '0'], { value: ether('1'), from: wallet1 });
+        await this.token.approve(this.tokenMooniswap.address, ether('100'));
+        await this.tokenMooniswap.deposit([ether('1'), ether('100')], ['0', '0'], { value: ether('1'), from: wallet1 });
     });
 
     describe('test', async function () {
@@ -49,8 +48,8 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
             await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', constants.ZERO_ADDRESS, { value: ether('1'), from: wallet2 });
             await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
             await this.feeReceiver.unwrapLPTokens(this.mooniswap.address);
-            await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.token_mooniswap.address, this.token.address]);
-            await this.feeReceiver.swap([this.DAI.address, this.mooniswap.address, constants.ZERO_ADDRESS, this.token_mooniswap.address, this.token.address]);
+            await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.tokenMooniswap.address, this.token.address]);
+            await this.feeReceiver.swap([this.DAI.address, this.mooniswap.address, constants.ZERO_ADDRESS, this.tokenMooniswap.address, this.token.address]);
             await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
             expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('888252604710896942');
             await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
