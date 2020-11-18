@@ -24,8 +24,12 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         this.factory.notifyStakeChanged(wallet1, '1');
         this.rewards.notifyStakeChanged(wallet1, '1');
         await this.factory.defaultFeeVote(ether('0.1'));
+        expect(await this.factory.defaultFee()).to.be.bignumber.equal('0');
+        await timeIncreaseTo((await time.latest()).addn(86500));
         expect(await this.factory.defaultFee()).to.be.bignumber.equal(ether('0.1'));
         await this.factory.governanceShareVote(ether('0.25'));
+        expect(await this.factory.governanceShare()).to.be.bignumber.equal('0');
+        await timeIncreaseTo((await time.latest()).addn(86500));
         expect(await this.factory.governanceShare()).to.be.bignumber.equal(ether('0.25'));
 
         await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
