@@ -41,6 +41,8 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         await this.token.mint(wallet1, ether('100'));
         await this.token.approve(this.tokenMooniswap.address, ether('100'));
         await this.tokenMooniswap.deposit([ether('1'), ether('100')], ['0', '0'], { value: ether('1'), from: wallet1 });
+
+        await timeIncreaseTo((await time.latest()).addn(86500));
     });
 
     describe('test', async function () {

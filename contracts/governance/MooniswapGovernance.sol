@@ -5,33 +5,34 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
-import "../libraries/Voting.sol";
+import "../libraries/LiquidVoting.sol";
 import "../MooniswapConstants.sol";
 
 
 abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
     using Vote for Vote.Data;
-    using Voting for Voting.Data;
+    using LiquidVoting for LiquidVoting.Data;
+    using LiquidVoting for LiquidVoting.VirtualData;
 
-    event FeeUpdate(uint256 fee);
-    event DecayPeriodUpdate(uint256 decayPeriod);
+    event FeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
+    event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, uint256 amount);
 
     IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
-    Voting.Data private _fee;
-    Voting.Data private _decayPeriod;
+    LiquidVoting.Data private _fee;
+    LiquidVoting.Data private _decayPeriod;
 
     constructor(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
         mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
-        _fee.result = _DEFAULT_FEE;
-        _decayPeriod.result = _DEFAULT_DECAY_PERIOD;
+        _fee.data.result = uint104(_DEFAULT_FEE);
+        _decayPeriod.data.result = uint104(_DEFAULT_DECAY_PERIOD);
     }
 
     function fee() public view returns(uint256) {
-        return _fee.result;
+        return _fee.data.current();
     }
 
     function decayPeriod() public view returns(uint256) {
-        return _decayPeriod.result;
+        return _decayPeriod.data.current();
     }
 
     function feeVotes(address user) public view returns(uint256) {
@@ -66,25 +67,24 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     }
 
     function _updateVote(
-        Voting.Data storage data,
+        LiquidVoting.Data storage data,
         address account,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
         uint256 defaultValue,
-        function(uint256) emitEvent
+        function(address, uint256, uint256) emitEvent
     ) private {
-        (uint256 newValue, bool changed) = data.updateVote(account, oldVote, newVote, balanceOf(account), totalSupply(), defaultValue);
-        if (changed) {
-            emitEvent(newValue);
-        }
+        uint256 balance = balanceOf(account);
+        data.updateVote(account, oldVote, newVote, balance, totalSupply(), defaultValue);
+        emitEvent(account, newVote.get(defaultValue), balance);
     }
 
-    function _emitFeeUpdate(uint256 newFee) private {
-        emit FeeUpdate(newFee);
+    function _emitFeeUpdate(address account, uint256 newFee, uint256 newBalance) private {
+        emit FeeVoteUpdate(account, newFee, newBalance);
     }
 
-    function _emitDecayPeriodUpdate(uint256 newDecayPeriod) private {
-        emit DecayPeriodUpdate(newDecayPeriod);
+    function _emitDecayPeriodUpdate(address account, uint256 newDecayPeriod, uint256 newBalance) private {
+        emit DecayPeriodVoteUpdate(account, newDecayPeriod, newBalance);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
@@ -119,30 +119,30 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     function _updateOnTransfer(
         ParamsHelper memory params,
         function() external view returns (uint256) defaultValueGetter,
-        function(uint256) internal emitEvent,
-        Voting.Data storage votingData
+        function(address, uint256, uint256) internal emitEvent,
+        LiquidVoting.Data storage votingData
     ) private {
         Vote.Data memory voteFrom = votingData.votes[params.from];
         Vote.Data memory voteTo = votingData.votes[params.to];
 
+        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || params.balanceFrom == params.amount) ? defaultValueGetter() : 0;
+
         if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
+            emitEvent(params.from, voteFrom.get(defaultValue), params.balanceFrom.sub(params.amount));
+            emitEvent(params.from, voteTo.get(defaultValue), params.balanceTo.add(params.amount));
             return;
         }
 
-        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || params.balanceFrom == params.amount) ? defaultValueGetter() : 0;
-        uint256 oldValue = votingData.result;
-        uint256 newValue;
-
         if (params.from != address(0)) {
-            (newValue,) = votingData.updateBalance(params.from, voteFrom, params.balanceFrom, params.balanceFrom.sub(params.amount), params.newTotalSupply, defaultValue);
+            uint256 newBalance = params.balanceFrom.sub(params.amount);
+            votingData.updateBalance(params.from, voteFrom, params.balanceFrom, newBalance, params.newTotalSupply, defaultValue);
+            emitEvent(params.from, voteFrom.value, newBalance);
         }
 
         if (params.to != address(0)) {
-            (newValue,) = votingData.updateBalance(params.to, voteTo, params.balanceTo, params.balanceTo.add(params.amount), params.newTotalSupply, defaultValue);
-        }
-
-        if (oldValue != newValue) {
-            emitEvent(newValue);
+            uint256 newBalance = params.balanceTo.add(params.amount);
+            votingData.updateBalance(params.to, voteTo, params.balanceTo, newBalance, params.newTotalSupply, defaultValue);
+            emitEvent(params.from, voteTo.value, newBalance);
         }
     }
 }
