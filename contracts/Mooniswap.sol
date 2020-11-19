@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./interfaces/IReferralFeeReceiver.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
@@ -246,7 +247,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver) = mooniswapFactoryGovernance.parameters();
+        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.parameters();
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -259,7 +260,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             if (referral != address(0)) {
                 referralShare = invIncrease.mul(referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
-                    _mint(referral, referralShare);
+                    _mint(referralFeeReceiver, referralShare);
+                    IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
                 }
             }
 

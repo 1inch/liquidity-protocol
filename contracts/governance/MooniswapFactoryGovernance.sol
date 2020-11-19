@@ -21,12 +21,14 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
     event GovernanceShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
     event GovernanceFeeReceiverUpdate(address governanceFeeReceiver);
+    event ReferralFeeReceiverUpdate(address referralFeeReceiver);
 
     LiquidVoting.Data private _defaultFee;
     LiquidVoting.Data private _defaultDecayPeriod;
     LiquidVoting.Data private _referralShare;
     LiquidVoting.Data private _governanceShare;
     address public override governanceFeeReceiver;
+    address public override referralFeeReceiver;
 
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
         _defaultFee.data.result = uint104(_DEFAULT_FEE);
@@ -35,8 +37,8 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.data.result = uint104(_DEFAULT_GOVERNANCE_SHARE);
     }
 
-    function parameters() external view override returns(uint256, uint256, address) {
-        return (_referralShare.data.current(), _governanceShare.data.current(), governanceFeeReceiver);
+    function parameters() external view override returns(uint256, uint256, address, address) {
+        return (_referralShare.data.current(), _governanceShare.data.current(), governanceFeeReceiver, referralFeeReceiver);
     }
 
     function defaultFee() external view override returns(uint256) {
@@ -74,6 +76,11 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     function setGovernanceFeeReceiver(address newGovernanceFeeReceiver) external onlyOwner {
         governanceFeeReceiver = newGovernanceFeeReceiver;
         emit GovernanceFeeReceiverUpdate(newGovernanceFeeReceiver);
+    }
+
+    function setReferralFeeReceiver(address newReferralFeeReceiver) external onlyOwner {
+        referralFeeReceiver = newReferralFeeReceiver;
+        emit ReferralFeeReceiverUpdate(newReferralFeeReceiver);
     }
 
     function defaultFeeVote(uint256 vote) external {
