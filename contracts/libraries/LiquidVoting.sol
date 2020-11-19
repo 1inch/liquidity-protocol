@@ -41,7 +41,7 @@ library LiquidVoting {
         uint256 balance,
         uint256 totalSupply,
         uint256 defaultVote
-    ) internal returns(uint256 newResult, bool changed) {
+    ) internal {
         return _update(self, user, oldVote, newVote, balance, balance, totalSupply, defaultVote);
     }
 
@@ -53,9 +53,8 @@ library LiquidVoting {
         uint256 newBalance,
         uint256 newTotalSupply,
         uint256 defaultVote
-    ) internal returns(uint256 newResult, bool changed) {
-        Vote.Data memory newVote = newBalance == 0 ? Vote.init() : oldVote;
-        return _update(self, user, oldVote, newVote, oldBalance, newBalance, newTotalSupply, defaultVote);
+    ) internal {
+        return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, newTotalSupply, defaultVote);
     }
 
     function _update(
@@ -67,14 +66,14 @@ library LiquidVoting {
         uint256 newBalance,
         uint256 newTotalSupply,
         uint256 defaultVote
-    ) private returns(uint256 newResult, bool changed) {
+    ) private {
         uint256 oldScaledResult = self._scaledResult;
         VirtualData memory data = self.data;
 
         uint256 newScaledResult = oldScaledResult
             .add(newBalance.mul(newVote.get(defaultVote)))
             .sub(oldBalance.mul(oldVote.get(defaultVote)));
-        newResult = newTotalSupply == 0 ? defaultVote : newScaledResult.div(newTotalSupply);
+        uint256 newResult = newTotalSupply == 0 ? defaultVote : newScaledResult.div(newTotalSupply);
 
         if (newScaledResult != oldScaledResult) {
             self._scaledResult = newScaledResult;
@@ -84,7 +83,6 @@ library LiquidVoting {
             self.data.oldResult = uint104(current(data));
             self.data.result = uint104(newResult);
             self.data.time = uint48(block.timestamp);
-            changed = true;
         }
 
         if (!newVote.eq(oldVote)) {
