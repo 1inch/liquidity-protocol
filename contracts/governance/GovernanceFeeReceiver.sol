@@ -85,7 +85,7 @@ contract GovernanceFeeReceiver {
             (balance, time) = mooniswap.virtualBalancesForRemoval(tokens[0]);
             uint256 token0BalanceForRemoval = Math.min(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token0Balance), token0Balance);
             (balance, time) = mooniswap.virtualBalancesForRemoval(tokens[1]);
-            uint256 token1BalanceForRemoval = Math.max(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token1Balance), token1Balance);
+            uint256 token1BalanceForRemoval = Math.min(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token1Balance), token1Balance);
 
             buyPrice = _ONE.mul(token1BalanceForAddition).div(token0BalanceForRemoval);
             sellPrice = _ONE.mul(token1BalanceForRemoval).div(token0BalanceForAddition);
