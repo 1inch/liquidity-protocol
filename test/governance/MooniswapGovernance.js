@@ -38,7 +38,6 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
                 this.mooniswap.feeVote(ether('0.2')),
                 'Fee vote is too high',
             );
-            expect(await this.mooniswap.fee()).to.be.bignumber.equal('0');
         });
 
         it('should discard fee', async function () {
@@ -81,7 +80,6 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
                 this.mooniswap.decayPeriodVote('4000'),
                 'Decay period vote is too high',
             );
-            expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('300');
         });
 
         it('should reject small decay period', async function () {
@@ -90,7 +88,6 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
                 this.mooniswap.decayPeriodVote('10'),
                 'Decay period vote is too low',
             );
-            expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('300');
         });
 
         it('should discard decay period', async function () {
