@@ -57,16 +57,16 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
             await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.tokenMooniswap.address, this.token.address]);
             await this.feeReceiver.swap([this.DAI.address, this.mooniswap.address, constants.ZERO_ADDRESS, this.tokenMooniswap.address, this.token.address]);
             await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
-            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('888252604710896942');
+            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('889046414196468429');
             await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
-            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1776499334754681600');
+            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1778086948475779200');
 
             const received = await trackReceivedToken(
                 this.token,
                 wallet1,
                 () => this.rewards.getReward(),
             );
-            expect(received).to.be.bignumber.equal('1776499334754681600');
+            expect(received).to.be.bignumber.equal('1778086948475779200');
             expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('0');
         });
     });

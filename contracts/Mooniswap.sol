@@ -272,13 +272,30 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         }
     }
 
+    /*
+        spot_ret = dx * y / x
+        uni_ret = dx * y / (x + dx)
+        slippage = (spot_ret - uni_ret) / spot_ret
+        slippage = dx * dx * y / (x * (x + dx)) / (dx * y / x)
+        slippage = dx / (x + dx)
+        ret = uni_ret * (1 - fee_percentage * slippage)
+        ret = dx * y / (x + dx) * (1 - slip_fee * dx / (x + dx))
+        ret = dx * y / (x + dx) * (x + dx - slip_fee * dx) / (x + dx)
+
+        x = amount * denominator
+        dx = amount * (denominator - fee)
+    */
     function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
         if (src > dst) {
             (src, dst) = (dst, src);
         }
         if (amount > 0 && src == token0 && dst == token1) {
             uint256 taxedAmount = amount.sub(amount.mul(fee()).div(_FEE_DENOMINATOR));
-            return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
+            uint256 taxedSrcBalance = srcBalance.add(taxedAmount);
+            uint256 ret = taxedAmount.mul(dstBalance).div(taxedSrcBalance);
+            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee().mul(taxedAmount));
+            uint256 feeDenominator = _FEE_DENOMINATOR.mul(taxedSrcBalance);
+            return ret.mul(feeNumerator).div(feeDenominator);
         }
     }
 
