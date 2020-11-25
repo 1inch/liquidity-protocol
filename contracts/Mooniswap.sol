@@ -29,6 +29,11 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint128 result;
     }
 
+    struct Fees {
+        uint256 fee;
+        uint256 slippageFee;
+    }
+
     event Deposited(
         address indexed sender,
         address indexed receiver,
@@ -60,7 +65,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     event Sync(
         uint256 srcBalance,
         uint256 dstBalance,
-        uint256 fee
+        uint256 fee,
+        uint256 slippageFee
     );
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
@@ -116,7 +122,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function getReturn(IERC20 src, IERC20 dst, uint256 amount) external view returns(uint256) {
-        return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst), fee());
+        return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst), fee(), slippageFee());
     }
 
     function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply) {
@@ -222,10 +228,13 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         });
         uint256 confirmed;
         Balances memory virtualBalances;
-        uint256 _fee = fee();
-        (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, _fee);
+        Fees memory fees = Fees({
+            fee: fee(),
+            slippageFee: slippageFee()
+        });
+        (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, fees);
         _mintRewards(confirmed, result, referral, balances);
-        emit Sync(balances.src, balances.dst, _fee);
+        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee);
         emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
 
         // Overflow of uint128 is desired
@@ -233,7 +242,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         volumes[src].result += uint128(result);
     }
 
-    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances, uint256 fee)
+    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances, Fees memory fees)
         private returns(uint256 confirmed, uint256 result, Balances memory virtualBalances)
     {
         uint256 _decayPeriod = decayPeriod();
@@ -243,7 +252,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         virtualBalances.dst = Math.min(virtualBalances.dst, balances.dst);
         src.uniTransferFrom(msg.sender, address(this), amount);
         confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
-        result = _getReturn(src, dst, confirmed, virtualBalances.src, virtualBalances.dst, fee);
+        result = _getReturn(src, dst, confirmed, virtualBalances.src, virtualBalances.dst, fees.fee, fees.slippageFee);
         require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
         dst.uniTransfer(receiver, result);
 
@@ -304,7 +313,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         x = amount * denominator
         dx = amount * (denominator - fee)
     */
-    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance, uint256 fee) internal view returns(uint256) {
+    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance, uint256 fee, uint256 slippageFee) internal view returns(uint256) {
         if (src > dst) {
             (src, dst) = (dst, src);
         }
@@ -312,7 +321,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
             uint256 taxedSrcBalance = srcBalance.add(taxedAmount);
             uint256 ret = taxedAmount.mul(dstBalance).div(taxedSrcBalance);
-            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee().mul(taxedAmount));
+            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee.mul(taxedAmount));
             uint256 feeDenominator = _FEE_DENOMINATOR.mul(taxedSrcBalance);
             return ret.mul(feeNumerator).div(feeDenominator);
         }
