@@ -17,6 +17,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     using SafeMath for uint256;
 
     event DefaultFeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
+    event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
     event DefaultDecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, uint256 amount);
     event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
     event GovernanceShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
@@ -24,6 +25,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     event ReferralFeeReceiverUpdate(address referralFeeReceiver);
 
     LiquidVoting.Data private _defaultFee;
+    LiquidVoting.Data private _defaultSlippageFee;
     LiquidVoting.Data private _defaultDecayPeriod;
     LiquidVoting.Data private _referralShare;
     LiquidVoting.Data private _governanceShare;
@@ -32,6 +34,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
         _defaultFee.data.result = uint104(_DEFAULT_FEE);
+        _defaultSlippageFee.data.result = uint104(_DEFAULT_SLIPPAGE_FEE);
         _defaultDecayPeriod.data.result = uint104(_DEFAULT_DECAY_PERIOD);
         _referralShare.data.result = uint104(_DEFAULT_REFERRAL_SHARE);
         _governanceShare.data.result = uint104(_DEFAULT_GOVERNANCE_SHARE);
@@ -47,6 +50,14 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function defaultFeeVotes(address user) external view returns(uint256) {
         return _defaultFee.votes[user].get(_DEFAULT_FEE);
+    }
+
+    function defaultSlippageFee() external view override returns(uint256) {
+        return _defaultSlippageFee.data.current();
+    }
+
+    function defaultSlippageFeeVotes(address user) external view returns(uint256) {
+        return _defaultSlippageFee.votes[user].get(_DEFAULT_SLIPPAGE_FEE);
     }
 
     function defaultDecayPeriod() external view override returns(uint256) {
@@ -90,6 +101,15 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
    function discardDefaultFeeVote() external {
        _updateVote(_defaultFee, msg.sender, Vote.init(), _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
+    }
+
+    function defaultSlippageFeeVote(uint256 vote) external {
+        require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
+        _updateVote(_defaultSlippageFee, msg.sender, Vote.init(vote), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
+    }
+
+   function discardDefaultSlippageFeeVote() external {
+       _updateVote(_defaultSlippageFee, msg.sender, Vote.init(), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
     }
 
     function defaultDecayPeriodVote(uint256 vote) external {
@@ -136,6 +156,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         uint256 newTotalSupply = totalSupply();
 
         _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
+        _updateBalance(_defaultSlippageFee, account, balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
         _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
         _updateBalance(_referralShare, account, balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
         _updateBalance(_governanceShare, account, balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
@@ -143,6 +164,10 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaulFee, uint256 balance) private {
         emit DefaultFeeVoteUpdate(user, newDefaulFee, balance);
+    }
+
+    function _emitDefaultSlippageFeeVoteUpdate(address user, uint256 newDefaulSlippageFee, uint256 balance) private {
+        emit DefaultSlippageFeeVoteUpdate(user, newDefaulSlippageFee, balance);
     }
 
     function _emitDefaultDecayPeriodVoteUpdate(address user, uint256 newDefaultDecayPeriod, uint256 balance) private {

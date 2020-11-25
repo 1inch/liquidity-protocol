@@ -65,6 +65,48 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
         });
     });
 
+    describe('slippage fee', async function () {
+        it('should correctly vote for slippage fee', async function () {
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await this.mooniswap.slippageFeeVote(ether('0.5'));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('499999999999999998');
+        });
+
+        it('should reject big slippage fee', async function () {
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await expectRevert(
+                this.mooniswap.slippageFeeVote(ether('2')),
+                'Slippage fee vote is too high',
+            );
+        });
+
+        it('should discard slippage fee', async function () {
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await this.mooniswap.slippageFeeVote(ether('0.5'));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('499999999999999998');
+            await this.mooniswap.discardSlippageFeeVote();
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('499999999999999998');
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+        });
+
+        it('should reset slippage fee vote on transfer', async function () {
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await this.mooniswap.slippageFeeVote(ether('0.5'));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('499999999999999998');
+            await this.mooniswap.transfer(wallet1, ether('270'));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('499999999999999998');
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.1'));
+        });
+    });
+
     describe('decay period', async function () {
         it('should correctly vote for decay period', async function () {
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('300');
@@ -122,6 +164,7 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
             await this.mooniswap.deposit([ether('1'), ether('270')], ['0', '0'], { value: ether('1'), from: wallet1 });
             expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal('270000000000000001000');
             await this.mooniswap.feeVote(ether('0.06'), { from: wallet1 });
+            await this.mooniswap.slippageFeeVote(ether('0.2'), { from: wallet1 });
             await this.mooniswap.decayPeriodVote('120', { from: wallet1 });
 
             await this.DAI.mint(wallet2, ether('270'));
@@ -129,19 +172,23 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
             await this.mooniswap.deposit([ether('1'), ether('270')], ['0', '0'], { value: ether('1'), from: wallet2 });
             expect(await this.mooniswap.balanceOf(wallet2)).to.be.bignumber.equal('270000000000000001000');
             await this.mooniswap.feeVote(ether('0.03'), { from: wallet2 });
+            await this.mooniswap.slippageFeeVote(ether('0.3'), { from: wallet2 });
             await this.mooniswap.decayPeriodVote('60', { from: wallet2 });
 
             await timeIncreaseTo((await time.latest()).addn(86500));
 
             expect(await this.mooniswap.fee()).to.be.bignumber.equal(ether('0.03'));
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal(ether('0.2'));
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('160');
 
             await this.mooniswap.feeVote(ether('0.09'));
+            await this.mooniswap.slippageFeeVote(ether('0.4'));
             await this.mooniswap.decayPeriodVote('600');
 
             await timeIncreaseTo((await time.latest()).addn(86500));
 
             expect(await this.mooniswap.fee()).to.be.bignumber.equal('59999999999999999');
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('299999999999999999');
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('259');
 
             await this.mooniswap.transfer(wallet1, ether('270'));
@@ -149,6 +196,7 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
             await timeIncreaseTo((await time.latest()).addn(86500));
 
             expect(await this.mooniswap.fee()).to.be.bignumber.equal('49999999999999999');
+            expect(await this.mooniswap.slippageFee()).to.be.bignumber.equal('233333333333333333');
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('100');
         });
     });
