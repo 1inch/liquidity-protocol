@@ -33,37 +33,38 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
         while (this.WETH.address.toLowerCase() > this.DAI.address.toLowerCase()) {
             this.WETH = await Token.new('WETH', 'WETH', 18);
         }
+        this.factory = await MooniswapFactory.new(wallet1, constants.ZERO_ADDRESS, _);
     });
 
     describe('Creation', async function () {
         it('should be denied with empty name', async function () {
             await expectRevert(
-                Mooniswap.new(this.WETH.address, this.DAI.address, '', 'MOON', constants.ZERO_ADDRESS),
+                Mooniswap.new(this.WETH.address, this.DAI.address, '', 'MOON', this.factory.address),
                 'Mooniswap: name is empty',
             );
         });
 
         it('should be denied with empty symbol', async function () {
             await expectRevert(
-                Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', '', constants.ZERO_ADDRESS),
+                Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', '', this.factory.address),
                 'Mooniswap: symbol is empty',
             );
         });
 
         it('should be denied with token duplicates', async function () {
             await expectRevert(
-                Mooniswap.new(this.DAI.address, this.DAI.address, 'Mooniswap', 'MOON', constants.ZERO_ADDRESS),
+                Mooniswap.new(this.DAI.address, this.DAI.address, 'Mooniswap', 'MOON', this.factory.address),
                 'Mooniswap: duplicate tokens',
             );
 
             await expectRevert(
-                Mooniswap.new(constants.ZERO_ADDRESS, constants.ZERO_ADDRESS, 'Mooniswap', 'MOON', constants.ZERO_ADDRESS),
+                Mooniswap.new(constants.ZERO_ADDRESS, constants.ZERO_ADDRESS, 'Mooniswap', 'MOON', this.factory.address),
                 'Mooniswap: duplicate tokens',
             );
         });
 
         it('should be allowed for different tokens and non-empty name and symbol', async function () {
-            await Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', 'MOON', constants.ZERO_ADDRESS);
+            await Mooniswap.new(this.WETH.address, this.DAI.address, 'Mooniswap', 'MOON', this.factory.address);
         });
     });
 
