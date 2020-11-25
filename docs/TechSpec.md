@@ -1,33 +1,36 @@
+
 # Mooniswap v2 Tech Spec
 
+
 ## Funcional structure
-The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stackholders by voting + in the future it is possible to add other control modules. 
+The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting + in the future; it is possible to add other control modules. 
 Users bring liquidity in exchange for what they receive voting tokens `inchToken`.
+
 
 ### Features:
 - Modular principle - the system is built on the separation of the core and modules `GovernanceMothership`, the voting logic is described in the plug-in modules, additional functions can be introduced through the modules in the future.
 - To protect against Front-Running Attacks and FlashLoans, the `LiquidVoting` library is used in the voting, with a 24-hour delay of `_VOTING_DECAY_PERIOD` - the voting takes effect on an increasing basis.
 
-- The rewards are also issued interpolated in ``DECAY_PERIOD`. 
-
+- The rewards are also issued interpolated in `DECAY_PERIOD`. 
 ## Logical structure
 
-- GovernanceMothership
-    - has 2 modules:
-        - MooniswapFactoryGovernance .
-        - Rewards
+![Moonisvap_v2_diagram](./Moonisvap_v2_diagram.png)
 
-    - Module managment in current version is resticted to owner, in future versions it will be 3 options avalilable:
-        - `onlyOwner` (current version)
-        - Multisig (planned)
-        - Governance (future releases)
+- GovernanceMothership has two modules:
+    - MooniswapFactoryGovernance
+    - Rewards
+
+- Module managment in current version is resticted to owner, in future versions it will be 3 options avalilable:
+    - `onlyOwner` (current version)
+    - Multisig (planned)
+    - Governance (future releases)
 
 ### Stacking
 // TBD
 
 
 ### Voting (LiquidVoting)
-- Stakeholeders vote for `fee` and `decayPeriod` parameters, calling the method is considered a branded voice of all stakeholders.
+- Stakeholders vote for `fee` and `decayPeriod` parameters, calling the method is considered a branded voice of all stakeholders.
 - The weight of each participant's voice is carried by linear interpolation within 24 hours.
 
 
@@ -36,20 +39,17 @@ Users bring liquidity in exchange for what they receive voting tokens `inchToken
 TBD:
 > #### How do rewards count?
 
-A request for distribution can be initiated by any stakeholder and is held for all active holdings at the time of the request.
+A request for distribution can be initiated by any stakeholder and held for all active holdings at the request's time.
 
 ## Technical structure
 
 #### Root contract: **GovernanceMothership.sol**
-This is root contract, has 2 two main functions:
-- `inchToken` is an ERC20 token voted by stakeholders, responsible for the number of rewards and determine the weight of the holder's vote.
-- Staking / Unstaking 
+GovernanceMothership is a root contract, has 2 two main functions:
+- `inchToken` is an ERC20 token voted by stakeholders, responsible for the number of rewards and determining the holder's vote's weight.
+- Stake / Ununstake `inchToken`
 - Add / Remove Modules
 
 ## Code structure:
-
-
-----
 
 📂 __mooniswap\-v2__
 
