@@ -72,6 +72,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
         beforeEach(async function () {
             this.deployer = await MooniswapDeployer.new();
             this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, _);
+            await this.factory.notifyStakeChanged(wallet1, ether('1'));
+            await this.factory.defaultSlippageFeeVote('0', { from: wallet1 });
+            await timeIncreaseTo((await time.latest()).addn(86500));
             await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
             await this.DAI.mint(wallet1, money.dai('270'));
@@ -121,6 +124,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
         beforeEach(async function () {
             this.deployer = await MooniswapDeployer.new();
             this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, _);
+            await this.factory.notifyStakeChanged(wallet1, ether('1'));
+            await this.factory.defaultSlippageFeeVote('0', { from: wallet1 });
+            await timeIncreaseTo((await time.latest()).addn(86500));
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, new BN('1000'));
@@ -146,6 +152,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
         beforeEach(async function () {
             this.deployer = await MooniswapDeployer.new();
             this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, _);
+            await this.factory.notifyStakeChanged(wallet1, ether('1'));
+            await this.factory.defaultSlippageFeeVote('0', { from: wallet1 });
+            await timeIncreaseTo((await time.latest()).addn(86500));
             await this.factory.deploy(this.WETH.address, this.DAI.address);
             this.mooniswap = await Mooniswap.at(await this.factory.pools(this.WETH.address, this.DAI.address));
             await this.WETH.mint(wallet1, money.weth('1'));

@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./interfaces/IReferralFeeReceiver.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
@@ -259,7 +260,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver) = mooniswapFactoryGovernance.parameters();
+        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.parameters();
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -272,7 +273,12 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             if (referral != address(0)) {
                 referralShare = invIncrease.mul(referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
-                    _mint(referral, referralShare);
+                    if (referralFeeReceiver != address(0)) {
+                        _mint(referralFeeReceiver, referralShare);
+                        IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
+                    } else {
+                        _mint(referral, referralShare);
+                    }
                 }
             }
 
@@ -285,13 +291,30 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         }
     }
 
+    /*
+        spot_ret = dx * y / x
+        uni_ret = dx * y / (x + dx)
+        slippage = (spot_ret - uni_ret) / spot_ret
+        slippage = dx * dx * y / (x * (x + dx)) / (dx * y / x)
+        slippage = dx / (x + dx)
+        ret = uni_ret * (1 - fee_percentage * slippage)
+        ret = dx * y / (x + dx) * (1 - slip_fee * dx / (x + dx))
+        ret = dx * y / (x + dx) * (x + dx - slip_fee * dx) / (x + dx)
+
+        x = amount * denominator
+        dx = amount * (denominator - fee)
+    */
     function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance, uint256 fee) internal view returns(uint256) {
         if (src > dst) {
             (src, dst) = (dst, src);
         }
         if (amount > 0 && src == token0 && dst == token1) {
             uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
-            return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
+            uint256 taxedSrcBalance = srcBalance.add(taxedAmount);
+            uint256 ret = taxedAmount.mul(dstBalance).div(taxedSrcBalance);
+            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee().mul(taxedAmount));
+            uint256 feeDenominator = _FEE_DENOMINATOR.mul(taxedSrcBalance);
+            return ret.mul(feeNumerator).div(feeDenominator);
         }
     }
 
