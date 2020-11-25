@@ -31,13 +31,17 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     event Deposited(
         address indexed sender,
         address indexed receiver,
-        uint256 amount
+        uint256 share,
+        uint256 token0Amount,
+        uint256 token1Amount
     );
 
     event Withdrawn(
         address indexed sender,
         address indexed receiver,
-        uint256 amount
+        uint256 share,
+        uint256 token0Amount,
+        uint256 token1Amount
     );
 
     event Swapped(
@@ -118,6 +122,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
         uint256 totalSupply = totalSupply();
+        uint256[2] memory receivedAmounts;
 
         if (totalSupply == 0) {
             fairSupply = _BASE_SUPPLY.mul(99);
@@ -130,6 +135,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 require(maxAmounts[i] >= minAmounts[i], "Mooniswap: minAmount not reached");
 
                 _tokens[i].uniTransferFrom(msg.sender, address(this), maxAmounts[i]);
+                receivedAmounts[i] = maxAmounts[i];
             }
         }
         else {
@@ -152,8 +158,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 require(amount >= minAmounts[i], "Mooniswap: minAmount not reached");
 
                 _tokens[i].uniTransferFrom(msg.sender, address(this), amount);
-                uint256 confirmed = _tokens[i].uniBalanceOf(address(this)).sub(realBalances[i]);
-                fairSupply = Math.min(fairSupply, totalSupply.mul(confirmed).div(realBalances[i]));
+                receivedAmounts[i] = _tokens[i].uniBalanceOf(address(this)).sub(realBalances[i]);
+                fairSupply = Math.min(fairSupply, totalSupply.mul(receivedAmounts[i]).div(realBalances[i]));
             }
 
             uint256 _decayPeriod = decayPeriod();  // gas savings
@@ -166,7 +172,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         require(fairSupply > 0, "Mooniswap: result is not enough");
         _mint(target, fairSupply);
 
-        emit Deposited(msg.sender, target, fairSupply);
+        emit Deposited(msg.sender, target, fairSupply, receivedAmounts[0], receivedAmounts[1]);
     }
 
     function withdraw(uint256 amount, uint256[] memory minReturns) external {
@@ -179,6 +185,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 totalSupply = totalSupply();
         uint256 _decayPeriod = decayPeriod();  // gas savings
         _burn(msg.sender, amount);
+        uint256[2] memory withdrawnAmounts;
 
         for (uint i = 0; i < _tokens.length; i++) {
             IERC20 token = _tokens[i];
@@ -186,13 +193,14 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             uint256 preBalance = token.uniBalanceOf(address(this));
             uint256 value = preBalance.mul(amount).div(totalSupply);
             token.uniTransfer(target, value);
+            withdrawnAmounts[i] = value;
             require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
 
             virtualBalancesForAddition[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
             virtualBalancesForRemoval[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
         }
 
-        emit Withdrawn(msg.sender, target, amount);
+        emit Withdrawn(msg.sender, target, amount, withdrawnAmounts[0], withdrawnAmounts[1]);
     }
 
     function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external payable returns(uint256 result) {
