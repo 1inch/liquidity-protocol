@@ -260,8 +260,12 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             if (referral != address(0)) {
                 referralShare = invIncrease.mul(referralShare).div(_FEE_DENOMINATOR);
                 if (referralShare > 0) {
-                    _mint(referralFeeReceiver, referralShare);
-                    IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
+                    if (referralFeeReceiver != address(0)) {
+                        _mint(referralFeeReceiver, referralShare);
+                        IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
+                    } else {
+                        _mint(referral, referralShare);
+                    }
                 }
             }
 
