@@ -2,13 +2,13 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./interfaces/IMooniswapDeployer.sol";
 import "./libraries/UniERC20.sol";
-import "./interfaces/IMooniFactory.sol";
 import "./Mooniswap.sol";
+import "./governance/MooniswapFactoryGovernance.sol";
 
 
-contract MooniFactory is IMooniFactory, Ownable {
+contract MooniswapFactory is MooniswapFactoryGovernance {
     using UniERC20 for IERC20;
 
     event Deployed(
@@ -17,20 +17,19 @@ contract MooniFactory is IMooniFactory, Ownable {
         address indexed token2
     );
 
-    uint256 public constant MAX_FEE = 0.003e18; // 0.3%
-
-    uint256 public override fee;
+    IMooniswapDeployer public immutable mooniswapDeployer;
+    address public immutable poolOwner;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
 
-    function getAllPools() external view returns(Mooniswap[] memory) {
-        return allPools;
+    constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
+        poolOwner = _poolOwner;
+        mooniswapDeployer = _mooniswapDeployer;
     }
 
-    function setFee(uint256 newFee) external onlyOwner {
-        require(newFee <= MAX_FEE, "Factory: fee should be <= 0.3%");
-        fee = newFee;
+    function getAllPools() external view returns(Mooniswap[] memory) {
+        return allPools;
     }
 
     function deploy(IERC20 tokenA, IERC20 tokenB) public returns(Mooniswap pool) {
@@ -42,14 +41,14 @@ contract MooniFactory is IMooniFactory, Ownable {
         string memory symbol1 = token1.uniSymbol();
         string memory symbol2 = token2.uniSymbol();
 
-        pool = new Mooniswap(
+        pool = mooniswapDeployer.deploy(
             token1,
             token2,
-            string(abi.encodePacked("Mooniswap V1 (", symbol1, "-", symbol2, ")")),
-            string(abi.encodePacked("MOON-V1-", symbol1, "-", symbol2))
+            string(abi.encodePacked("Mooniswap V2 (", symbol1, "-", symbol2, ")")),
+            string(abi.encodePacked("MOON-V2-", symbol1, "-", symbol2)),
+            poolOwner
         );
 
-        pool.transferOwnership(owner());
         pools[token1][token2] = pool;
         pools[token2][token1] = pool;
         allPools.push(pool);
