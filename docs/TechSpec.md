@@ -1,18 +1,29 @@
 
 # Mooniswap v2 Tech Spec
 
+- [Funcional](#funcional)
+  + [Features:](#features)
+  * [Logical](#logical)
+    + [Stacking](#stacking)
+    + [Voting (LiquidVoting)](#voting-liquidvoting)
+    + [Reward distribution](#reward-distribution)
+      - [How do rewards count?](#how-do-rewards-count)
+  * [Technical](#technical)
+      - [**GovernanceMothership.sol**](#governancemothershipsol)
+  * [Code](#code)
 
-## Funcional structure
+## Funcional
+
 The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting + in the future; it is possible to add other control modules. 
 Users bring liquidity in exchange for what they receive voting tokens `inchToken`.
 
 
-### Features:
-- Modular principle - the system is built on the separation of the core and modules `GovernanceMothership`, the voting logic is described in the plug-in modules, additional functions can be introduced through the modules in the future.
-- To protect against Front-Running Attacks and FlashLoans, the `LiquidVoting` library is used in the voting, with a 24-hour delay of `_VOTING_DECAY_PERIOD` - the voting takes effect on an increasing basis.
+### Features
+- **Modular principle** - the system is built on the separation of the core and modules `GovernanceMothership`, the voting logic is described in the plug-in modules, additional functions can be introduced through the modules in the future.
+- To protect against **Front-Running Attacks and FlashLoans**, the `LiquidVoting.sol` library is used in the voting, with a 24-hour delay of `_VOTING_DECAY_PERIOD` - the voting takes effect on an increasing basis.
 
 - The rewards are also issued interpolated in `DECAY_PERIOD`. 
-## Logical structure
+## Logical
 
 ![Moonisvap_v2_diagram](./Moonisvap_v2_diagram.png)
 
@@ -41,15 +52,17 @@ TBD:
 
 A request for distribution can be initiated by any stakeholder and held for all active holdings at the request's time.
 
-## Technical structure
+## Technical
 
-#### Root contract: **GovernanceMothership.sol**
-GovernanceMothership is a root contract, has 2 two main functions:
-- `inchToken` is an ERC20 token voted by stakeholders, responsible for the number of rewards and determining the holder's vote's weight.
+#### **GovernanceMothership.sol**
+This is  is a root contract, that holds `inchToken` (is an ERC20 token voted by stakeholders, responsible for the number of rewards and determining the holder's vote's weight)
+
+It operates by has 2 two core functions:
+
 - Stake / Ununstake `inchToken`
 - Add / Remove Modules
 
-## Code structure:
+## Code
 
 📂 __mooniswap\-v2__
 
@@ -68,4 +81,3 @@ GovernanceMothership is a root contract, has 2 two main functions:
     - 📄 [**Rewards.sol**](contracts/governance/rewards/Rewards.sol)
   - 📂 __libraries__
     - 📄 [**LiquidVoting.sol**](contracts/libraries/LiquidVoting.sol)
- 
