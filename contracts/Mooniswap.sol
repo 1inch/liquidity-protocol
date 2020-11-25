@@ -51,10 +51,15 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         address dstToken,
         uint256 amount,
         uint256 result,
+        uint256 srcAdditionBalance,
+        uint256 dstRemovalBalance,
+        address referral
+    );
+
+    event Sync(
         uint256 srcBalance,
         uint256 dstBalance,
-        uint256 totalSupply,
-        address referral
+        uint256 fee
     );
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
@@ -110,7 +115,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function getReturn(IERC20 src, IERC20 dst, uint256 amount) external view returns(uint256) {
-        return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst));
+        return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst), fee());
     }
 
     function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply) {
@@ -215,38 +220,38 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             dst: dst.uniBalanceOf(address(this))
         });
         uint256 confirmed;
-        (confirmed, result) = _doTransfers(src, dst, amount, minReturn, receiver, balances);
+        Balances memory virtualBalances;
+        uint256 _fee = fee();
+        (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, _fee);
         _mintRewards(confirmed, result, referral, balances);
-        _emitSwapped(receiver, src, dst, confirmed, result, balances, referral);
+        emit Sync(balances.src, balances.dst, _fee);
+        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
         volumes[src].result += uint128(result);
     }
 
-    function _emitSwapped(address receiver, IERC20 src, IERC20 dst, uint256 confirmed, uint256 result, Balances memory balances, address referral) private {
-        emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, balances.src, balances.dst, totalSupply(), referral);
-    }
-
-    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances) private returns(uint256 confirmed, uint256 result) {
+    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances, uint256 fee)
+        private returns(uint256 confirmed, uint256 result, Balances memory virtualBalances)
+    {
         uint256 _decayPeriod = decayPeriod();
-        uint256 srcAdditionBalance = virtualBalancesForAddition[src].current(_decayPeriod, balances.src);
-        srcAdditionBalance = Math.max(srcAdditionBalance, balances.src);
-        uint256 dstRemovalBalance = virtualBalancesForRemoval[dst].current(_decayPeriod, balances.dst);
-        dstRemovalBalance = Math.min(dstRemovalBalance, balances.dst);
-
+        virtualBalances.src = virtualBalancesForAddition[src].current(_decayPeriod, balances.src);
+        virtualBalances.src = Math.max(virtualBalances.src, balances.src);
+        virtualBalances.dst = virtualBalancesForRemoval[dst].current(_decayPeriod, balances.dst);
+        virtualBalances.dst = Math.min(virtualBalances.dst, balances.dst);
         src.uniTransferFrom(msg.sender, address(this), amount);
         confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
-        result = _getReturn(src, dst, confirmed, srcAdditionBalance, dstRemovalBalance);
+        result = _getReturn(src, dst, confirmed, virtualBalances.src, virtualBalances.dst, fee);
         require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
         dst.uniTransfer(receiver, result);
 
         // Update virtual balances to the same direction only at imbalanced state
-        if (srcAdditionBalance != balances.src) {
-            virtualBalancesForAddition[src].set(srcAdditionBalance.add(confirmed));
+        if (virtualBalances.src != balances.src) {
+            virtualBalancesForAddition[src].set(virtualBalances.src.add(confirmed));
         }
-        if (dstRemovalBalance != balances.dst) {
-            virtualBalancesForRemoval[dst].set(dstRemovalBalance.sub(result));
+        if (virtualBalances.dst != balances.dst) {
+            virtualBalancesForRemoval[dst].set(virtualBalances.dst.sub(result));
         }
         // Update virtual balances to the opposite direction
         virtualBalancesForRemoval[src].update(_decayPeriod, balances.src);
@@ -280,12 +285,12 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         }
     }
 
-    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance) internal view returns(uint256) {
+    function _getReturn(IERC20 src, IERC20 dst, uint256 amount, uint256 srcBalance, uint256 dstBalance, uint256 fee) internal view returns(uint256) {
         if (src > dst) {
             (src, dst) = (dst, src);
         }
         if (amount > 0 && src == token0 && dst == token1) {
-            uint256 taxedAmount = amount.sub(amount.mul(fee()).div(_FEE_DENOMINATOR));
+            uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
             return taxedAmount.mul(dstBalance).div(srcBalance.add(taxedAmount));
         }
     }
