@@ -85,7 +85,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
 
         uint256 amount = _maxAmountForSwap(path, availableBalance);
-        uint256 receivedAmount = _swap(path, amount, address(this));
+        uint256 receivedAmount = _swap(path, amount, payable(address(this)));
         epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
         if (path[0] == tokens[0]) {
             epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);

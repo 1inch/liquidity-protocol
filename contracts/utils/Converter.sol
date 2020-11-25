@@ -79,7 +79,7 @@ contract Converter {
         return amount;
     }
 
-    function _swap(IERC20[] memory path, uint256 initialAmount, address destination) internal returns(uint256 amount) {
+    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
         require(path[path.length - 1] == targetToken, "Should swap to target token");
 
         amount = initialAmount;
@@ -96,10 +96,10 @@ contract Converter {
 
         if (pathLength > 1) {
             if (path[pathLength-3].isETH()) {
-                amount = Mooniswap(address(path[pathLength-2])).swap{value: amount}(path[pathLength-3], path[pathLength-1], amount, 0, destination);
+                amount = Mooniswap(address(path[pathLength-2])).swapFor{value: amount}(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
             } else {
                 path[pathLength-3].safeApprove(address(path[pathLength-2]), amount);
-                amount = Mooniswap(address(path[pathLength-2])).swap(path[pathLength-3], path[pathLength-1], amount, 0, destination);
+                amount = Mooniswap(address(path[pathLength-2])).swapFor(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
             }
         } else {
             path[0].transfer(destination, amount);
