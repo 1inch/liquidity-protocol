@@ -10,20 +10,19 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
     struct UserInfo {
         uint256 balance;
         mapping(IERC20 => mapping(uint256 => uint256)) share;
-        mapping(IERC20 => uint256) lastUnprocessedEpoch;
+        mapping(IERC20 => uint256) firstUnprocessedEpoch;
     }
 
     struct EpochBalance {
+        uint256 totalSupply;
         uint256 token0Balance;
         uint256 token1Balance;
         uint256 inchBalance;
     }
 
     struct TokenInfo {
-        mapping(uint256 => uint256) totalSupply;
-        mapping(uint256 => uint256) amount;
         mapping(uint256 => EpochBalance) epochBalance;
-        uint256 lastUnprocessedEpoch;
+        uint256 firstUnprocessedEpoch;
         uint256 currentEpoch;
     }
 
@@ -43,14 +42,14 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
             _userInfo.balance = _userInfo.balance.add(unclaimedTokens);
         }
         _userInfo.share[mooniswap][currentEpoch] = _userInfo.share[mooniswap][currentEpoch].add(referralShare);
-        _tokenInfo.totalSupply[currentEpoch] = _tokenInfo.totalSupply[currentEpoch].add(referralShare);
+        _tokenInfo.epochBalance[currentEpoch].totalSupply = _tokenInfo.epochBalance[currentEpoch].totalSupply.add(referralShare);
     }
 
     function freezeEpoch(Mooniswap mooniswap) external validSpread(mooniswap) {
         TokenInfo storage info = tokenInfo[mooniswap];
         uint256 currentEpoch = info.currentEpoch;
 
-        require(info.lastUnprocessedEpoch == currentEpoch, "Previous epoch is not finlazed");
+        require(info.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finlazed");
 
         tokenInfo[mooniswap].currentEpoch = currentEpoch.add(1);
 
@@ -60,19 +59,16 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
 
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
 
-        info.epochBalance[currentEpoch] = EpochBalance({
-            token0Balance: tokens[0].uniBalanceOf(address(this)).sub(token0Balance),
-            token1Balance: tokens[1].uniBalanceOf(address(this)).sub(token1Balance),
-            inchBalance: 0
-        });
+        info.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
+        info.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
     }
 
     function trade(Mooniswap mooniswap, IERC20[] memory path) external {
         TokenInfo storage info = tokenInfo[mooniswap];
-        uint256 lastUnprocessedEpoch = info.lastUnprocessedEpoch;
-        require(lastUnprocessedEpoch.add(1) == info.currentEpoch, "Prev epoch already finalized");
+        uint256 firstUnprocessedEpoch = info.firstUnprocessedEpoch;
+        require(firstUnprocessedEpoch.add(1) == info.currentEpoch, "Prev epoch already finalized");
 
-        EpochBalance storage epochBalance = info.epochBalance[lastUnprocessedEpoch];
+        EpochBalance storage epochBalance = info.epochBalance[firstUnprocessedEpoch];
 
         IERC20[] memory tokens = mooniswap.getTokens();
         uint256 availableBalance;
@@ -94,7 +90,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
 
         if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {
-            info.lastUnprocessedEpoch = lastUnprocessedEpoch.add(1);
+            info.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);
         }
     }
 
@@ -123,7 +119,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         uint256 balance = _userInfo.share[mooniswap][currentEpoch];
         if (balance > 0) {
             _userInfo.share[mooniswap][currentEpoch] = 0;
-            _tokenInfo.totalSupply[currentEpoch] = _tokenInfo.totalSupply[currentEpoch].sub(balance);
+            _tokenInfo.epochBalance[currentEpoch].totalSupply = _tokenInfo.epochBalance[currentEpoch].totalSupply.sub(balance);
             mooniswap.transfer(msg.sender, balance);
         }
     }
@@ -131,22 +127,22 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
     function claimFrozenEpoch(Mooniswap mooniswap) external {
         TokenInfo storage _tokenInfo = tokenInfo[mooniswap];
         UserInfo storage _userInfo = userInfo[msg.sender];
-        uint256 lastUnprocessedEpoch = _tokenInfo.lastUnprocessedEpoch;
+        uint256 firstUnprocessedEpoch = _tokenInfo.firstUnprocessedEpoch;
         uint256 currentEpoch = _tokenInfo.currentEpoch;
 
-        require(lastUnprocessedEpoch.add(1) == currentEpoch, "Epoch already finalized");
-        require(_userInfo.lastUnprocessedEpoch[mooniswap] == lastUnprocessedEpoch, "Epoch funcds already claimed");
+        require(firstUnprocessedEpoch.add(1) == currentEpoch, "Epoch already finalized");
+        require(_userInfo.firstUnprocessedEpoch[mooniswap] == firstUnprocessedEpoch, "Epoch funcds already claimed");
 
-        _userInfo.lastUnprocessedEpoch[mooniswap] = currentEpoch;
-        uint256 share = _userInfo.share[mooniswap][lastUnprocessedEpoch];
-        uint256 totalSupply = _tokenInfo.totalSupply[lastUnprocessedEpoch];
+        _userInfo.firstUnprocessedEpoch[mooniswap] = currentEpoch;
+        uint256 share = _userInfo.share[mooniswap][firstUnprocessedEpoch];
+        uint256 totalSupply = _tokenInfo.epochBalance[firstUnprocessedEpoch].totalSupply;
 
         if (share > 0) {
-            _userInfo.share[mooniswap][lastUnprocessedEpoch] = 0;
-            _tokenInfo.totalSupply[lastUnprocessedEpoch] = totalSupply.sub(share);
+            _userInfo.share[mooniswap][firstUnprocessedEpoch] = 0;
+            _tokenInfo.epochBalance[firstUnprocessedEpoch].totalSupply = totalSupply.sub(share);
 
             IERC20[] memory tokens = mooniswap.getTokens();
-            EpochBalance storage epochBalance = _tokenInfo.epochBalance[lastUnprocessedEpoch];
+            EpochBalance storage epochBalance = _tokenInfo.epochBalance[firstUnprocessedEpoch];
             {
                 uint256 token0Balance = epochBalance.token0Balance;
                 uint256 token0Amount = token0Balance.mul(share).div(totalSupply);
@@ -175,14 +171,33 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
     }
 
     function _claimOldEpoch(TokenInfo storage _tokenInfo, UserInfo storage _userInfo, uint256 currentEpoch, Mooniswap mooniswap) private returns (uint256 unclaimedTokens) {
-        uint256 lastUserEpoch = _userInfo.lastUnprocessedEpoch[mooniswap];
-        if (lastUserEpoch < _tokenInfo.lastUnprocessedEpoch) {
-            unclaimedTokens =
-                _tokenInfo.epochBalance[lastUserEpoch].inchBalance
-                .mul(_userInfo.share[mooniswap][lastUserEpoch])
-                .div(_tokenInfo.totalSupply[lastUserEpoch]);
+        if (_userInfo.share[mooniswap][_userInfo.firstUnprocessedEpoch[mooniswap]] == 0) {
+            _userInfo.firstUnprocessedEpoch[mooniswap] = currentEpoch;
+            return 0;
+        }
 
-            _userInfo.lastUnprocessedEpoch[mooniswap] = currentEpoch;
+        uint256 startEpoch = _userInfo.firstUnprocessedEpoch[mooniswap];
+        uint256 epoch = startEpoch;
+        for (uint256 i = 0; i < 2 && epoch < _tokenInfo.firstUnprocessedEpoch; i++) {
+            unclaimedTokens = unclaimedTokens.add(
+                _tokenInfo.epochBalance[epoch].inchBalance
+                .mul(_userInfo.share[mooniswap][epoch])
+                .div(_tokenInfo.epochBalance[epoch].totalSupply)
+            );
+            epoch++;
+        }
+
+        if (epoch - startEpoch == 2) {
+            _userInfo.firstUnprocessedEpoch[mooniswap] = currentEpoch;
+        }
+        else if (epoch - startEpoch == 1) {
+            if (_userInfo.share[mooniswap][epoch] > 0) {
+                _userInfo.firstUnprocessedEpoch[mooniswap] = epoch;
+            } else {
+                _userInfo.firstUnprocessedEpoch[mooniswap] = currentEpoch;
+            }
+        } else {
+            revert("Unreachable code");
         }
     }
 }
