@@ -110,9 +110,9 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
                 balance = balance.add(unclaimedTokens);
             }
         }
-        if (balance > 0) {
-            _userInfo.balance = 0;
-            targetToken.transfer(msg.sender, balance);
+        if (balance > 1) {
+            _userInfo.balance = 1;
+            targetToken.transfer(msg.sender, balance - 1);
         }
     }
 
@@ -135,7 +135,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         uint256 currentEpoch = _tokenInfo.currentEpoch;
 
         require(lastUnprocessedEpoch.add(1) == currentEpoch, "Epoch already finalized");
-        require(_userInfo.lastUnprocessedEpoch[mooniswap] == lastUnprocessedEpoch, "Epoch funcds already claimed");
+        require(_userInfo.lastUnprocessedEpoch[mooniswap] == lastUnprocessedEpoch, "Epoch funds already claimed");
 
         _userInfo.lastUnprocessedEpoch[mooniswap] = currentEpoch;
         uint256 share = _userInfo.share[mooniswap][lastUnprocessedEpoch];
