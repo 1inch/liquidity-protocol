@@ -81,27 +81,27 @@ contract Converter {
 
     function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
         require(path[path.length - 1] == targetToken, "Should swap to target token");
+        require(path.length % 2 == 1, "Path length should be odd");
 
         amount = initialAmount;
-        uint256 pathLength = path.length;
 
-        for (uint256 i = 1; i + 2 < pathLength; i += 2) {
-            if (path[i-1].isETH()) {
-                amount = Mooniswap(address(path[i])).swap{value: amount}(path[i-1], path[i+1], amount, 0, address(this));
-            } else {
+        for (uint256 i = 1; i < path.length; i += 2) {
+            uint256 value = amount;
+            if (!path[i-1].isETH()) {
                 path[i-1].safeApprove(address(path[i]), amount);
-                amount = Mooniswap(address(path[i])).swap(path[i-1], path[i+1], amount, 0, address(this));
+                value = 0;
+            }
+
+            Mooniswap mooni = Mooniswap(address(path[i]));
+            if (i + 2 < path.length) {
+                amount = mooni.swap{value: value}(path[i-1], path[i+1], amount, 0, address(this));
+            }
+            else {
+                amount = mooni.swapFor{value: value}(path[i-1], path[i+1], amount, 0, address(this), destination);
             }
         }
 
-        if (pathLength > 1) {
-            if (path[pathLength-3].isETH()) {
-                amount = Mooniswap(address(path[pathLength-2])).swapFor{value: amount}(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
-            } else {
-                path[pathLength-3].safeApprove(address(path[pathLength-2]), amount);
-                amount = Mooniswap(address(path[pathLength-2])).swapFor(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
-            }
-        } else {
+        if (path.length == 1) {
             path[0].transfer(destination, amount);
         }
     }
