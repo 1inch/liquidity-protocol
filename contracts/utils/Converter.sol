@@ -77,7 +77,6 @@ contract Converter {
                 stepAmount = mooniswap.getReturn(path[i-1], path[i+1], stepAmount);
             }
         }
-        return amount;
     }
 
     function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
