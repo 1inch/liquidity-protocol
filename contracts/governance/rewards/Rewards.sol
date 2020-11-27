@@ -69,7 +69,7 @@ contract Rewards is IRewardDistributionRecipient, BaseGovernanceModule, BalanceA
                 .add(rewards[account]);
     }
 
-    function notifyStakeChanged(address account, uint256 newBalance) external override onlyMothership updateReward(account) {
+    function _notifyStakeChanged(address account, uint256 newBalance) internal override updateReward(account) {
         uint256 balance = balanceOf(account);
         if (newBalance > balance) {
             _mint(account, newBalance.sub(balance));

@@ -49,6 +49,17 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
         _notifyFor(account, balanceOf(msg.sender));
     }
 
+    function batchNotifyFor(address[] memory accounts) external {
+        uint256 modulesLength = _modules.length();
+        uint256[] memory balances = new uint256[](accounts.length);
+        for (uint256 j = 0; j < accounts.length; ++j) {
+            balances[j] = balanceOf(accounts[j]);
+        }
+        for (uint256 i = 0; i < modulesLength; ++i) {
+            IGovernanceModule(_modules.at(i)).notifyStakesChanged(accounts, balances);
+        }
+    }
+
     function addModule(address module) external onlyOwner {
         require(_modules.add(module), "Module already registered");
         emit AddModule(module);
