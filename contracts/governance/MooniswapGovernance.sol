@@ -54,21 +54,21 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         return _decayPeriod.votes[user].get(mooniswapFactoryGovernance.defaultDecayPeriod);
     }
 
-    function feeVote(uint256 vote) external nonReentrant {
+    function feeVote(uint256 vote) external {
         require(vote <= _MAX_FEE, "Fee vote is too high");
 
         Vote.Data memory oldVote = _fee.votes[msg.sender];
         _updateVote(_fee, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultFee() : 0, _emitFeeVoteUpdate);
     }
 
-    function slippageFeeVote(uint256 vote) external nonReentrant {
+    function slippageFeeVote(uint256 vote) external {
         require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
         Vote.Data memory oldVote = _slippageFee.votes[msg.sender];
         _updateVote(_slippageFee, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultSlippageFee() : 0, _emitSlippageFeeVoteUpdate);
     }
 
-    function decayPeriodVote(uint256 vote) external nonReentrant {
+    function decayPeriodVote(uint256 vote) external {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
@@ -76,15 +76,15 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         _updateVote(_decayPeriod, msg.sender, oldVote, Vote.init(vote), oldVote.isDefault() ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0, _emitDecayPeriodVoteUpdate);
     }
 
-    function discardFeeVote() external nonReentrant {
+    function discardFeeVote() external {
         _updateVote(_fee, msg.sender, _fee.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
     }
 
-    function discardSlippageFeeVote() external nonReentrant {
+    function discardSlippageFeeVote() external {
         _updateVote(_slippageFee, msg.sender, _slippageFee.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
     }
 
-    function discardDecayPeriodVote() external nonReentrant {
+    function discardDecayPeriodVote() external {
         _updateVote(_decayPeriod, msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }
 
