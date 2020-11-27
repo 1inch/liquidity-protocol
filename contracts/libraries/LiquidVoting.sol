@@ -21,7 +21,7 @@ library LiquidVoting {
 
     struct Data {
         VirtualData data;
-        uint256 _scaledResult;
+        uint256 _weightedSum;
         mapping(address => Vote.Data) votes;
     }
 
@@ -67,16 +67,16 @@ library LiquidVoting {
         uint256 newTotalSupply,
         uint256 defaultVote
     ) private {
-        uint256 oldScaledResult = self._scaledResult;
+        uint256 oldWeightedSum = self._weightedSum;
         VirtualData memory data = self.data;
 
-        uint256 newScaledResult = oldScaledResult
+        uint256 newWeightedSum = oldWeightedSum
             .add(newBalance.mul(newVote.get(defaultVote)))
             .sub(oldBalance.mul(oldVote.get(defaultVote)));
-        uint256 newResult = newTotalSupply == 0 ? defaultVote : newScaledResult.div(newTotalSupply);
+        uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.div(newTotalSupply);
 
-        if (newScaledResult != oldScaledResult) {
-            self._scaledResult = newScaledResult;
+        if (newWeightedSum != oldWeightedSum) {
+            self._weightedSum = newWeightedSum;
         }
 
         if (newResult != data.result) {
