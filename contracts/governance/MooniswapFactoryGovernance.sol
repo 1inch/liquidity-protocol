@@ -96,52 +96,49 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function defaultFeeVote(uint256 vote) external {
         require(vote <= _MAX_FEE, "Fee vote is too high");
-        _updateVote(_defaultFee, msg.sender, Vote.init(vote), _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
+        _defaultFee.updateVote(msg.sender, _defaultFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
     }
 
    function discardDefaultFeeVote() external {
-       _updateVote(_defaultFee, msg.sender, Vote.init(), _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
+       _defaultFee.updateVote(msg.sender, _defaultFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
     }
 
     function defaultSlippageFeeVote(uint256 vote) external {
         require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
-        _updateVote(_defaultSlippageFee, msg.sender, Vote.init(vote), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
+        _defaultSlippageFee.updateVote(msg.sender, _defaultSlippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
     }
 
    function discardDefaultSlippageFeeVote() external {
-       _updateVote(_defaultSlippageFee, msg.sender, Vote.init(), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
+        _defaultSlippageFee.updateVote(msg.sender, _defaultSlippageFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
     }
 
     function defaultDecayPeriodVote(uint256 vote) external {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
-
-        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(vote), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
+        _defaultDecayPeriod.updateVote(msg.sender, _defaultDecayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
     }
 
     function discardDefaultDecayPeriodVote() external {
-        _updateVote(_defaultDecayPeriod, msg.sender, Vote.init(), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
+        _defaultDecayPeriod.updateVote(msg.sender, _defaultDecayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
     }
 
     function referralShareVote(uint256 vote) external {
         require(vote <= _MAX_SHARE, "Referral share vote is too high");
         require(vote >= _MIN_REFERRAL_SHARE, "Referral share vote is too low");
-
-        _updateVote(_referralShare, msg.sender, Vote.init(vote), _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
+        _referralShare.updateVote(msg.sender, _referralShare.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
     }
 
     function discardReferralShareVote() external {
-        _updateVote(_referralShare, msg.sender, Vote.init(), _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
+        _referralShare.updateVote(msg.sender, _referralShare.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
     }
 
     function governanceShareVote(uint256 vote) external {
         require(vote <= _MAX_SHARE, "Gov share vote is too high");
-
-        _updateVote(_governanceShare, msg.sender, Vote.init(vote), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
+        _governanceShare.updateVote(msg.sender, _governanceShare.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
     function discardGovernanceShareVote() external {
-        _updateVote(_governanceShare, msg.sender, Vote.init(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
+        _governanceShare.updateVote(msg.sender, _governanceShare.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
     function notifyStakeChanged(address account, uint256 newBalance) external override onlyMothership {
@@ -155,11 +152,11 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         }
         uint256 newTotalSupply = totalSupply();
 
-        _updateBalance(_defaultFee, account, balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
-        _updateBalance(_defaultSlippageFee, account, balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
-        _updateBalance(_defaultDecayPeriod, account, balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
-        _updateBalance(_referralShare, account, balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
-        _updateBalance(_governanceShare, account, balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
+        _defaultFee.updateBalance(account, _defaultFee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
+        _defaultSlippageFee.updateBalance(account, _defaultSlippageFee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitDefaultSlippageFeeVoteUpdate);
+        _defaultDecayPeriod.updateBalance(account, _defaultDecayPeriod.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDefaultDecayPeriodVoteUpdate);
+        _referralShare.updateBalance(account, _referralShare.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_REFERRAL_SHARE, _emitReferralShareVoteUpdate);
+        _governanceShare.updateBalance(account, _governanceShare.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
     function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaulFee, uint256 balance) private {
@@ -180,49 +177,5 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function _emitGovernanceShareVoteUpdate(address user, uint256 newGovernanceShare, uint256 balance) private {
         emit GovernanceShareVoteUpdate(user, newGovernanceShare, balance);
-    }
-
-    function _updateVote(
-        LiquidVoting.Data storage data,
-        address account,
-        Vote.Data memory vote,
-        uint256 defaultValue,
-        function(address, uint256, uint256) emitEvent
-    ) private {
-        uint256 newBalance = balanceOf(account);
-
-        data.updateVote(
-            account,
-            data.votes[account],
-            vote,
-            newBalance,
-            totalSupply(),
-            defaultValue
-        );
-
-        emitEvent(account, vote.get(defaultValue), newBalance);
-    }
-
-    function _updateBalance(
-        LiquidVoting.Data storage data,
-        address account,
-        uint256 balance,
-        uint256 newBalance,
-        uint256 newTotalSupply,
-        uint256 defaultValue,
-        function(address, uint256, uint256) emitEvent
-    ) private {
-        Vote.Data memory vote = data.votes[account];
-
-        data.updateBalance(
-            account,
-            vote,
-            balance,
-            newBalance,
-            newTotalSupply,
-            defaultValue
-        );
-
-        emitEvent(account, vote.get(defaultValue), newBalance);
     }
 }
