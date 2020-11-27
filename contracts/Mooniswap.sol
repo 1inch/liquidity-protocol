@@ -125,16 +125,15 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst), fee(), slippageFee());
     }
 
-    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply) {
+    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
         return depositFor(maxAmounts, minAmounts, msg.sender);
     }
 
-    function depositFor(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply) {
+    function depositFor(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
         IERC20[2] memory _tokens = [token0, token1];
         require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
         uint256 totalSupply = totalSupply();
-        uint256[2] memory receivedAmounts;
 
         if (totalSupply == 0) {
             fairSupply = _BASE_SUPPLY.mul(99);
@@ -187,17 +186,16 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         emit Deposited(msg.sender, target, fairSupply, receivedAmounts[0], receivedAmounts[1]);
     }
 
-    function withdraw(uint256 amount, uint256[] memory minReturns) external {
-        withdrawFor(amount, minReturns, msg.sender);
+    function withdraw(uint256 amount, uint256[] memory minReturns) external returns(uint256[2] memory withdrawnAmounts) {
+        return withdrawFor(amount, minReturns, msg.sender);
     }
 
-    function withdrawFor(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant {
+    function withdrawFor(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant returns(uint256[2] memory withdrawnAmounts) {
         IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
         uint256 _decayPeriod = decayPeriod();  // gas savings
         _burn(msg.sender, amount);
-        uint256[2] memory withdrawnAmounts;
 
         for (uint i = 0; i < _tokens.length; i++) {
             IERC20 token = _tokens[i];
