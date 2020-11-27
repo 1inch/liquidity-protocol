@@ -8,7 +8,7 @@ import "../interfaces/IGovernanceModule.sol";
 abstract contract BaseGovernanceModule is IGovernanceModule {
     address public immutable mothership;
 
-    modifier onlyMothership() {
+    modifier onlyMothership {
         require(msg.sender == mothership, "Access restricted to mothership");
 
         _;
