@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./IRewardDistributionRecipient.sol";
+import "./RewardDistributionRecipient.sol";
 import "../BaseGovernanceModule.sol";
 import "../../utils/BalanceAccounting.sol";
 
 
-contract Rewards is IRewardDistributionRecipient, BaseGovernanceModule, BalanceAccounting {
+contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAccounting {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
