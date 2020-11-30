@@ -70,7 +70,6 @@ contract Converter {
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
             (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
             Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
-            require(_validateSpread(mooniswap), "Spread is too high");
             uint256 maxCurSwapAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
             if (maxCurSwapAmount < stepAmount) {
                 amount = amount.mul(maxCurSwapAmount).div(stepAmount);
@@ -93,6 +92,8 @@ contract Converter {
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
             (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
             Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
+
+            require(_validateSpread(mooniswap), "Spread is too high");
 
             uint256 value = amount;
             if (!path[i].isETH()) {
