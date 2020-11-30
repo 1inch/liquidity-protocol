@@ -33,7 +33,7 @@
     },
     "scripts": {
         "test": "truffle test --stacktrace",
-        "deploy:kovan": "truffle migrate —-network kovan --reset",
+        "deploy:kovan": "truffle migrate --network kovan --reset",
         "coverage": "truffle run coverage",
         "coveralls": "truffle run coverage && cat coverage/lcov.info | coveralls",
         "lint:js": "eslint .",

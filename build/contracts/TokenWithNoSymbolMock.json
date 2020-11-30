@@ -1,0 +1,225 @@
+{
+  "contractName": "TokenWithNoSymbolMock",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithNoSymbolMock.sol\":\"TokenWithNoSymbolMock\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10000},\"remappings\":[]},\"sources\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithNoSymbolMock.sol\":{\"keccak256\":\"0x9626f6e6ebbcec2781fbe6ba1fd3a5b93e6db6dc90cf01b2b3759efb4a6a82c6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bf065de08bf0bf32e57184d6d1579f64251db0b6b84dc4d4222ec47451607ae3\",\"dweb:/ipfs/QmRbGNvpQVeUnUYJS1qr3LH4rxVDcfGd7mTTJZCJrPbqve\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220f587a5c614bab1c14b0a96a7bf86f2bbbb27e404c0335fd038d908a540421a0b64736f6c634300060c0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220f587a5c614bab1c14b0a96a7bf86f2bbbb27e404c0335fd038d908a540421a0b64736f6c634300060c0033",
+  "immutableReferences": {},
+  "sourceMap": "59:81:25:-:0;;;96:42;;;;;;;;;;59:81;;;;;;",
+  "deployedSourceMap": "59:81:25:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\n\ncontract TokenWithNoSymbolMock {\n    constructor() public {\n        this;\n    }\n}\n",
+  "sourcePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithNoSymbolMock.sol",
+  "ast": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithNoSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithNoSymbolMock": [
+        6495
+      ]
+    },
+    "id": 6496,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6488,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:25"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6495,
+        "linearizedBaseContracts": [
+          6495
+        ],
+        "name": "TokenWithNoSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6493,
+              "nodeType": "Block",
+              "src": "117:21:25",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6491,
+                    "name": "this",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": -28,
+                    "src": "127:4:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TokenWithNoSymbolMock_$6495",
+                      "typeString": "contract TokenWithNoSymbolMock"
+                    }
+                  },
+                  "id": 6492,
+                  "nodeType": "ExpressionStatement",
+                  "src": "127:4:25"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6494,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6489,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "107:2:25"
+            },
+            "returnParameters": {
+              "id": 6490,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "117:0:25"
+            },
+            "scope": 6495,
+            "src": "96:42:25",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6496,
+        "src": "59:81:25"
+      }
+    ],
+    "src": "33:108:25"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithNoSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithNoSymbolMock": [
+        6495
+      ]
+    },
+    "id": 6496,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6488,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:25"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6495,
+        "linearizedBaseContracts": [
+          6495
+        ],
+        "name": "TokenWithNoSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6493,
+              "nodeType": "Block",
+              "src": "117:21:25",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6491,
+                    "name": "this",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": -28,
+                    "src": "127:4:25",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TokenWithNoSymbolMock_$6495",
+                      "typeString": "contract TokenWithNoSymbolMock"
+                    }
+                  },
+                  "id": 6492,
+                  "nodeType": "ExpressionStatement",
+                  "src": "127:4:25"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6494,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6489,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "107:2:25"
+            },
+            "returnParameters": {
+              "id": 6490,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "117:0:25"
+            },
+            "scope": 6495,
+            "src": "96:42:25",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6496,
+        "src": "59:81:25"
+      }
+    ],
+    "src": "33:108:25"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.2",
+  "updatedAt": "2020-11-30T13:22:04.116Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

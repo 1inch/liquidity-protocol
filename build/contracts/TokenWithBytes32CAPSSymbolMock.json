@@ -1,0 +1,450 @@
+{
+  "contractName": "TokenWithBytes32CAPSSymbolMock",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "s",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "SYMBOL",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"SYMBOL\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithBytes32CAPSSymbolMock.sol\":\"TokenWithBytes32CAPSSymbolMock\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10000},\"remappings\":[]},\"sources\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithBytes32CAPSSymbolMock.sol\":{\"keccak256\":\"0xf57890a4059e83c84f5bb058a95f1eb9c829ee0d96e11473f2acd1a46d43bdfc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://07265c1aba4ef6af28ceaf77f090ac4c450bbc97bc2a7d5d50f4ca50a74327dc\",\"dweb:/ipfs/QmNaoicp7yEk4G96uKRPkDGw7wSMyGtM1MsatfapdG5R2R\"]}},\"version\":1}",
+  "bytecode": "0x60806040526241424360e81b60005534801561001a57600080fd5b506040516100d13803806100d18339818101604052602081101561003d57600080fd5b50516000556081806100506000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063f76f8d7814602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000548156fea2646970667358221220ebf50dd55de4ff6bed8025cb61964bb0dca2ff293fba692b1d168028b4937fea64736f6c634300060c0033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063f76f8d7814602d575b600080fd5b60336045565b60408051918252519081900360200190f35b6000548156fea2646970667358221220ebf50dd55de4ff6bed8025cb61964bb0dca2ff293fba692b1d168028b4937fea64736f6c634300060c0033",
+  "immutableReferences": {},
+  "sourceMap": "59:183:23:-:0;;;-1:-1:-1;;;147:29:23;;183:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;183:57:23;223:6;:10;59:183;;;;;;",
+  "deployedSourceMap": "59:183:23:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;147:29;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\n\ncontract TokenWithBytes32CAPSSymbolMock {\n    // solhint-disable var-name-mixedcase\n    bytes32 public SYMBOL = \"ABC\";\n\n    constructor(bytes32 s) public {\n        SYMBOL = s;\n    }\n}\n",
+  "sourcePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithBytes32CAPSSymbolMock.sol",
+  "ast": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithBytes32CAPSSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithBytes32CAPSSymbolMock": [
+        6470
+      ]
+    },
+    "id": 6471,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6456,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:23"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6470,
+        "linearizedBaseContracts": [
+          6470
+        ],
+        "name": "TokenWithBytes32CAPSSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "f76f8d78",
+            "id": 6459,
+            "mutability": "mutable",
+            "name": "SYMBOL",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6470,
+            "src": "147:29:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 6457,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "147:7:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "414243",
+              "id": 6458,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "171:5:23",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_e1629b9dda060bb30c7908346f6af189c16773fa148d3366701fbaa35d54f3c8",
+                "typeString": "literal_string \"ABC\""
+              },
+              "value": "ABC"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6468,
+              "nodeType": "Block",
+              "src": "213:27:23",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6466,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6464,
+                      "name": "SYMBOL",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6459,
+                      "src": "223:6:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6465,
+                      "name": "s",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6461,
+                      "src": "232:1:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "223:10:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 6467,
+                  "nodeType": "ExpressionStatement",
+                  "src": "223:10:23"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6469,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6462,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6461,
+                  "mutability": "mutable",
+                  "name": "s",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6469,
+                  "src": "195:9:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 6460,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "195:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:11:23"
+            },
+            "returnParameters": {
+              "id": 6463,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "213:0:23"
+            },
+            "scope": 6470,
+            "src": "183:57:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6471,
+        "src": "59:183:23"
+      }
+    ],
+    "src": "33:210:23"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithBytes32CAPSSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithBytes32CAPSSymbolMock": [
+        6470
+      ]
+    },
+    "id": 6471,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6456,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:23"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6470,
+        "linearizedBaseContracts": [
+          6470
+        ],
+        "name": "TokenWithBytes32CAPSSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "f76f8d78",
+            "id": 6459,
+            "mutability": "mutable",
+            "name": "SYMBOL",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6470,
+            "src": "147:29:23",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes32",
+              "typeString": "bytes32"
+            },
+            "typeName": {
+              "id": 6457,
+              "name": "bytes32",
+              "nodeType": "ElementaryTypeName",
+              "src": "147:7:23",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "414243",
+              "id": 6458,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "171:5:23",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_e1629b9dda060bb30c7908346f6af189c16773fa148d3366701fbaa35d54f3c8",
+                "typeString": "literal_string \"ABC\""
+              },
+              "value": "ABC"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6468,
+              "nodeType": "Block",
+              "src": "213:27:23",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6466,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6464,
+                      "name": "SYMBOL",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6459,
+                      "src": "223:6:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6465,
+                      "name": "s",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6461,
+                      "src": "232:1:23",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "src": "223:10:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "id": 6467,
+                  "nodeType": "ExpressionStatement",
+                  "src": "223:10:23"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6469,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6462,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6461,
+                  "mutability": "mutable",
+                  "name": "s",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6469,
+                  "src": "195:9:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 6460,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "195:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "194:11:23"
+            },
+            "returnParameters": {
+              "id": 6463,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "213:0:23"
+            },
+            "scope": 6470,
+            "src": "183:57:23",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6471,
+        "src": "59:183:23"
+      }
+    ],
+    "src": "33:210:23"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.2",
+  "updatedAt": "2020-11-30T13:22:04.115Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

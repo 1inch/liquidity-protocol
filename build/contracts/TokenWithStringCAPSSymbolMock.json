@@ -1,0 +1,450 @@
+{
+  "contractName": "TokenWithStringCAPSSymbolMock",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "s",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "SYMBOL",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"string\",\"name\":\"s\",\"type\":\"string\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"SYMBOL\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithStringCAPSSymbolMock.sol\":\"TokenWithStringCAPSSymbolMock\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":10000},\"remappings\":[]},\"sources\":{\"/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithStringCAPSSymbolMock.sol\":{\"keccak256\":\"0xe105df6e56628cf388bf33374b017839d00660f5fce527bfed6047f53cc76727\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c28cff0eae72b929b09cc44036259867b676c37b7827b9e4e64e578dd0e98b7c\",\"dweb:/ipfs/QmcvhTC3iBTKgxXttNw2HytkG223a4G8aGuwUjSn7Xezxh\"]}},\"version\":1}",
+  "bytecode": "0x60c0604052600360808190526241424360e81b60a0908152610024916000919061011e565b5034801561003157600080fd5b5060405161034f38038061034f8339818101604052602081101561005457600080fd5b810190808051604051939291908464010000000082111561007457600080fd5b90830190602082018581111561008957600080fd5b82516401000000008111828201881017156100a357600080fd5b82525081516020918201929091019080838360005b838110156100d05781810151838201526020016100b8565b50505050905090810190601f1680156100fd5780820380516001836020036101000a031916815260200191505b50604052505081516101179150600090602084019061011e565b50506101b1565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061015f57805160ff191683800117855561018c565b8280016001018555821561018c579182015b8281111561018c578251825591602001919060010190610171565b5061019892915061019c565b5090565b5b80821115610198576000815560010161019d565b61018f806101c06000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063f76f8d7814610030575b600080fd5b6100386100ad565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561007257818101518382015260200161005a565b50505050905090810190601f16801561009f5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6000805460408051602060026001851615610100027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0190941693909304601f810184900484028201840190925281815292918301828280156101515780601f1061012657610100808354040283529160200191610151565b820191906000526020600020905b81548152906001019060200180831161013457829003601f168201915b50505050508156fea2646970667358221220e80061931e76add5b3433e4e908d68071afe8a89500c3d800383143a5b6fe33e64736f6c634300060c0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063f76f8d7814610030575b600080fd5b6100386100ad565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561007257818101518382015260200161005a565b50505050905090810190601f16801561009f5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6000805460408051602060026001851615610100027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0190941693909304601f810184900484028201840190925281815292918301828280156101515780601f1061012657610100808354040283529160200191610151565b820191906000526020600020905b81548152906001019060200180831161013457829003601f168201915b50505050508156fea2646970667358221220e80061931e76add5b3433e4e908d68071afe8a89500c3d800383143a5b6fe33e64736f6c634300060c0033",
+  "immutableReferences": {},
+  "sourceMap": "146:28:26:-:0;59:187;146:28;;59:187;146:28;;;-1:-1:-1;;;146:28:26;;;;;;-1:-1:-1;;146:28:26;;:::i;:::-;;181:63;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;181:63:26;;;;;;;;;;-1:-1:-1;181:63:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;181:63:26;;-1:-1:-1;;227:10:26;;;;-1:-1:-1;227:6:26;;:10;;;;;:::i;:::-;;181:63;59:187;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;59:187:26;;;-1:-1:-1;59:187:26;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "59:187:26:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;146:28;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\n\ncontract TokenWithStringCAPSSymbolMock {\n    // solhint-disable var-name-mixedcase\n    string public SYMBOL = \"ABC\";\n\n    constructor(string memory s) public {\n        SYMBOL = s;\n    }\n}\n",
+  "sourcePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithStringCAPSSymbolMock.sol",
+  "ast": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithStringCAPSSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithStringCAPSSymbolMock": [
+        6511
+      ]
+    },
+    "id": 6512,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6497,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:26"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6511,
+        "linearizedBaseContracts": [
+          6511
+        ],
+        "name": "TokenWithStringCAPSSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "f76f8d78",
+            "id": 6500,
+            "mutability": "mutable",
+            "name": "SYMBOL",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6511,
+            "src": "146:28:26",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 6498,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "146:6:26",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "414243",
+              "id": 6499,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "169:5:26",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_e1629b9dda060bb30c7908346f6af189c16773fa148d3366701fbaa35d54f3c8",
+                "typeString": "literal_string \"ABC\""
+              },
+              "value": "ABC"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6509,
+              "nodeType": "Block",
+              "src": "217:27:26",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6507,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6505,
+                      "name": "SYMBOL",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6500,
+                      "src": "227:6:26",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6506,
+                      "name": "s",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6502,
+                      "src": "236:1:26",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "227:10:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 6508,
+                  "nodeType": "ExpressionStatement",
+                  "src": "227:10:26"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6510,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6503,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6502,
+                  "mutability": "mutable",
+                  "name": "s",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6510,
+                  "src": "193:15:26",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6501,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "193:6:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "192:17:26"
+            },
+            "returnParameters": {
+              "id": 6504,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "217:0:26"
+            },
+            "scope": 6511,
+            "src": "181:63:26",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6512,
+        "src": "59:187:26"
+      }
+    ],
+    "src": "33:214:26"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/k06a/Projects/mooniswap-v2/contracts/mocks/TokenWithStringCAPSSymbolMock.sol",
+    "exportedSymbols": {
+      "TokenWithStringCAPSSymbolMock": [
+        6511
+      ]
+    },
+    "id": 6512,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6497,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:26"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6511,
+        "linearizedBaseContracts": [
+          6511
+        ],
+        "name": "TokenWithStringCAPSSymbolMock",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "f76f8d78",
+            "id": 6500,
+            "mutability": "mutable",
+            "name": "SYMBOL",
+            "nodeType": "VariableDeclaration",
+            "overrides": null,
+            "scope": 6511,
+            "src": "146:28:26",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 6498,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "146:6:26",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "414243",
+              "id": 6499,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "169:5:26",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_e1629b9dda060bb30c7908346f6af189c16773fa148d3366701fbaa35d54f3c8",
+                "typeString": "literal_string \"ABC\""
+              },
+              "value": "ABC"
+            },
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6509,
+              "nodeType": "Block",
+              "src": "217:27:26",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 6507,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 6505,
+                      "name": "SYMBOL",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6500,
+                      "src": "227:6:26",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_storage",
+                        "typeString": "string storage ref"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 6506,
+                      "name": "s",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6502,
+                      "src": "236:1:26",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_string_memory_ptr",
+                        "typeString": "string memory"
+                      }
+                    },
+                    "src": "227:10:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage",
+                      "typeString": "string storage ref"
+                    }
+                  },
+                  "id": 6508,
+                  "nodeType": "ExpressionStatement",
+                  "src": "227:10:26"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6510,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 6503,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6502,
+                  "mutability": "mutable",
+                  "name": "s",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 6510,
+                  "src": "193:15:26",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 6501,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "193:6:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "192:17:26"
+            },
+            "returnParameters": {
+              "id": 6504,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "217:0:26"
+            },
+            "scope": 6511,
+            "src": "181:63:26",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 6512,
+        "src": "59:187:26"
+      }
+    ],
+    "src": "33:214:26"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.2",
+  "updatedAt": "2020-11-30T13:22:04.116Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
