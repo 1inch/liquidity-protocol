@@ -4,6 +4,7 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "../interfaces/IMooniswapFactory.sol";
 import "../libraries/UniERC20.sol";
 import "../libraries/VirtualBalance.sol";
 import "../Mooniswap.sol";
@@ -20,9 +21,11 @@ contract Converter {
     uint256 private constant _MAX_LIQUIDITY_SHARE = 100;
 
     IERC20 public immutable targetToken;
+    IMooniswapFactory public immutable mooniswapFactory;
 
-    constructor (IERC20 _targetToken) public {
+    constructor (IERC20 _targetToken, IMooniswapFactory _mooniswapFactory) public {
         targetToken = _targetToken;
+        mooniswapFactory = _mooniswapFactory;
     }
 
     modifier validSpread(Mooniswap mooniswap) {
@@ -64,45 +67,56 @@ contract Converter {
         uint256 stepAmount = amount;
         uint256 pathLength = path.length;
 
-        for (uint256 i = 1; i < pathLength; i += 2) {
-            Mooniswap mooniswap = Mooniswap(address(path[i]));
+        for (uint256 i = 0; i + 1 < pathLength; i += 1) {
+            (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
+            Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
             require(_validateSpread(mooniswap), "Spread is too high");
-            uint256 maxCurSwapAmount = path[i-1].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
+            uint256 maxCurSwapAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
             if (maxCurSwapAmount < stepAmount) {
                 amount = amount.mul(maxCurSwapAmount).div(stepAmount);
                 stepAmount = maxCurSwapAmount;
             }
             if (i + 2 < pathLength) {
                 // no need to estimate getReturn on last step
-                stepAmount = mooniswap.getReturn(path[i-1], path[i+1], stepAmount);
+                stepAmount = mooniswap.getReturn(path[i], path[i+1], stepAmount);
             }
         }
     }
 
     function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
-        require(path[path.length - 1] == targetToken, "Should swap to target token");
-        require(path.length % 2 == 1, "Path length should be odd");
+        uint256 pathLength = path.length;
+
+        require(path[pathLength - 1] == targetToken, "Should swap to target token");
 
         amount = initialAmount;
 
-        for (uint256 i = 1; i < path.length; i += 2) {
+        for (uint256 i = 0; i + 1 < pathLength; i += 1) {
+            (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
+            Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
+
             uint256 value = amount;
-            if (!path[i-1].isETH()) {
-                path[i-1].safeApprove(address(path[i]), amount);
+            if (!path[i].isETH()) {
+                path[i].safeApprove(address(mooniswap), amount);
                 value = 0;
             }
 
-            Mooniswap mooni = Mooniswap(address(path[i]));
-            if (i + 2 < path.length) {
-                amount = mooni.swap{value: value}(path[i-1], path[i+1], amount, 0, address(this));
+            if (i + 2 < pathLength) {
+                amount = mooniswap.swap{value: value}(path[i], path[i+1], amount, 0, address(0));
             }
             else {
-                amount = mooni.swapFor{value: value}(path[i-1], path[i+1], amount, 0, address(this), destination);
+                amount = mooniswap.swapFor{value: value}(path[i], path[i+1], amount, 0, address(0), destination);
             }
         }
 
-        if (path.length == 1) {
+        if (pathLength == 1) {
             path[0].transfer(destination, amount);
         }
+    }
+
+    function _sortTokens(IERC20 tokenA, IERC20 tokenB) private pure returns(IERC20, IERC20) {
+        if (tokenA < tokenB) {
+            return (tokenA, tokenB);
+        }
+        return (tokenB, tokenA);
     }
 }

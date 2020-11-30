@@ -30,7 +30,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
     mapping(IERC20 => TokenInfo) public tokenInfo;
 
     // solhint-disable-next-line no-empty-blocks
-    constructor(IERC20 _targetToken) public Converter(_targetToken) {}
+    constructor(IERC20 _targetToken, IMooniswapFactory _mooniswapFactory) public Converter(_targetToken, _mooniswapFactory) {}
 
     function updateReward(address referral, uint256 referralShare) external override {
         Mooniswap mooniswap = Mooniswap(msg.sender);

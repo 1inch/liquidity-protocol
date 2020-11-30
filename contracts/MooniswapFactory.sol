@@ -3,12 +3,13 @@
 pragma solidity ^0.6.0;
 
 import "./interfaces/IMooniswapDeployer.sol";
+import "./interfaces/IMooniswapFactory.sol";
 import "./libraries/UniERC20.sol";
 import "./Mooniswap.sol";
 import "./governance/MooniswapFactoryGovernance.sol";
 
 
-contract MooniswapFactory is MooniswapFactoryGovernance {
+contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
     using UniERC20 for IERC20;
 
     event Deployed(
@@ -21,7 +22,7 @@ contract MooniswapFactory is MooniswapFactoryGovernance {
     address public immutable poolOwner;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
-    mapping(IERC20 => mapping(IERC20 => Mooniswap)) public pools;
+    mapping(IERC20 => mapping(IERC20 => Mooniswap)) public override pools;
 
     constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
         poolOwner = _poolOwner;
