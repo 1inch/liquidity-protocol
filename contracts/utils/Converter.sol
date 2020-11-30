@@ -2,6 +2,7 @@
 
 pragma solidity ^0.6.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IMooniswapFactory.sol";
@@ -10,7 +11,7 @@ import "../libraries/VirtualBalance.sol";
 import "../Mooniswap.sol";
 
 
-contract Converter {
+contract Converter is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using UniERC20 for IERC20;
@@ -22,6 +23,7 @@ contract Converter {
 
     IERC20 public immutable targetToken;
     IMooniswapFactory public immutable mooniswapFactory;
+    mapping(IERC20 => bool) public pathWhitelist;
 
     constructor (IERC20 _targetToken, IMooniswapFactory _mooniswapFactory) public {
         targetToken = _targetToken;
@@ -32,6 +34,10 @@ contract Converter {
         require(_validateSpread(mooniswap), "Spread is too high");
 
         _;
+    }
+
+    function updatePathWhitelist(IERC20 token, bool whitelisted) external onlyOwner {
+        pathWhitelist[token] = whitelisted;
     }
 
     function _validateSpread(Mooniswap mooniswap) internal view returns(bool) {
@@ -90,6 +96,10 @@ contract Converter {
         require(path[pathLength - 1] == targetToken, "Should swap to target token");
 
         amount = initialAmount;
+
+        for (uint256 i = 1; i + 1 < pathLength; i += 1) {
+            require(pathWhitelist[path[i]], "Token is not whitelisted");
+        }
 
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
             (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);

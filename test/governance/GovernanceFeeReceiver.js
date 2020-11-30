@@ -19,6 +19,7 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         this.rewards = await Rewards.new(this.token.address, wallet1);
         this.feeReceiver = await GovernanceFeeReceiver.new(this.token.address, this.rewards.address, this.factory.address);
         await this.rewards.setRewardDistribution(this.feeReceiver.address);
+        await this.feeReceiver.updatePathWhitelist(constants.ZERO_ADDRESS, true);
 
         await this.factory.setGovernanceFeeReceiver(this.feeReceiver.address);
         this.factory.notifyStakeChanged(wallet1, '1');
