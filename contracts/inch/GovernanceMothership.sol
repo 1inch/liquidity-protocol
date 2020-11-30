@@ -36,6 +36,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     function unstake(uint256 amount) external {
         require(amount > 0, "Empty unstake is not allowed");
 
+        inchToken.transfer(msg.sender, amount);
         _burn(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
     }
@@ -46,6 +47,17 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
 
     function notifyFor(address account) external {
         _notifyFor(account, balanceOf(msg.sender));
+    }
+
+    function batchNotifyFor(address[] memory accounts) external {
+        uint256 modulesLength = _modules.length();
+        uint256[] memory balances = new uint256[](accounts.length);
+        for (uint256 j = 0; j < accounts.length; ++j) {
+            balances[j] = balanceOf(accounts[j]);
+        }
+        for (uint256 i = 0; i < modulesLength; ++i) {
+            IGovernanceModule(_modules.at(i)).notifyStakesChanged(accounts, balances);
+        }
     }
 
     function addModule(address module) external onlyOwner {

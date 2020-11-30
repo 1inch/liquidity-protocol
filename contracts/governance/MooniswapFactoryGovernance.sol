@@ -141,7 +141,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.updateVote(msg.sender, _governanceShare.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
-    function notifyStakeChanged(address account, uint256 newBalance) external override onlyMothership {
+    function _notifyStakeChanged(address account, uint256 newBalance) internal override {
         uint256 balance = balanceOf(account);
         if (newBalance > balance) {
             _mint(account, newBalance.sub(balance));
