@@ -18,38 +18,42 @@
 
 ## Funcional
 
-The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting + in the future; it is possible to add other control modules. 
-Users bring liquidity in exchange for what they receive voting tokens `inchToken`.
+The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting It is possible to add other control modules in the future. 
+Users receive voting tokens `inchToken` for bringing liquidity to the exchange.
 
 
 ### Features
 
-- **Modular principle** - the system is built on the separation of the core and modules `GovernanceMothership`, the voting logic is described in the plug-in modules, additional functions can be introduced through the modules in the future.
-- To protect against **Front-Running Attacks and FlashLoans**, the `LiquidVoting.sol` library is used in the voting, with a 24-hour delay of `_VOTING_DECAY_PERIOD` - the voting takes effect on an increasing basis.
+- **Modular principle** - the system is built on the separation of the core and modules, that can be managed in `GovernanceMothership`. Currenly there are 2 modules: 
+1. **voting** logic is described as separate module, 
+2. **referal** distribution is the second.
+Additional functions can be introduced through the extra modules in the future.
 
-- The rewards are also issued interpolated in `DECAY_PERIOD`. 
+- **Front-Running Attacks protection** - `LiquidVoting.sol` library responsible for taking voting effect with a 24-hour delay on an increasing basis.
 
-## Logical
+- **FlashLoans protection** - The rewards are also issued 
 
-![Moonisvap_v2_diagram](./Moonisvap_v2_diagram.png)
+## Logic
 
+![](./Moonisvap_v2_diagram.png)
+:frame_with_picture: 
 - GovernanceMothership has two modules:
-- MooniswapFactoryGovernance
-- Rewards
+  - MooniswapFactoryGovernance
+  - Rewards
 
-- Module managment in current version is resticted to owner, in future versions it will be 3 options avalilable:
-- `onlyOwner` (current version)
-- Multisig (planned)
-- Governance (future releases)
+- Module managment is resticted to owner in current version, but in the future 3 options will be available:
+  - `onlyOwner` (current version)
+  - Multisig (planned)
+  - Governance (future releases)
 
 ### Stacking
 
 // TBD
 
 
-### Voting
+### Voting (LiquidVoting)
 
-- Stakeholders vote for `fee` and `decayPeriod` parameters, calling the method is considered a branded voice of all stakeholders.
+- Stakeholders vote for values of `fee` and `decayPeriod` parameters by calling the method which considers a branded voice of every stakeholder.
 - The weight of each participant's voice is carried by linear interpolation within 24 hours.
 
 
@@ -63,7 +67,9 @@ A request for distribution can be initiated by any stakeholder and held for all 
 
 ### Fees
 
-In Mooniswap V2 we added several new fees.
+In Mooniswap V2 we added several fees.
+
+The first one is the **slippage fee**. **Slippage fee** is charged on top of the basic fee. It's equal to some percentage of slippage caused by trade.
 
 First one is slippage fee. Slippage fee is charged on top of basic fee and is equal to some percentage of slippage caused by trade.
 
@@ -71,13 +77,13 @@ Second one is governance fee. Governance fee is charged the same way as referral
 
 ### Governance
 
-We also introduced configuration of all the pool parameters via governance. Some parameters are specific to each pool and some are shared over all the pools. Mooniswap V2 uses liquid governance to determine resulting values of parameters. Votes are gradually applied over a fixed period of 1 day.
+We also introduced the configuration of all pool parameters via governance. Some parameters are specific to each pool and some are shared over all pools. Mooniswap V2 uses liquid governance to determine the resulting parameters' values. Votes are gradually applied over a fixed period of 1 day.
 
 #### Pool parameters
 
-* fee [0% .. 10%]
-* slippageFee [0% .. 100%] (of slippage)
-* decayPeriod [15 sec .. 1 hour]
+* `fee` [0% .. 10%]
+* `slippageFee` [0% .. 100%] (of slippage)
+* `decayPeriod` [15 sec .. 1 hour]
 
 #### Factory parameters
 
@@ -104,29 +110,32 @@ INCH token holders can lock their tokens in GovernanceMothership which allows to
 
 ## Technical
 
-GovernanceMothership.sol is  is a root contract, that holds `inchToken` (is an ERC20 token voted by stakeholders, responsible for the number of rewards and determining the holder's vote's weight)
+#### **GovernanceMothership.sol**
+
+This is a root contract, that holds `inchToken` (is an ERC20 token voted by stakeholders, responsible for the number of rewards and determining the holder's vote's weight)
 
 It operates by has 2 two core functions:
 
 - Stake / Ununstake `inchToken`
 - Add / Remove Modules
 
+
 ## Code
 
 📂 __mooniswap\-v2__
 
 - 📂 __root__
-- 📄 [**GovernanceMothership.sol**](contracts/inch/GovernanceMothership.sol)
+  - 📄 [**GovernanceMothership.sol**](contracts/inch/GovernanceMothership.sol)
 - 📂 __contracts__
-- 📄 [Mooniswap.sol](contracts/Mooniswap.sol)
-- 📄 [MooniswapConstants.sol](contracts/MooniswapConstants.sol) // *Base parameters of the governance mechanics.*
-- 📄 [**MooniswapFactory.sol**](contracts/MooniswapFactory.sol)
-- 📂 __governance__
+  - 📄 [Mooniswap.sol](contracts/Mooniswap.sol)
+  - 📄 [MooniswapConstants.sol](contracts/MooniswapConstants.sol) // *Base parameters of the governance mechanics.*
+  - 📄 [**MooniswapFactory.sol**](contracts/MooniswapFactory.sol)
+  - 📂 __governance__
     - 📄 [**BaseGovernanceModule.sol**](contracts/governance/BaseGovernanceModule.sol)
-    // *This is `abstract` class, all the modules have to inherit from this class.*
+      // *This is `abstract` class, all the modules have to inherit from this class.*
     - 📄 [GovernanceFeeReceiver.sol](contracts/governance/GovernanceFeeReceiver.sol)
     - 📄 [**MooniswapFactoryGovernance.sol**](contracts/governance/MooniswapFactoryGovernance.sol)
     - 📄 [**MooniswapGovernance.sol**](contracts/governance/MooniswapGovernance.sol)
     - 📄 [**Rewards.sol**](contracts/governance/rewards/Rewards.sol)
-- 📂 __libraries__
+  - 📂 __libraries__
     - 📄 [**LiquidVoting.sol**](contracts/libraries/LiquidVoting.sol)
