@@ -18,15 +18,15 @@
 
 ## Funcional
 
-The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting It is possible to add other control modules in the future. 
+The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting. It is possible to add other control modules in the future. 
 Users receive voting tokens `inchToken` for bringing liquidity to the exchange.
 
 
 ### Features
 
-- **Modular principle** - the system is built on the separation of the core and modules, that can be managed in `GovernanceMothership`. Currenly there are 2 modules: 
-1. **voting** logic is described as separate module, 
-2. **referal** distribution is the second.
+- **Modular principle** - the system is built on the separation of the core and modules that can be managed in `GovernanceMothership`. Currently, there are two modules: 
+1. **voting** logic is described as a separate module, 
+2. **referral** distribution is the second.
 Additional functions can be introduced through the extra modules in the future.
 
 - **Front-Running Attacks protection** - `LiquidVoting.sol` library responsible for taking voting effect with a 24-hour delay on an increasing basis.
@@ -41,7 +41,7 @@ Additional functions can be introduced through the extra modules in the future.
   - MooniswapFactoryGovernance
   - Rewards
 
-- Module managment is resticted to owner in current version, but in the future 3 options will be available:
+- Module management is restricted to the owner in the current version, but in the future three options will be available:
   - `onlyOwner` (current version)
   - Multisig (planned)
   - Governance (future releases)
