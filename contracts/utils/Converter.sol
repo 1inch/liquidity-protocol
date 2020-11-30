@@ -26,12 +26,12 @@ contract Converter {
     }
 
     modifier validSpread(Mooniswap mooniswap) {
-        _validateSpread(mooniswap);
+        require(_validateSpread(mooniswap), "Spread is too high");
 
         _;
     }
 
-    function _validateSpread(Mooniswap mooniswap) internal view {
+    function _validateSpread(Mooniswap mooniswap) internal view returns(bool) {
         IERC20[] memory tokens = mooniswap.getTokens();
 
         uint256 buyPrice;
@@ -41,21 +41,22 @@ contract Converter {
             uint256 token0Balance = tokens[0].uniBalanceOf(address(mooniswap));
             uint256 token1Balance = tokens[1].uniBalanceOf(address(mooniswap));
             uint256 decayPeriod = mooniswap.decayPeriod();
-            (uint216 balance, uint40 time) = mooniswap.virtualBalancesForAddition(tokens[0]);
-            uint256 token0BalanceForAddition = Math.max(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token0Balance), token0Balance);
-            (balance, time) = mooniswap.virtualBalancesForAddition(tokens[1]);
-            uint256 token1BalanceForAddition = Math.max(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token1Balance), token1Balance);
-            (balance, time) = mooniswap.virtualBalancesForRemoval(tokens[0]);
-            uint256 token0BalanceForRemoval = Math.min(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token0Balance), token0Balance);
-            (balance, time) = mooniswap.virtualBalancesForRemoval(tokens[1]);
-            uint256 token1BalanceForRemoval = Math.min(VirtualBalance.Data({balance: balance, time: time}).current(decayPeriod, token1Balance), token1Balance);
+            VirtualBalance.Data memory vb;
+            (vb.balance, vb.time) = mooniswap.virtualBalancesForAddition(tokens[0]);
+            uint256 token0BalanceForAddition = Math.max(vb.current(decayPeriod, token0Balance), token0Balance);
+            (vb.balance, vb.time) = mooniswap.virtualBalancesForAddition(tokens[1]);
+            uint256 token1BalanceForAddition = Math.max(vb.current(decayPeriod, token1Balance), token1Balance);
+            (vb.balance, vb.time) = mooniswap.virtualBalancesForRemoval(tokens[0]);
+            uint256 token0BalanceForRemoval = Math.min(vb.current(decayPeriod, token0Balance), token0Balance);
+            (vb.balance, vb.time) = mooniswap.virtualBalancesForRemoval(tokens[1]);
+            uint256 token1BalanceForRemoval = Math.min(vb.current(decayPeriod, token1Balance), token1Balance);
 
             buyPrice = _ONE.mul(token1BalanceForAddition).div(token0BalanceForRemoval);
             sellPrice = _ONE.mul(token1BalanceForRemoval).div(token0BalanceForAddition);
             spotPrice = _ONE.mul(token1Balance).div(token0Balance);
         }
 
-        require(buyPrice.sub(sellPrice).mul(_ONE) < mooniswap.fee().mul(_SPREAD_FEE_MULTIPLIER).mul(spotPrice), "Spread is too high");
+        return buyPrice.sub(sellPrice).mul(_ONE) < mooniswap.fee().mul(_SPREAD_FEE_MULTIPLIER).mul(spotPrice);
     }
 
     function _maxAmountForSwap(IERC20[] memory path, uint256 initialAmount) internal view returns(uint256 amount) {
@@ -65,7 +66,7 @@ contract Converter {
 
         for (uint256 i = 1; i < pathLength; i += 2) {
             Mooniswap mooniswap = Mooniswap(address(path[i]));
-            _validateSpread(mooniswap);
+            require(_validateSpread(mooniswap), "Spread is too high");
             uint256 maxCurSwapAmount = path[i-1].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
             if (maxCurSwapAmount < stepAmount) {
                 amount = amount.mul(maxCurSwapAmount).div(stepAmount);
@@ -76,32 +77,31 @@ contract Converter {
                 stepAmount = mooniswap.getReturn(path[i-1], path[i+1], stepAmount);
             }
         }
-        return amount;
     }
 
     function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
         require(path[path.length - 1] == targetToken, "Should swap to target token");
+        require(path.length % 2 == 1, "Path length should be odd");
 
         amount = initialAmount;
-        uint256 pathLength = path.length;
 
-        for (uint256 i = 1; i + 2 < pathLength; i += 2) {
-            if (path[i-1].isETH()) {
-                amount = Mooniswap(address(path[i])).swap{value: amount}(path[i-1], path[i+1], amount, 0, address(this));
-            } else {
+        for (uint256 i = 1; i < path.length; i += 2) {
+            uint256 value = amount;
+            if (!path[i-1].isETH()) {
                 path[i-1].safeApprove(address(path[i]), amount);
-                amount = Mooniswap(address(path[i])).swap(path[i-1], path[i+1], amount, 0, address(this));
+                value = 0;
+            }
+
+            Mooniswap mooni = Mooniswap(address(path[i]));
+            if (i + 2 < path.length) {
+                amount = mooni.swap{value: value}(path[i-1], path[i+1], amount, 0, address(this));
+            }
+            else {
+                amount = mooni.swapFor{value: value}(path[i-1], path[i+1], amount, 0, address(this), destination);
             }
         }
 
-        if (pathLength > 1) {
-            if (path[pathLength-3].isETH()) {
-                amount = Mooniswap(address(path[pathLength-2])).swapFor{value: amount}(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
-            } else {
-                path[pathLength-3].safeApprove(address(path[pathLength-2]), amount);
-                amount = Mooniswap(address(path[pathLength-2])).swapFor(path[pathLength-3], path[pathLength-1], amount, 0, address(this), destination);
-            }
-        } else {
+        if (path.length == 1) {
             path[0].transfer(destination, amount);
         }
     }

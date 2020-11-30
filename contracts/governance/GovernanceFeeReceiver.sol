@@ -24,7 +24,7 @@ contract GovernanceFeeReceiver is Converter {
 
     function swap(IERC20[] memory path) external {
         uint256 amount = _maxAmountForSwap(path, path[0].uniBalanceOf(address(this)));
-        amount = _swap(path, amount, payable(address(rewards)));
-        rewards.notifyRewardAmount(amount);
+        uint256 result = _swap(path, amount, payable(address(rewards)));
+        rewards.notifyRewardAmount(result);
     }
 }

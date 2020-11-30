@@ -106,9 +106,9 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
                 balance = balance.add(unclaimedTokens);
             }
         }
-        if (balance > 0) {
-            _userInfo.balance = 0;
-            targetToken.transfer(msg.sender, balance);
+        if (balance > 1) {
+            _userInfo.balance = 1;
+            targetToken.transfer(msg.sender, balance - 1);
         }
     }
 

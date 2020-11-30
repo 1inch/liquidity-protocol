@@ -21,7 +21,7 @@ library LiquidVoting {
 
     struct Data {
         VirtualData data;
-        uint256 _scaledResult;
+        uint256 _weightedSum;
         mapping(address => Vote.Data) votes;
     }
 
@@ -40,9 +40,10 @@ library LiquidVoting {
         Vote.Data memory newVote,
         uint256 balance,
         uint256 totalSupply,
-        uint256 defaultVote
+        uint256 defaultVote,
+        function(address, uint256, uint256) emitEvent
     ) internal {
-        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, defaultVote);
+        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, defaultVote, emitEvent);
     }
 
     function updateBalance(
@@ -52,9 +53,10 @@ library LiquidVoting {
         uint256 oldBalance,
         uint256 newBalance,
         uint256 newTotalSupply,
-        uint256 defaultVote
+        uint256 defaultVote,
+        function(address, uint256, uint256) emitEvent
     ) internal {
-        return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, newTotalSupply, defaultVote);
+        return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, newTotalSupply, defaultVote, emitEvent);
     }
 
     function _update(
@@ -65,18 +67,19 @@ library LiquidVoting {
         uint256 oldBalance,
         uint256 newBalance,
         uint256 newTotalSupply,
-        uint256 defaultVote
+        uint256 defaultVote,
+        function(address, uint256, uint256) emitEvent
     ) private {
-        uint256 oldScaledResult = self._scaledResult;
+        uint256 oldWeightedSum = self._weightedSum;
         VirtualData memory data = self.data;
 
-        uint256 newScaledResult = oldScaledResult
+        uint256 newWeightedSum = oldWeightedSum
             .add(newBalance.mul(newVote.get(defaultVote)))
             .sub(oldBalance.mul(oldVote.get(defaultVote)));
-        uint256 newResult = newTotalSupply == 0 ? defaultVote : newScaledResult.div(newTotalSupply);
+        uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.div(newTotalSupply);
 
-        if (newScaledResult != oldScaledResult) {
-            self._scaledResult = newScaledResult;
+        if (newWeightedSum != oldWeightedSum) {
+            self._weightedSum = newWeightedSum;
         }
 
         if (newResult != data.result) {
@@ -88,5 +91,7 @@ library LiquidVoting {
         if (!newVote.eq(oldVote)) {
             self.votes[user] = newVote;
         }
+
+        emitEvent(user, newVote.get(defaultVote), newBalance);
     }
 }

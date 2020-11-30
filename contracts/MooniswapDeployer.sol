@@ -11,7 +11,7 @@ contract MooniswapDeployer {
         string calldata name,
         string calldata symbol,
         address poolOwner
-    ) public returns(Mooniswap pool) {
+    ) external returns(Mooniswap pool) {
         pool = new Mooniswap(
             token1,
             token2,
