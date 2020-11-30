@@ -85,6 +85,8 @@ contract Converter {
     function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
         uint256 pathLength = path.length;
 
+        require(pathLength > 0, "Min path length is 1");
+        require(pathLength < 5, "Max path length is 4");
         require(path[pathLength - 1] == targetToken, "Should swap to target token");
 
         amount = initialAmount;
