@@ -1,11 +1,18 @@
+
 # Mooniswap v2 Tech Spec
 
-- [Funcional](#funcional)
-  - [Features](#features)
-- [Logical](#logical)
-  - [Stacking](#stacking)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- doctoc ./docs/TechSpec.md --github -->
+
+  - [Liquidity Pool (LP)](#liquidity-pool-lp)
+  - [Staking program](#staking-program)
   - [Voting (LiquidVoting)](#voting-liquidvoting)
   - [Reward distribution](#reward-distribution)
+  - [Referral](#referral)
+  - [Features](#features)
+- [Logic](#logic)
+  - [Reward distribution](#reward-distribution-1)
   - [Fees](#fees)
   - [Governance](#governance)
     - [Pool parameters](#pool-parameters)
@@ -13,14 +20,51 @@
     - [Pool governance](#pool-governance)
     - [Factory Governance](#factory-governance)
 - [Technical](#technical)
-  - [**GovernanceMothership.sol**](#governancemothershipsol)
+    - [**GovernanceMothership.sol**](#governancemothershipsol)
 - [Code](#code)
 
-## Funcional
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-The protocol focuses on adjusting the parameters of LiquidityPool (fee, decayPeriod) by stakeholders by voting. It is possible to add other control modules in the future. 
-Users receive voting tokens `inchToken` for bringing liquidity to the exchange.
 
+The protocol focuses on adjusting the parameters of LiquidityPool (LP) by stakeholders by voting. It is possible to add other control modules in the future. 
+Users receive voting tokens `LP token` for bringing liquidity to the exchange.
+
+### Liquidity Pool (LP)
+- Liquidity Provider
+> TODO def
+
+### Staking program
+
+Staking program give ability to `inchToken` holders to vote for values of base parameters of **LiquidityPool** (**LP**). These users also receive $stakeFee$.
+
+Users must lock $InchTokens$ in the contract to participate in the program. These users called **InchStakingHolders** (**ISH**).
+**ISH** also rewarded for staking by $StakingFee$.
+ 
+Stakeholders can actively participate in the governance 2:
+ - they can vote for default `fee` and `decayPeriod` parameters for LP.
+ - they can initiate rewards distribution for stakeholders 
+ 
+Locked quantity of `inchToken` determining the amount of rewards, and the holder's vote's weight.
+
+### Voting (LiquidVoting)
+
+ISH's vote for values of `fee` and `decayPeriod` parameters of LiquidityPool. Votes are average weighted according to locked `inchToken` balance. For users who locked tokens but did not vote the default values are applied.
+
+The weight of each participant's voice is carried by linear interpolation within 24 hours governance grace period (`_VOTING_DECAY_PERIOD`). 
+
+
+### Reward distribution
+
+A request for distribution can be initiated by any stakeholder and held for all active holdings at the request's time.
+
+Mooniswap users pay fee for exchange. One of them is $StakingFee$. This fee distributed between ISH's proportional to the user investment to reward them for staking.
+$$ISHStakingAmount = \frac {ISHLockedInchTokens}{TotalLockedInchTokens} \times StakingFee$$
+
+### Referral
+We have a referral program. Users, who invited new users will receive $referralFee$ for each trade of new users.
+$refferralFee = referralShare \times TradeFee$
+
+---
 
 ### Features
 
@@ -45,16 +89,6 @@ Additional functions can be introduced through the extra modules in the future.
   - `onlyOwner` (current version)
   - Multisig (planned)
   - Governance (future releases)
-
-### Stacking
-
-// TBD
-
-
-### Voting (LiquidVoting)
-
-- Stakeholders vote for values of `fee` and `decayPeriod` parameters by calling the method which considers a branded voice of every stakeholder.
-- The weight of each participant's voice is carried by linear interpolation within 24 hours.
 
 
 ### Reward distribution
