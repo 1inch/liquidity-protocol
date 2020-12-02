@@ -21,12 +21,12 @@ contract Converter is Ownable {
     uint256 private constant _SPREAD_FEE_MULTIPLIER = 10;
     uint256 private constant _MAX_LIQUIDITY_SHARE = 100;
 
-    IERC20 public immutable targetToken;
+    IERC20 public immutable inchToken;
     IMooniswapFactory public immutable mooniswapFactory;
     mapping(IERC20 => bool) public pathWhitelist;
 
-    constructor (IERC20 _targetToken, IMooniswapFactory _mooniswapFactory) public {
-        targetToken = _targetToken;
+    constructor (IERC20 _inchToken, IMooniswapFactory _mooniswapFactory) public {
+        inchToken = _inchToken;
         mooniswapFactory = _mooniswapFactory;
     }
 
@@ -93,7 +93,7 @@ contract Converter is Ownable {
 
         require(pathLength > 0, "Min path length is 1");
         require(pathLength < 5, "Max path length is 4");
-        require(path[pathLength - 1] == targetToken, "Should swap to target token");
+        require(path[pathLength - 1] == inchToken, "Should swap to target token");
 
         amount = initialAmount;
 

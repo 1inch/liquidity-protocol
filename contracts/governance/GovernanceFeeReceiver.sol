@@ -14,8 +14,8 @@ contract GovernanceFeeReceiver is Converter {
         require(msg.sender != tx.origin, "ETH transfer forbidden");
     }
 
-    constructor(IERC20 _targetToken, IRewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
-        public Converter(_targetToken, _mooniswapFactory)
+    constructor(IERC20 _inchToken, IRewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
+        public Converter(_inchToken, _mooniswapFactory)
     {
         rewards = _rewards;
     }
