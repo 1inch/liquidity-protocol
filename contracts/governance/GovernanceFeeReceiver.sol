@@ -3,18 +3,18 @@
 pragma solidity ^0.6.0;
 
 import "../utils/Converter.sol";
-import "./rewards/IRewardDistributionRecipient.sol";
+import "./rewards/RewardDistributionRecipient.sol";
 
 
 contract GovernanceFeeReceiver is Converter {
-    IRewardDistributionRecipient public immutable rewards;
+    RewardDistributionRecipient public immutable rewards;
 
     receive() external payable {
         // solhint-disable-next-line avoid-tx-origin
         require(msg.sender != tx.origin, "ETH transfer forbidden");
     }
 
-    constructor(IERC20 _inchToken, IRewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
+    constructor(IERC20 _inchToken, RewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
         public Converter(_inchToken, _mooniswapFactory)
     {
         rewards = _rewards;
