@@ -17,10 +17,10 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     using SafeMath for uint256;
 
     event DefaultFeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
-    event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
+    event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, uint256 amount);
     event DefaultDecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, uint256 amount);
     event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
-    event GovernanceShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
+    event GovernanceShareVoteUpdate(address indexed user, uint256 governanceShare, uint256 amount);
     event GovernanceFeeReceiverUpdate(address governanceFeeReceiver);
     event ReferralFeeReceiverUpdate(address referralFeeReceiver);
 
