@@ -22,6 +22,7 @@ library LiquidVoting {
     struct Data {
         VirtualData data;
         uint256 _weightedSum;
+        uint256 _defaultVotes;
         mapping(address => Vote.Data) votes;
     }
 
@@ -71,21 +72,39 @@ library LiquidVoting {
         function(address, uint256, uint256) emitEvent
     ) private {
         uint256 oldWeightedSum = self._weightedSum;
+        uint256 newWeightedSum = oldWeightedSum;
+        uint256 oldDefaultVotes = self._defaultVotes;
+        uint256 newDefaultVotes = oldDefaultVotes;
         VirtualData memory data = self.data;
 
-        uint256 newWeightedSum = oldWeightedSum
-            .add(newBalance.mul(newVote.get(defaultVote)))
-            .sub(oldBalance.mul(oldVote.get(defaultVote)));
-        uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.div(newTotalSupply);
+        if (oldVote.isDefault()) {
+            newDefaultVotes = newDefaultVotes.sub(oldBalance);
+        } else {
+            newWeightedSum = newWeightedSum.sub(oldBalance.mul(oldVote.get(defaultVote)));
+        }
+
+        if (newVote.isDefault()) {
+            newDefaultVotes = newDefaultVotes.add(newBalance);
+        } else {
+            newWeightedSum = newWeightedSum.add(newBalance.mul(newVote.get(defaultVote)));
+        }
 
         if (newWeightedSum != oldWeightedSum) {
             self._weightedSum = newWeightedSum;
         }
 
-        if (newResult != data.result) {
-            self.data.oldResult = uint104(current(data));
-            self.data.result = uint104(newResult);
-            self.data.time = uint48(block.timestamp);
+        if (newDefaultVotes != oldDefaultVotes) {
+            self._defaultVotes = newDefaultVotes;
+        }
+
+        {
+            uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.add(newDefaultVotes.mul(defaultVote)).div(newTotalSupply);
+
+            if (newResult != data.result) {
+                self.data.oldResult = uint104(current(data));
+                self.data.result = uint104(newResult);
+                self.data.time = uint48(block.timestamp);
+            }
         }
 
         if (!newVote.eq(oldVote)) {

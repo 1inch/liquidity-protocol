@@ -200,4 +200,24 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('100');
         });
     });
+
+    describe('default-changed', async function() {
+        it('default fee changed', async function () {
+            await this.factory.notifyStakeChanged(_, ether('1'));
+            await this.factory.defaultFeeVote(ether('0.1'));
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            await this.mooniswap.discardFeeVote();
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.fee()).to.be.bignumber.equal(ether('0.1'));
+        });
+
+        it('balance decreased', async function () {
+            await this.factory.notifyStakeChanged(_, ether('1'));
+            await this.factory.defaultFeeVote(ether('0.1'));
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            await this.mooniswap.withdraw(ether('135'), []);
+            await timeIncreaseTo((await time.latest()).addn(86500));
+            expect(await this.mooniswap.fee()).to.be.bignumber.equal(ether('0.1'));
+        });
+    });
 });

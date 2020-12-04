@@ -57,26 +57,20 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     function feeVote(uint256 vote) external {
         require(vote <= _MAX_FEE, "Fee vote is too high");
 
-        Vote.Data memory oldVote = _fee.votes[msg.sender];
-        uint256 defaultFee = oldVote.isDefault() ? mooniswapFactoryGovernance.defaultFee() : 0;
-        _fee.updateVote(msg.sender, oldVote, Vote.init(vote), balanceOf(msg.sender), totalSupply(), defaultFee, _emitFeeVoteUpdate);
+        _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
     }
 
     function slippageFeeVote(uint256 vote) external {
         require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
-        Vote.Data memory oldVote = _slippageFee.votes[msg.sender];
-        uint256 defaultSlippageFee = oldVote.isDefault() ? mooniswapFactoryGovernance.defaultSlippageFee() : 0;
-        _slippageFee.updateVote(msg.sender, oldVote, Vote.init(vote), balanceOf(msg.sender), totalSupply(), defaultSlippageFee, _emitSlippageFeeVoteUpdate);
+        _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
     }
 
     function decayPeriodVote(uint256 vote) external {
         require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
-        Vote.Data memory oldVote = _decayPeriod.votes[msg.sender];
-        uint256 defaultDecayPeriod = oldVote.isDefault() ? mooniswapFactoryGovernance.defaultDecayPeriod() : 0;
-        _decayPeriod.updateVote(msg.sender, oldVote, Vote.init(vote), balanceOf(msg.sender), totalSupply(), defaultDecayPeriod, _emitDecayPeriodVoteUpdate);
+        _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }
 
     function discardFeeVote() external {
@@ -142,7 +136,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         Vote.Data memory voteFrom = votingData.votes[params.from];
         Vote.Data memory voteTo = votingData.votes[params.to];
 
-        uint256 defaultValue = (voteFrom.isDefault() || voteTo.isDefault() || params.balanceFrom == params.amount) ? defaultValueGetter() : 0;
+        uint256 defaultValue = defaultValueGetter();
 
         if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
             emitEvent(params.from, voteFrom.get(defaultValue), params.balanceFrom.sub(params.amount));
