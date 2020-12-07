@@ -12,6 +12,7 @@
     },
     "devDependencies": {
         "@codechecks/client": "^0.1.10",
+        "@openzeppelin/test-helpers": "^0.5.6",
         "chai": "^4.2.0",
         "coveralls": "^3.1.0",
         "eslint": "^7.5.0",
@@ -22,15 +23,17 @@
         "eslint-plugin-standard": "^4.0.0",
         "eth-gas-reporter": "^0.2.17",
         "ganache-cli": "^6.10.1",
-        "@openzeppelin/test-helpers": "^0.5.6",
         "solc": "^0.6.12",
-        "solidity-coverage": "^0.7.10",
         "solhint": "^3.3.2",
+        "solidity-coverage": "^0.7.10",
         "truffle": "^5.1.41",
-        "truffle-flattener": "^1.4.4"
+        "truffle-flattener": "^1.4.4",
+        "truffle-hdwallet-provider": "^1.0.17",
+        "truffle-hdwallet-provider-privkey": "^0.3.0"
     },
     "scripts": {
         "test": "truffle test --stacktrace",
+        "deploy:kovan": "truffle migrate --network kovan --reset",
         "coverage": "truffle run coverage",
         "coveralls": "truffle run coverage && cat coverage/lcov.info | coveralls",
         "lint:js": "eslint .",
@@ -39,7 +42,8 @@
         "lint:sol:fix": "solhint --max-warnings 0 \"contracts/**/*.sol\" --fix",
         "lint": "yarn run lint:js && yarn run lint:sol",
         "lint:fix": "yarn run lint:js:fix && yarn run lint:sol:fix",
-        "dist": "truffle-flattener ./contracts/Mooniswap.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./Mooniswap.full.sol && solcjs --bin --abi --optimize ./Mooniswap.full.sol && mv ./__Mooniswap_full_sol_Mooniswap.bin ./Mooniswap.full.bin && mv ./__Mooniswap_full_sol_Mooniswap.abi ./Mooniswap.full.abi && rm ./*_sol_*",
-        "dist:factory": "truffle-flattener ./contracts/MooniFactory.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./MooniFactory.full.sol && solcjs --bin --abi --optimize ./MooniFactory.full.sol && mv ./__MooniFactory_full_sol_MooniFactory.bin ./MooniFactory.full.bin && mv ./__MooniFactory_full_sol_MooniFactory.abi ./MooniFactory.full.abi && rm ./*_sol_*"
+        "dist": "rm -rf build && yarn truffle compile && mkdir -p dist && cp build/contracts/Mooniswap.json dist/ && cp build/contracts/MooniswapFactory.json dist/ && cp build/contracts/GovernanceMothership.json dist/ && cp build/contracts/Rewards.json dist/ && cp build/contracts/ReferralFeeReceiver.json dist/ && cp build/contracts/GovernanceFeeReceiver.json dist/ && cp build/contracts/TokenMock.json dist/",
+        "flatten:mooniswap": "truffle-flattener ./contracts/Mooniswap.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./Mooniswap.full.sol && solcjs --bin --abi --optimize ./Mooniswap.full.sol && mv ./__Mooniswap_full_sol_Mooniswap.bin ./Mooniswap.full.bin && mv ./__Mooniswap_full_sol_Mooniswap.abi ./Mooniswap.full.abi && rm ./*_sol_*",
+        "flatten:factory": "truffle-flattener ./contracts/MooniFactory.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./MooniFactory.full.sol && solcjs --bin --abi --optimize ./MooniFactory.full.sol && mv ./__MooniFactory_full_sol_MooniFactory.bin ./MooniFactory.full.bin && mv ./__MooniFactory_full_sol_MooniFactory.abi ./MooniFactory.full.abi && rm ./*_sol_*"
     }
 }
