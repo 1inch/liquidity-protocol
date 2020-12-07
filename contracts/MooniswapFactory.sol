@@ -33,16 +33,15 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
         return allPools;
     }
 
-    function pools(IERC20 tokenA, IERC20 tokenB) public view override returns (Mooniswap pool) {
+    function pools(IERC20 tokenA, IERC20 tokenB) external view override returns (Mooniswap pool) {
         (IERC20 token1, IERC20 token2) = sortTokens(tokenA, tokenB);
         return _pools[token1][token2];
     }
 
     function deploy(IERC20 tokenA, IERC20 tokenB) public returns(Mooniswap pool) {
         require(tokenA != tokenB, "Factory: not support same tokens");
-        require(pools(tokenA, tokenB) == Mooniswap(0), "Factory: pool already exists");
-
         (IERC20 token1, IERC20 token2) = sortTokens(tokenA, tokenB);
+        require(_pools[token1][token2] == Mooniswap(0), "Factory: pool already exists");
 
         string memory symbol1 = token1.uniSymbol();
         string memory symbol2 = token2.uniSymbol();
