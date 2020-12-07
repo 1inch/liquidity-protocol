@@ -14,11 +14,16 @@ const POOL_OWNER = {
     coverage: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
 
+const TOKEN = {
+    kovan: '0x9F6A694123e5599a07f984eb8c0F3A475F553A03',
+    'kovan-fork': '0x9F6A694123e5599a07f984eb8c0F3A475F553A03'
+}
+
 module.exports = function (deployer, network) {
     return deployer.then(async () => {
-        await deployer.deploy(Migrations);
+        // await deployer.deploy(Migrations);
 
-        const token = await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
+        const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = await deployer.deploy(GovernanceMothership, token.address);
 
         // Mooniswap Factory
