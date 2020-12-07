@@ -22,7 +22,7 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
     address public immutable poolOwner;
     Mooniswap[] public allPools;
     mapping(Mooniswap => bool) public isPool;
-    mapping(IERC20 => mapping(IERC20 => Mooniswap)) public override pools;
+    mapping(IERC20 => mapping(IERC20 => Mooniswap)) private _pools;
 
     constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
         poolOwner = _poolOwner;
@@ -33,9 +33,14 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
         return allPools;
     }
 
+    function pools(IERC20 tokenA, IERC20 tokenB) public view override returns (Mooniswap pool) {
+        (IERC20 token1, IERC20 token2) = sortTokens(tokenA, tokenB);
+        return _pools[token1][token2];
+    }
+
     function deploy(IERC20 tokenA, IERC20 tokenB) public returns(Mooniswap pool) {
         require(tokenA != tokenB, "Factory: not support same tokens");
-        require(pools[tokenA][tokenB] == Mooniswap(0), "Factory: pool already exists");
+        require(pools(tokenA, tokenB) == Mooniswap(0), "Factory: pool already exists");
 
         (IERC20 token1, IERC20 token2) = sortTokens(tokenA, tokenB);
 
@@ -50,8 +55,7 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
             poolOwner
         );
 
-        pools[token1][token2] = pool;
-        pools[token2][token1] = pool;
+        _pools[token1][token2] = pool;
         allPools.push(pool);
         isPool[pool] = true;
 
