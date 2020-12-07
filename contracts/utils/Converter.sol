@@ -74,8 +74,7 @@ contract Converter is Ownable {
         uint256 pathLength = path.length;
 
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
-            (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
-            Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
+            Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
             uint256 maxCurSwapAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
             if (maxCurSwapAmount < stepAmount) {
                 amount = amount.mul(maxCurSwapAmount).div(stepAmount);
@@ -102,8 +101,7 @@ contract Converter is Ownable {
         }
 
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
-            (IERC20 token0, IERC20 token1) = _sortTokens(path[i], path[i+1]);
-            Mooniswap mooniswap = mooniswapFactory.pools(token0, token1);
+            Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
 
             require(_validateSpread(mooniswap), "Spread is too high");
 
@@ -124,12 +122,5 @@ contract Converter is Ownable {
         if (pathLength == 1) {
             path[0].transfer(destination, amount);
         }
-    }
-
-    function _sortTokens(IERC20 tokenA, IERC20 tokenB) private pure returns(IERC20, IERC20) {
-        if (tokenA < tokenB) {
-            return (tokenA, tokenB);
-        }
-        return (tokenB, tokenA);
     }
 }
