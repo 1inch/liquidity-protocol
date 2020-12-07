@@ -68,7 +68,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 fee,
         uint256 slippageFee,
         uint256 referralShare,
-        uint256 governancShare
+        uint256 governanceShare
     );
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
