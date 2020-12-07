@@ -140,7 +140,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
 
         if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
             emitEvent(params.from, voteFrom.get(defaultValue), voteFrom.isDefault(), params.balanceFrom.sub(params.amount));
-            emitEvent(params.from, voteTo.get(defaultValue), voteFrom.isDefault(), params.balanceTo.add(params.amount));
+            emitEvent(params.to, voteTo.get(defaultValue), voteTo.isDefault(), params.balanceTo.add(params.amount));
             return;
         }
 
