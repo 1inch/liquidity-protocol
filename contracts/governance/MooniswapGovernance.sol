@@ -14,9 +14,9 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     using LiquidVoting for LiquidVoting.Data;
     using LiquidVoting for LiquidVoting.VirtualData;
 
-    event FeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
-    event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, uint256 amount);
-    event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, uint256 amount);
+    event FeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
+    event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
+    event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
 
     IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
     LiquidVoting.Data private _fee;
@@ -85,16 +85,16 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }
 
-    function _emitFeeVoteUpdate(address account, uint256 newFee, uint256 newBalance) private {
-        emit FeeVoteUpdate(account, newFee, newBalance);
+    function _emitFeeVoteUpdate(address account, uint256 newFee, bool isDefault, uint256 newBalance) private {
+        emit FeeVoteUpdate(account, newFee, isDefault, newBalance);
     }
 
-    function _emitSlippageFeeVoteUpdate(address account, uint256 newSlippageFee, uint256 newBalance) private {
-        emit SlippageFeeVoteUpdate(account, newSlippageFee, newBalance);
+    function _emitSlippageFeeVoteUpdate(address account, uint256 newSlippageFee, bool isDefault, uint256 newBalance) private {
+        emit SlippageFeeVoteUpdate(account, newSlippageFee, isDefault, newBalance);
     }
 
-    function _emitDecayPeriodVoteUpdate(address account, uint256 newDecayPeriod, uint256 newBalance) private {
-        emit DecayPeriodVoteUpdate(account, newDecayPeriod, newBalance);
+    function _emitDecayPeriodVoteUpdate(address account, uint256 newDecayPeriod, bool isDefault, uint256 newBalance) private {
+        emit DecayPeriodVoteUpdate(account, newDecayPeriod, isDefault, newBalance);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
@@ -130,7 +130,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     function _updateOnTransfer(
         ParamsHelper memory params,
         function() external view returns (uint256) defaultValueGetter,
-        function(address, uint256, uint256) internal emitEvent,
+        function(address, uint256, bool, uint256) internal emitEvent,
         LiquidVoting.Data storage votingData
     ) private {
         Vote.Data memory voteFrom = votingData.votes[params.from];
@@ -139,8 +139,8 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         uint256 defaultValue = defaultValueGetter();
 
         if (voteFrom.isDefault() && voteTo.isDefault() && params.from != address(0) && params.to != address(0)) {
-            emitEvent(params.from, voteFrom.get(defaultValue), params.balanceFrom.sub(params.amount));
-            emitEvent(params.from, voteTo.get(defaultValue), params.balanceTo.add(params.amount));
+            emitEvent(params.from, voteFrom.get(defaultValue), voteFrom.isDefault(), params.balanceFrom.sub(params.amount));
+            emitEvent(params.from, voteTo.get(defaultValue), voteFrom.isDefault(), params.balanceTo.add(params.amount));
             return;
         }
 

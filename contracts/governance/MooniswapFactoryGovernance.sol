@@ -16,11 +16,11 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     using LiquidVoting for LiquidVoting.VirtualData;
     using SafeMath for uint256;
 
-    event DefaultFeeVoteUpdate(address indexed user, uint256 fee, uint256 amount);
-    event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, uint256 amount);
-    event DefaultDecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, uint256 amount);
-    event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, uint256 amount);
-    event GovernanceShareVoteUpdate(address indexed user, uint256 governanceShare, uint256 amount);
+    event DefaultFeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
+    event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
+    event DefaultDecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
+    event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, bool isDefault, uint256 amount);
+    event GovernanceShareVoteUpdate(address indexed user, uint256 governanceShare, bool isDefault, uint256 amount);
     event GovernanceFeeReceiverUpdate(address governanceFeeReceiver);
     event ReferralFeeReceiverUpdate(address referralFeeReceiver);
 
@@ -159,23 +159,23 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.updateBalance(account, _governanceShare.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
-    function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaulFee, uint256 balance) private {
-        emit DefaultFeeVoteUpdate(user, newDefaulFee, balance);
+    function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaulFee, bool isDefault, uint256 balance) private {
+        emit DefaultFeeVoteUpdate(user, newDefaulFee, isDefault, balance);
     }
 
-    function _emitDefaultSlippageFeeVoteUpdate(address user, uint256 newDefaulSlippageFee, uint256 balance) private {
-        emit DefaultSlippageFeeVoteUpdate(user, newDefaulSlippageFee, balance);
+    function _emitDefaultSlippageFeeVoteUpdate(address user, uint256 newDefaulSlippageFee, bool isDefault, uint256 balance) private {
+        emit DefaultSlippageFeeVoteUpdate(user, newDefaulSlippageFee, isDefault, balance);
     }
 
-    function _emitDefaultDecayPeriodVoteUpdate(address user, uint256 newDefaultDecayPeriod, uint256 balance) private {
-        emit DefaultDecayPeriodVoteUpdate(user, newDefaultDecayPeriod, balance);
+    function _emitDefaultDecayPeriodVoteUpdate(address user, uint256 newDefaultDecayPeriod, bool isDefault, uint256 balance) private {
+        emit DefaultDecayPeriodVoteUpdate(user, newDefaultDecayPeriod, isDefault, balance);
     }
 
-    function _emitReferralShareVoteUpdate(address user, uint256 newReferralShare, uint256 balance) private {
-        emit ReferralShareVoteUpdate(user, newReferralShare, balance);
+    function _emitReferralShareVoteUpdate(address user, uint256 newReferralShare, bool isDefault, uint256 balance) private {
+        emit ReferralShareVoteUpdate(user, newReferralShare, isDefault, balance);
     }
 
-    function _emitGovernanceShareVoteUpdate(address user, uint256 newGovernanceShare, uint256 balance) private {
-        emit GovernanceShareVoteUpdate(user, newGovernanceShare, balance);
+    function _emitGovernanceShareVoteUpdate(address user, uint256 newGovernanceShare, bool isDefault, uint256 balance) private {
+        emit GovernanceShareVoteUpdate(user, newGovernanceShare, isDefault, balance);
     }
 }

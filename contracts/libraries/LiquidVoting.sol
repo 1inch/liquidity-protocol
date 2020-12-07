@@ -42,7 +42,7 @@ library LiquidVoting {
         uint256 balance,
         uint256 totalSupply,
         uint256 defaultVote,
-        function(address, uint256, uint256) emitEvent
+        function(address, uint256, bool, uint256) emitEvent
     ) internal {
         return _update(self, user, oldVote, newVote, balance, balance, totalSupply, defaultVote, emitEvent);
     }
@@ -55,7 +55,7 @@ library LiquidVoting {
         uint256 newBalance,
         uint256 newTotalSupply,
         uint256 defaultVote,
-        function(address, uint256, uint256) emitEvent
+        function(address, uint256, bool, uint256) emitEvent
     ) internal {
         return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, newTotalSupply, defaultVote, emitEvent);
     }
@@ -69,7 +69,7 @@ library LiquidVoting {
         uint256 newBalance,
         uint256 newTotalSupply,
         uint256 defaultVote,
-        function(address, uint256, uint256) emitEvent
+        function(address, uint256, bool, uint256) emitEvent
     ) private {
         uint256 oldWeightedSum = self._weightedSum;
         uint256 newWeightedSum = oldWeightedSum;
@@ -111,6 +111,6 @@ library LiquidVoting {
             self.votes[user] = newVote;
         }
 
-        emitEvent(user, newVote.get(defaultVote), newBalance);
+        emitEvent(user, newVote.get(defaultVote), newVote.isDefault(), newBalance);
     }
 }

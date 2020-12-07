@@ -66,7 +66,9 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 srcBalance,
         uint256 dstBalance,
         uint256 fee,
-        uint256 slippageFee
+        uint256 slippageFee,
+        uint256 referralShare,
+        uint256 governancShare
     );
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
@@ -231,8 +233,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             slippageFee: slippageFee()
         });
         (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, fees);
-        _mintRewards(confirmed, result, referral, balances);
-        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee);
+        _mintRewards(confirmed, result, referral, balances, fees);
         emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
 
         // Overflow of uint128 is desired
@@ -266,7 +267,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         virtualBalancesForAddition[dst].update(_decayPeriod, balances.dst);
     }
 
-    function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
+    function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
         (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.parameters();
 
         uint256 invariantRatio = uint256(1e36);
@@ -296,6 +297,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 }
             }
         }
+
+        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, referralShare, governanceShare);
     }
 
     /*
