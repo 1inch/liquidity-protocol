@@ -8,14 +8,14 @@ const Rewards = artifacts.require('./governance/rewards/Rewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
 const POOL_OWNER = {
-    'kovan': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    kovan: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     'kovan-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    'test': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    'coverage': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    test: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    coverage: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
 
-module.exports = function(deployer, network) {
-    deployer.then(async () => {
+module.exports = function (deployer, network) {
+    return deployer.then(async () => {
         await deployer.deploy(Migrations);
 
         const token = await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
@@ -28,7 +28,7 @@ module.exports = function(deployer, network) {
             MooniswapFactory,
             POOL_OWNER[network],
             mooniswapDeployer.address,
-            governanceMothership.address
+            governanceMothership.address,
         );
         await governanceMothership.addModule(mooniswapFactory.address);
 
