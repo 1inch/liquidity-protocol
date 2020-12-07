@@ -5,11 +5,6 @@ const kovanEndpointUrl = 'https://kovan.infura.io/v3/9e4cfe82e43c48e2afc547c4014
 
 module.exports = {
     networks: {
-        development: {
-            host: '127.0.0.1',
-            port: 9545,
-            network_id: '5777'
-        },
         kovan: {
             provider: function() {
                 return new HDWalletProvider(

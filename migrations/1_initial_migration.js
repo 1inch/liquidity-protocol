@@ -10,7 +10,8 @@ const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 const POOL_OWNER = {
     'kovan': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     'kovan-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    'development': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef'
+    'test': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    'coverage': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
 
 module.exports = function(deployer, network) {
@@ -36,11 +37,11 @@ module.exports = function(deployer, network) {
         const rewards = await deployer.deploy(Rewards, token.address, governanceMothership.address);
         await governanceMothership.addModule(rewards.address);
 
-        const governanceFeeReceiver = await deployer.deploy(GovernanceFeeReceiver, token.address, rewards.address);
+        const governanceFeeReceiver = await deployer.deploy(GovernanceFeeReceiver, token.address, rewards.address, mooniswapFactory.address);
         await mooniswapFactory.setGovernanceFeeReceiver(governanceFeeReceiver.address);
         await rewards.setRewardDistribution(governanceFeeReceiver.address);
 
-        const referralFeeReceiver = await deployer.deploy(ReferralFeeReceiver, token.address);
+        const referralFeeReceiver = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
         await mooniswapFactory.setReferralFeeReceiver(referralFeeReceiver.address);
 
         // Transfer Ownership
