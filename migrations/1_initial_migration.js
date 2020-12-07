@@ -1,4 +1,3 @@
-const Migrations = artifacts.require('./Migrations.sol');
 const GovernanceMothership = artifacts.require('./inch/GovernanceMothership.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
@@ -12,17 +11,19 @@ const POOL_OWNER = {
     'kovan-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     test: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     coverage: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    mainnet: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    'mainnet-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
 
 const TOKEN = {
     kovan: '0x9F6A694123e5599a07f984eb8c0F3A475F553A03',
-    'kovan-fork': '0x9F6A694123e5599a07f984eb8c0F3A475F553A03'
-}
+    'kovan-fork': '0x9F6A694123e5599a07f984eb8c0F3A475F553A03',
+    mainnet: '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
+    'mainnet-fork': '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
+};
 
 module.exports = function (deployer, network) {
     return deployer.then(async () => {
-        // await deployer.deploy(Migrations);
-
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = await deployer.deploy(GovernanceMothership, token.address);
 
