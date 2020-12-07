@@ -201,7 +201,7 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
         });
     });
 
-    describe('default-changed', async function() {
+    describe('default-changed', async function () {
         it('default fee changed', async function () {
             await this.factory.notifyStakeChanged(_, ether('1'));
             await this.factory.defaultFeeVote(ether('0.1'));
