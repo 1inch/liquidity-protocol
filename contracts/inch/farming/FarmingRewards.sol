@@ -4,19 +4,19 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./RewardDistributionRecipient.sol";
-import "../BaseGovernanceModule.sol";
+import "../../Mooniswap.sol";
 import "../../utils/BalanceAccounting.sol";
+import "../../utils/RewardDistributionRecipient.sol";
+import "./FarmingVoter.sol";
 
 
-contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAccounting {
+contract FarmingRewards is RewardDistributionRecipient, FarmingVoter {
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
 
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed user, uint256 reward);
+    event Staked(address indexed user, uint256 amount);
+    event Withdrawn(address indexed user, uint256 amount);
 
     uint256 public constant DURATION = 7 days;
     IERC20 public immutable gift;
@@ -39,9 +39,24 @@ contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAc
         _;
     }
 
-    constructor(IERC20 _gift, address _mothership) public BaseGovernanceModule(_mothership) {
+    constructor(Mooniswap _mooniswap, IERC20 _gift) public FarmingVoter(_mooniswap) {
         gift = _gift;
     }
+
+    function stake(uint256 amount) public updateReward(msg.sender) {
+        require(amount > 0, "Cannot stake 0");
+        _mint(msg.sender, amount);
+        mooniswap.transferFrom(msg.sender, address(this), amount);
+        emit Staked(msg.sender, amount);
+    }
+
+    function withdraw(uint256 amount) public updateReward(msg.sender) {
+        require(amount > 0, "Cannot withdraw 0");
+        _burn(msg.sender, amount);
+        mooniswap.transfer(msg.sender, amount);
+        emit Withdrawn(msg.sender, amount);
+    }
+
 
     function lastTimeRewardApplicable() public view returns (uint256) {
         return Math.min(block.timestamp, periodFinish);
@@ -69,20 +84,16 @@ contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAc
                 .add(rewards[account]);
     }
 
-    function _notifyStakeChanged(address account, uint256 newBalance) internal override updateReward(account) {
-        uint256 balance = balanceOf(account);
-        if (newBalance > balance) {
-            _mint(account, newBalance.sub(balance));
-        } else if (newBalance < balance) {
-            _burn(account, balance.sub(newBalance));
-        }
+    function exit() external {
+        withdraw(balanceOf(msg.sender));
+        getReward();
     }
 
-    function getReward() external updateReward(msg.sender) {
+    function getReward() public updateReward(msg.sender) {
         uint256 reward = earned(msg.sender);
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            gift.safeTransfer(msg.sender, reward);
+            gift.transfer(msg.sender, reward);
             emit RewardPaid(msg.sender, reward);
         }
     }

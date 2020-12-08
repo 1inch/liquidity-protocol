@@ -3,7 +3,7 @@
 pragma solidity ^0.6.0;
 
 import "../utils/Converter.sol";
-import "./rewards/RewardDistributionRecipient.sol";
+import "../utils/RewardDistributionRecipient.sol";
 
 
 contract GovernanceFeeReceiver is Converter {
