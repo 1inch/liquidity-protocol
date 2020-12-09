@@ -9,11 +9,6 @@ import "./rewards/RewardDistributionRecipient.sol";
 contract GovernanceFeeReceiver is Converter {
     RewardDistributionRecipient public immutable rewards;
 
-    receive() external payable {
-        // solhint-disable-next-line avoid-tx-origin
-        require(msg.sender != tx.origin, "ETH transfer forbidden");
-    }
-
     constructor(IERC20 _inchToken, RewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
         public Converter(_inchToken, _mooniswapFactory)
     {

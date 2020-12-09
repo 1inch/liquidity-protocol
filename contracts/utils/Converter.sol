@@ -30,6 +30,11 @@ contract Converter is Ownable {
         mooniswapFactory = _mooniswapFactory;
     }
 
+    receive() external payable {
+        // solhint-disable-next-line avoid-tx-origin
+        require(msg.sender != tx.origin, "ETH transfer forbidden");
+    }
+
     modifier validSpread(Mooniswap mooniswap) {
         require(_validateSpread(mooniswap), "Spread is too high");
 
