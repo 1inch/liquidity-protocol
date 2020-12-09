@@ -50,25 +50,23 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         await timeIncreaseTo((await time.latest()).addn(86500));
     });
 
-    describe('test', async function () {
-        it('test', async function () {
-            await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', constants.ZERO_ADDRESS, { value: ether('1'), from: wallet2 });
-            await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-            await this.feeReceiver.unwrapLPTokens(this.mooniswap.address);
-            await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.token.address]);
-            await this.feeReceiver.swap([this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
-            await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
-            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('889046414196468429');
-            await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
-            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1778086948475779200');
+    it('test', async function () {
+        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', constants.ZERO_ADDRESS, { value: ether('1'), from: wallet2 });
+        await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
+        await this.feeReceiver.unwrapLPTokens(this.mooniswap.address);
+        await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.token.address]);
+        await this.feeReceiver.swap([this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
+        await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
+        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('889046414196468429');
+        await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
+        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1778086948475779200');
 
-            const received = await trackReceivedToken(
-                this.token,
-                wallet1,
-                () => this.rewards.getReward(),
-            );
-            expect(received).to.be.bignumber.equal('1778086948475779200');
-            expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('0');
-        });
+        const received = await trackReceivedToken(
+            this.token,
+            wallet1,
+            () => this.rewards.getReward(),
+        );
+        expect(received).to.be.bignumber.equal('1778086948475779200');
+        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('0');
     });
 });
