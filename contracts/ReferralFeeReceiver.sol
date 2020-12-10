@@ -49,7 +49,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         _collectProcessedEpochs(user, token, mooniswap, currentEpoch);
     }
 
-    function freezeEpoch(Mooniswap mooniswap) external validSpread(mooniswap) {
+    function freezeEpoch(Mooniswap mooniswap, IERC20[] memory token0Path, IERC20[] memory token1Path) external validSpread(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 currentEpoch = token.currentEpoch;
         require(token.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finalized");
@@ -61,8 +61,14 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         uint256 token0Balance = tokens[0].uniBalanceOf(address(this));
         uint256 token1Balance = tokens[1].uniBalanceOf(address(this));
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
-        token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
-        token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
+        token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
+        token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
+        (,uint256 inchReward) = _maxAmountForSwap(token0Path, token0Balance);
+        require(inchReward > 0, "Reward for token0 is too small");
+        (,inchReward) = _maxAmountForSwap(token1Path, token1Balance);
+        require(inchReward > 0, "Reward for token1 is too small");
+        token.epochBalance[currentEpoch].token0Balance = token0Balance;
+        token.epochBalance[currentEpoch].token1Balance = token1Balance;
     }
 
     function trade(Mooniswap mooniswap, IERC20[] memory path) external {
@@ -81,7 +87,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
             revert("Invalid first token");
         }
 
-        uint256 amount = _maxAmountForSwap(path, availableBalance);
+        (uint256 amount,) = _maxAmountForSwap(path, availableBalance);
         uint256 receivedAmount = _swap(path, amount, payable(address(this)));
         epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
         if (path[0] == tokens[0]) {

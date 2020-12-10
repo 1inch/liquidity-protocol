@@ -1,4 +1,4 @@
-const { ether, time } = require('@openzeppelin/test-helpers');
+const { ether, time, expectRevert } = require('@openzeppelin/test-helpers');
 const constants = require('@openzeppelin/test-helpers/src/constants');
 const { expect } = require('chai');
 const { trackReceivedToken, timeIncreaseTo } = require('./helpers/utils.js');
@@ -9,7 +9,7 @@ const MooniswapFactory = artifacts.require('MooniswapFactory');
 const ReferralFeeReceiver = artifacts.require('ReferralFeeReceiver');
 const TokenMock = artifacts.require('TokenMock');
 
-contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
+contract.only('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await TokenMock.new('DAI', 'DAI', 18);
         this.token = await TokenMock.new('INCH', 'INCH', 18);
@@ -43,7 +43,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     it('test', async function () {
         await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        await this.feeReceiver.freezeEpoch(this.mooniswap.address);
+        await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
         await this.feeReceiver.trade(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address]);
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
@@ -69,15 +69,20 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
         expect(currentEpoch).to.be.bignumber.equal('1');
     });
 
-    it('empty freeze', async function () {
-        await this.feeReceiver.freezeEpoch(this.mooniswap.address);
+    it('should not freeze empty epoch', async function () {
+        await expectRevert(
+            this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
+            "Reward for token0 is too small"
+        );
+    });
+
+    it('should not freeze twice', async function () {
+        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        await this.feeReceiver.trade(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address]);
-        await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        await this.feeReceiver.trade(this.mooniswap.address, [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
-        await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        const { firstUnprocessedEpoch, currentEpoch } = await this.feeReceiver.tokenInfo(this.mooniswap.address);
-        expect(firstUnprocessedEpoch).to.be.bignumber.equal('1');
-        expect(currentEpoch).to.be.bignumber.equal('1');
+        await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
+        await expectRevert(
+            this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
+            "Previous epoch is not finalized"
+        );
     });
 });

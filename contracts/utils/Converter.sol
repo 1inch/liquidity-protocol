@@ -73,22 +73,19 @@ contract Converter is Ownable {
         return buyPrice.sub(sellPrice).mul(_ONE) < mooniswap.fee().mul(_SPREAD_FEE_MULTIPLIER).mul(spotPrice);
     }
 
-    function _maxAmountForSwap(IERC20[] memory path, uint256 initialAmount) internal view returns(uint256 amount) {
-        amount = initialAmount;
-        uint256 stepAmount = amount;
+    function _maxAmountForSwap(IERC20[] memory path, uint256 amount) internal view returns(uint256 srcAmount, uint256 dstAmount) {
+        srcAmount = amount;
+        dstAmount = amount;
         uint256 pathLength = path.length;
 
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
             Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
-            uint256 maxCurSwapAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
-            if (maxCurSwapAmount < stepAmount) {
-                amount = amount.mul(maxCurSwapAmount).div(stepAmount);
-                stepAmount = maxCurSwapAmount;
+            uint256 maxCurStepAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
+            if (maxCurStepAmount < dstAmount) {
+                srcAmount = srcAmount.mul(maxCurStepAmount).div(dstAmount);
+                dstAmount = maxCurStepAmount;
             }
-            if (i + 2 < pathLength) {
-                // no need to estimate getReturn on last step
-                stepAmount = mooniswap.getReturn(path[i], path[i+1], stepAmount);
-            }
+            dstAmount = mooniswap.getReturn(path[i], path[i+1], dstAmount);
         }
     }
 
