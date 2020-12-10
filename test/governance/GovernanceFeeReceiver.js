@@ -57,7 +57,9 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.token.address]);
         await this.feeReceiver.swap([this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
         await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
-        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('889046414196468429');
+        const earned = await this.rewards.earned(wallet1);
+        expect(earned).to.be.bignumber.gt(ether('0.88'));
+        expect(earned).to.be.bignumber.lt(ether('0.9'));
         await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
         expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1778086948475779200');
 
