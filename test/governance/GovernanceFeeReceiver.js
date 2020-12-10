@@ -7,7 +7,7 @@ const Mooniswap = artifacts.require('Mooniswap');
 const MooniswapDeployer = artifacts.require('MooniswapDeployer');
 const MooniswapFactory = artifacts.require('MooniswapFactory');
 const GovernanceFeeReceiver = artifacts.require('GovernanceFeeReceiver');
-const Rewards = artifacts.require('Rewards');
+const GovernanceRewards = artifacts.require('GovernanceRewards');
 const TokenMock = artifacts.require('TokenMock');
 
 contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
@@ -16,7 +16,7 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         this.token = await TokenMock.new('INCH', 'INCH', 18);
         this.deployer = await MooniswapDeployer.new();
         this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, wallet1);
-        this.rewards = await Rewards.new(this.token.address, wallet1);
+        this.rewards = await GovernanceRewards.new(this.token.address, wallet1);
         this.feeReceiver = await GovernanceFeeReceiver.new(this.token.address, this.rewards.address, this.factory.address);
         await this.rewards.setRewardDistribution(this.feeReceiver.address);
         await this.feeReceiver.updatePathWhitelist(constants.ZERO_ADDRESS, true);

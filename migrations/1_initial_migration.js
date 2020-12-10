@@ -3,7 +3,7 @@ const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
 const GovernanceFeeReceiver = artifacts.require('./governance/GovernanceFeeReceiver.sol');
-const Rewards = artifacts.require('./governance/rewards/Rewards.sol');
+const Rewards = artifacts.require('./governance/GovernanceRewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
 const POOL_OWNER = {
