@@ -75,7 +75,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     it('should not freeze empty epoch', async function () {
         await expectRevert(
             this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
-            "Reward for token0 is too small"
+            'Reward for token0 is too small',
         );
     });
 
@@ -85,7 +85,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
         await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
         await expectRevert(
             this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
-            "Previous epoch is not finalized"
+            'Previous epoch is not finalized',
         );
     });
 });

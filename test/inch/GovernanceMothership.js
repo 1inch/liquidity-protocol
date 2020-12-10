@@ -19,11 +19,11 @@ contract('GovernanceMothership', function ([wallet1, wallet2]) {
 
         it('should not add module twice', async function () {
             await this.governanceMothership.addModule(wallet1);
-            await expectRevert(this.governanceMothership.addModule(wallet1), "Module already registered");
+            await expectRevert(this.governanceMothership.addModule(wallet1), 'Module already registered');
         });
 
         it('should not remove non-existent module', async function () {
-            await expectRevert(this.governanceMothership.removeModule(wallet1), "Module was not registered");
+            await expectRevert(this.governanceMothership.removeModule(wallet1), 'Module was not registered');
         });
 
         it('should remove module', async function () {
