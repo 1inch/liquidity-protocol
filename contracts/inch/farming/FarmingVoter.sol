@@ -74,17 +74,48 @@ contract FarmingVoter is MooniswapConstants, BalanceAccounting {
 
     function discardFeeVote() external {
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
-        mooniswap.feeVote(_fee.result);
+        _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
     }
 
     function discardSlippageFeeVote() external {
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
-        mooniswap.slippageFeeVote(_slippageFee.result);
+        _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
     function discardDecayPeriodVote() external {
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
-        mooniswap.decayPeriodVote(_decayPeriod.result);
+        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
+    }
+
+    function _mint(address account, uint256 amount) internal override {
+        super._mint(account, amount);
+
+        uint256 newBalance = balanceOf(account);
+        _updateVotes(account, newBalance.sub(amount), newBalance, totalSupply());
+    }
+
+    function _burn(address account, uint256 amount) internal override {
+        super._burn(account, amount);
+
+        uint256 newBalance = balanceOf(account);
+        _updateVotes(account, newBalance.add(amount), newBalance, totalSupply());
+    }
+
+    function _updateVotes(address account, uint256 balance, uint256 newBalance, uint256 newTotalSupply) private {
+        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitFeeVoteUpdate);
+        _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
+        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitSlippageFeeVoteUpdate);
+        _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
+        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDecayPeriodVoteUpdate);
+        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
+    }
+
+    function _vote(Voting.Data storage votingData, function(uint256) external vote, function() external discardVote) private {
+        if (votingData._weightedSum == 0) {
+            discardVote();
+        } else {
+            vote(votingData.result);
+        }
     }
 
     function _emitFeeVoteUpdate(address account, uint256 newFee, bool isDefault, uint256 newBalance) private {
@@ -97,32 +128,5 @@ contract FarmingVoter is MooniswapConstants, BalanceAccounting {
 
     function _emitDecayPeriodVoteUpdate(address account, uint256 newDecayPeriod, bool isDefault, uint256 newBalance) private {
         emit DecayPeriodVoteUpdate(account, newDecayPeriod, isDefault, newBalance);
-    }
-
-    function _mint(address account, uint256 amount) internal override {
-        uint256 balance = balanceOf(account);
-        uint256 newBalance = balance.add(amount);
-        super._mint(account, amount);
-        uint256 newTotalSupply = totalSupply();
-
-        _updateVotes(account, balance, newBalance, newTotalSupply);
-    }
-
-    function _burn(address account, uint256 amount) internal override {
-        uint256 balance = balanceOf(account);
-        uint256 newBalance = balance.add(amount);
-        super._burn(account, amount);
-        uint256 newTotalSupply = totalSupply();
-
-        _updateVotes(account, balance, newBalance, newTotalSupply);
-    }
-
-    function _updateVotes(address account, uint256 balance, uint256 newBalance, uint256 newTotalSupply) private {
-        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitFeeVoteUpdate);
-        mooniswap.feeVote(_fee.result);
-        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitSlippageFeeVoteUpdate);
-        mooniswap.slippageFeeVote(_slippageFee.result);
-        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDecayPeriodVoteUpdate);
-        mooniswap.decayPeriodVote(_decayPeriod.result);
     }
 }
