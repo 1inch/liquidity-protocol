@@ -41,6 +41,14 @@ contract Converter is Ownable {
         _;
     }
 
+    modifier validPath(IERC20[] memory path) {
+        require(path.length > 0, "Min path length is 1");
+        require(path.length < 5, "Max path length is 4");
+        require(path[path.length - 1] == inchToken, "Should swap to target token");
+
+        _;
+    }
+
     function updatePathWhitelist(IERC20 token, bool whitelisted) external onlyOwner {
         pathWhitelist[token] = whitelisted;
     }
@@ -89,20 +97,16 @@ contract Converter is Ownable {
         }
     }
 
-    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount) {
-        uint256 pathLength = path.length;
-
-        require(pathLength > 0, "Min path length is 1");
-        require(pathLength < 5, "Max path length is 4");
-        require(path[pathLength - 1] == inchToken, "Should swap to target token");
-
+    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination)
+        internal validPath(path) returns(uint256 amount)
+    {
         amount = initialAmount;
 
-        for (uint256 i = 1; i + 1 < pathLength; i += 1) {
+        for (uint256 i = 1; i + 1 < path.length; i += 1) {
             require(pathWhitelist[path[i]], "Token is not whitelisted");
         }
 
-        for (uint256 i = 0; i + 1 < pathLength; i += 1) {
+        for (uint256 i = 0; i + 1 < path.length; i += 1) {
             Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
 
             require(_validateSpread(mooniswap), "Spread is too high");
@@ -113,7 +117,7 @@ contract Converter is Ownable {
                 value = 0;
             }
 
-            if (i + 2 < pathLength) {
+            if (i + 2 < path.length) {
                 amount = mooniswap.swap{value: value}(path[i], path[i+1], amount, 0, address(0));
             }
             else {
@@ -121,7 +125,7 @@ contract Converter is Ownable {
             }
         }
 
-        if (pathLength == 1) {
+        if (path.length == 1) {
             path[0].transfer(destination, amount);
         }
     }
