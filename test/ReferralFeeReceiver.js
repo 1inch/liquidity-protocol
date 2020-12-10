@@ -9,11 +9,14 @@ const MooniswapFactory = artifacts.require('MooniswapFactory');
 const ReferralFeeReceiver = artifacts.require('ReferralFeeReceiver');
 const TokenMock = artifacts.require('TokenMock');
 
-contract.only('ReferralFeeReceiver', function ([wallet1, wallet2]) {
-    beforeEach(async function () {
+contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
+    before(async function () {
         this.DAI = await TokenMock.new('DAI', 'DAI', 18);
         this.token = await TokenMock.new('INCH', 'INCH', 18);
         this.deployer = await MooniswapDeployer.new();
+    });
+
+    beforeEach(async function () {
         this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, wallet1);
         this.feeReceiver = await ReferralFeeReceiver.new(this.token.address, this.factory.address);
         await this.factory.setReferralFeeReceiver(this.feeReceiver.address);
@@ -40,7 +43,7 @@ contract.only('ReferralFeeReceiver', function ([wallet1, wallet2]) {
         await timeIncreaseTo((await time.latest()).addn(86500));
     });
 
-    it('test', async function () {
+    it('should receive referral fee', async function () {
         await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
         await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
