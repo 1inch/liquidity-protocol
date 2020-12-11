@@ -46,7 +46,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     it('should receive referral fee', async function () {
         await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
+        await this.feeReceiver.freezeEpoch(this.mooniswap.address);
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
         await this.feeReceiver.trade(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address]);
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
@@ -72,20 +72,18 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
         expect(currentEpoch).to.be.bignumber.equal('1');
     });
 
-    it('should not freeze empty epoch', async function () {
-        await expectRevert(
-            this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
-            'Reward for token0 is too small',
-        );
+    it('should correctly process empty frozen epoch', async function () {
+        await this.feeReceiver.freezeEpoch(this.mooniswap.address);
+        await this.feeReceiver.trade(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address]);
+        const { firstUnprocessedEpoch, currentEpoch } = await this.feeReceiver.tokenInfo(this.mooniswap.address);
+        expect(firstUnprocessedEpoch).to.be.bignumber.equal('1');
+        expect(currentEpoch).to.be.bignumber.equal('1');
     });
 
     it('should not freeze twice', async function () {
         await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
-        await this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
-        await expectRevert(
-            this.feeReceiver.freezeEpoch(this.mooniswap.address, [constants.ZERO_ADDRESS, this.token.address], [this.DAI.address, constants.ZERO_ADDRESS, this.token.address]),
-            'Previous epoch is not finalized',
-        );
+        await this.feeReceiver.freezeEpoch(this.mooniswap.address);
+        await expectRevert(this.feeReceiver.freezeEpoch(this.mooniswap.address), 'Previous epoch is not finalized');
     });
 });
