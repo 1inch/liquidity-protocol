@@ -19,7 +19,7 @@ contract GovernanceFeeReceiver is Converter {
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
     }
 
-    function swap(IERC20[] memory path) external {
+    function swap(IERC20[] memory path) external validPath(path) {
         (uint256 amount,) = _maxAmountForSwap(path, path[0].uniBalanceOf(address(this)));
         uint256 result = _swap(path, amount, payable(address(rewards)));
         rewards.notifyRewardAmount(result);

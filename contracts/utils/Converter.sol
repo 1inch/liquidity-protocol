@@ -46,6 +46,10 @@ contract Converter is Ownable {
         require(path.length < 5, "Max path length is 4");
         require(path[path.length - 1] == inchToken, "Should swap to target token");
 
+        for (uint256 i = 1; i + 1 < path.length; i += 1) {
+            require(pathWhitelist[path[i]], "Token is not whitelisted");
+        }
+
         _;
     }
 
@@ -97,14 +101,9 @@ contract Converter is Ownable {
         }
     }
 
-    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination)
-        internal validPath(path) returns(uint256 amount)
+    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount)
     {
         amount = initialAmount;
-
-        for (uint256 i = 1; i + 1 < path.length; i += 1) {
-            require(pathWhitelist[path[i]], "Token is not whitelisted");
-        }
 
         for (uint256 i = 0; i + 1 < path.length; i += 1) {
             Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);

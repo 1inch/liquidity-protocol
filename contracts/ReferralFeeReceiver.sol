@@ -63,7 +63,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         token.currentEpoch = currentEpoch.add(1);
     }
 
-    function trade(Mooniswap mooniswap, IERC20[] memory path) external {
+    function trade(Mooniswap mooniswap, IERC20[] memory path) external validPath(path) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
         EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];
@@ -82,8 +82,12 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);
         if (returnAmount == 0) {
             // get rid of dust
-            require(availableBalance == amount, "availableBalance is not dust");
             if (availableBalance > 0) {
+                require(availableBalance == amount, "availableBalance is not dust");
+                for (uint256 i = 0; i + 1 < path.length; i += 1) {
+                    Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
+                    require(_validateSpread(_mooniswap), "Spread is too high");
+                }
                 if (path[0].isETH()) {
                     tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin
                 } else {
