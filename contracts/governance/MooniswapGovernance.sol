@@ -42,6 +42,18 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         return _decayPeriod.data.current();
     }
 
+    function virtualFee() external view returns(uint104, uint104, uint48) {
+        return (_fee.data.oldResult, _fee.data.result, _fee.data.time);
+    }
+
+    function virtualSlippageFee() external view returns(uint104, uint104, uint48) {
+        return (_slippageFee.data.oldResult, _slippageFee.data.result, _slippageFee.data.time);
+    }
+
+    function virtualDecayPeriod() external view returns(uint104, uint104, uint48) {
+        return (_decayPeriod.data.oldResult, _decayPeriod.data.result, _decayPeriod.data.time);
+    }
+
     function feeVotes(address user) external view returns(uint256) {
         return _fee.votes[user].get(mooniswapFactoryGovernance.defaultFee);
     }

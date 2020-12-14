@@ -52,12 +52,20 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _defaultFee.votes[user].get(_DEFAULT_FEE);
     }
 
+    function virtualDefaultFee() external view returns(uint104, uint104, uint48) {
+        return (_defaultFee.data.oldResult, _defaultFee.data.result, _defaultFee.data.time);
+    }
+
     function defaultSlippageFee() external view override returns(uint256) {
         return _defaultSlippageFee.data.current();
     }
 
     function defaultSlippageFeeVotes(address user) external view returns(uint256) {
         return _defaultSlippageFee.votes[user].get(_DEFAULT_SLIPPAGE_FEE);
+    }
+
+    function virtualDefaultSlippageFee() external view returns(uint104, uint104, uint48) {
+        return (_defaultSlippageFee.data.oldResult, _defaultSlippageFee.data.result, _defaultSlippageFee.data.time);
     }
 
     function defaultDecayPeriod() external view override returns(uint256) {
@@ -68,6 +76,10 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _defaultDecayPeriod.votes[user].get(_DEFAULT_DECAY_PERIOD);
     }
 
+    function virtualDefaultDecayPeriod() external view returns(uint104, uint104, uint48) {
+        return (_defaultDecayPeriod.data.oldResult, _defaultDecayPeriod.data.result, _defaultDecayPeriod.data.time);
+    }
+
     function referralShare() external view override returns(uint256) {
         return _referralShare.data.current();
     }
@@ -76,12 +88,20 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _referralShare.votes[user].get(_DEFAULT_REFERRAL_SHARE);
     }
 
+    function virtualReferralShare() external view returns(uint104, uint104, uint48) {
+        return (_referralShare.data.oldResult, _referralShare.data.result, _referralShare.data.time);
+    }
+
     function governanceShare() external view override returns(uint256) {
         return _governanceShare.data.current();
     }
 
     function governanceShareVotes(address user) external view returns(uint256) {
         return _governanceShare.votes[user].get(_DEFAULT_GOVERNANCE_SHARE);
+    }
+
+    function virtualGovernanceShare() external view returns(uint104, uint104, uint48) {
+        return (_governanceShare.data.oldResult, _governanceShare.data.result, _governanceShare.data.time);
     }
 
     function setGovernanceFeeReceiver(address newGovernanceFeeReceiver) external onlyOwner {
