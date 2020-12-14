@@ -46,7 +46,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     }
 
     function notifyFor(address account) external {
-        _notifyFor(account, balanceOf(msg.sender));
+        _notifyFor(account, balanceOf(account));
     }
 
     function batchNotifyFor(address[] memory accounts) external {
