@@ -4,10 +4,11 @@ const { timeIncreaseTo } = require('../helpers/utils.js');
 
 const MooniswapFactoryGovernance = artifacts.require('MooniswapFactoryGovernance');
 
-contract('MooniswapFactoryGovernance', function ([_, wallet1, wallet2]) {
+contract('MooniswapFactoryGovernance', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
         this.mooniswapFactoryGovernance = await MooniswapFactoryGovernance.new(_);
         await this.mooniswapFactoryGovernance.notifyStakeChanged(_, ether('1'));
+        await this.mooniswapFactoryGovernance.notifyStakeChanged(wallet3, ether('1'));
     });
 
     describe('fee', async function () {
@@ -215,11 +216,11 @@ contract('MooniswapFactoryGovernance', function ([_, wallet1, wallet2]) {
 
             await timeIncreaseTo((await time.latest()).addn(86500));
 
-            expect(await this.mooniswapFactoryGovernance.defaultFee()).to.be.bignumber.equal(ether('0.03'));
-            expect(await this.mooniswapFactoryGovernance.defaultSlippageFee()).to.be.bignumber.equal(ether('0.4'));
-            expect(await this.mooniswapFactoryGovernance.defaultDecayPeriod()).to.be.bignumber.equal('160');
-            expect(await this.mooniswapFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.04'));
-            expect(await this.mooniswapFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.07'));
+            expect(await this.mooniswapFactoryGovernance.defaultFee()).to.be.bignumber.equal(ether('0.045'));
+            expect(await this.mooniswapFactoryGovernance.defaultSlippageFee()).to.be.bignumber.equal(ether('0.55'));
+            expect(await this.mooniswapFactoryGovernance.defaultDecayPeriod()).to.be.bignumber.equal('90');
+            expect(await this.mooniswapFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.035'));
+            expect(await this.mooniswapFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.105'));
 
             await this.mooniswapFactoryGovernance.defaultFeeVote(ether('0.09'));
             await this.mooniswapFactoryGovernance.defaultSlippageFeeVote(ether('0.4'));
@@ -244,6 +245,20 @@ contract('MooniswapFactoryGovernance', function ([_, wallet1, wallet2]) {
             expect(await this.mooniswapFactoryGovernance.defaultDecayPeriod()).to.be.bignumber.equal('330');
             expect(await this.mooniswapFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.135'));
             expect(await this.mooniswapFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.15'));
+
+            await this.mooniswapFactoryGovernance.discardDefaultFeeVote();
+            await this.mooniswapFactoryGovernance.discardDefaultSlippageFeeVote();
+            await this.mooniswapFactoryGovernance.discardDefaultDecayPeriodVote();
+            await this.mooniswapFactoryGovernance.discardReferralShareVote();
+            await this.mooniswapFactoryGovernance.discardGovernanceShareVote();
+
+            await timeIncreaseTo((await time.latest()).addn(86500));
+
+            expect(await this.mooniswapFactoryGovernance.defaultFee()).to.be.bignumber.equal(ether('0.03'));
+            expect(await this.mooniswapFactoryGovernance.defaultSlippageFee()).to.be.bignumber.equal(ether('0.6'));
+            expect(await this.mooniswapFactoryGovernance.defaultDecayPeriod()).to.be.bignumber.equal('60');
+            expect(await this.mooniswapFactoryGovernance.referralShare()).to.be.bignumber.equal(ether('0.04'));
+            expect(await this.mooniswapFactoryGovernance.governanceShare()).to.be.bignumber.equal(ether('0.09'));
         });
     });
 });
