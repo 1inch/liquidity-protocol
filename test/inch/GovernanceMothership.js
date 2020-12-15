@@ -66,14 +66,14 @@ contract('GovernanceMothership', function ([wallet1, wallet2]) {
     describe('notify new module', async function () {
         beforeEach(async function () {
             await this.token.mint(wallet2, ether('10'));
-            await this.token.approve(this.governanceMothership.address, ether('10'), {from: wallet2});
-            await this.governanceMothership.stake(ether('10'), {from: wallet2});
+            await this.token.approve(this.governanceMothership.address, ether('10'), { from: wallet2 });
+            await this.governanceMothership.stake(ether('10'), { from: wallet2 });
             this.rewards = await GovernanceModuleMock.new(this.governanceMothership.address);
             this.governanceMothership.addModule(this.rewards.address);
         });
 
         it('should notify', async function () {
-            await this.governanceMothership.notify({from: wallet2});
+            await this.governanceMothership.notify({ from: wallet2 });
             expect(await this.rewards.balanceOf(wallet2)).to.be.bignumber.equal(ether('10'));
             expect(await this.rewards.totalSupply()).to.be.bignumber.equal(ether('10'));
         });
