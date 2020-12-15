@@ -70,12 +70,7 @@ contract GovernanceRewards is RewardDistributionRecipient, BaseGovernanceModule,
     }
 
     function _notifyStakeChanged(address account, uint256 newBalance) internal override updateReward(account) {
-        uint256 balance = balanceOf(account);
-        if (newBalance > balance) {
-            _mint(account, newBalance.sub(balance));
-        } else if (newBalance < balance) {
-            _burn(account, balance.sub(newBalance));
-        }
+        _set(account, newBalance);
     }
 
     function getReward() external updateReward(msg.sender) {

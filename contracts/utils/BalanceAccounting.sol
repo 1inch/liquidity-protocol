@@ -28,4 +28,12 @@ contract BalanceAccounting {
         _balances[account] = _balances[account].sub(amount, "Burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
     }
+
+    function _set(address account, uint256 amount) internal virtual returns(uint256 oldAmount) {
+        oldAmount = _balances[account];
+        if (oldAmount != amount) {
+            _balances[account] = amount;
+            _totalSupply = _totalSupply.add(amount).sub(oldAmount);
+        }
+    }
 }
