@@ -2,14 +2,14 @@
 
 pragma solidity ^0.6.0;
 
+import "../utils/BaseRewards.sol";
 import "../utils/Converter.sol";
-import "../utils/RewardDistributionRecipient.sol";
 
 
 contract GovernanceFeeReceiver is Converter {
-    RewardDistributionRecipient public immutable rewards;
+    BaseRewards public immutable rewards;
 
-    constructor(IERC20 _inchToken, RewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
+    constructor(IERC20 _inchToken, BaseRewards _rewards, IMooniswapFactory _mooniswapFactory)
         public Converter(_inchToken, _mooniswapFactory)
     {
         rewards = _rewards;
