@@ -12,7 +12,7 @@ import "../MooniswapConstants.sol";
 abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
-    using LiquidVoting for LiquidVoting.VirtualData;
+    using VirtualVote for VirtualVote.Data;
 
     event FeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);

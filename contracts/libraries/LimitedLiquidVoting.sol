@@ -7,7 +7,7 @@ import "./VirtualVote.sol";
 import "./Vote.sol";
 
 
-library LiquidVoting {
+library LimitedLiquidVoting {
     using SafeMath for uint256;
     using Vote for Vote.Data;
     using VirtualVote for VirtualVote.Data;
@@ -15,75 +15,71 @@ library LiquidVoting {
     struct Data {
         VirtualVote.Data data;
         uint256 _weightedSum;
-        uint256 _defaultVotes;
+        uint256 _votedTotalSupply;
         mapping(address => Vote.Data) votes;
     }
 
     function updateVote(
-        LiquidVoting.Data storage self,
+        LimitedLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
         uint256 balance,
-        uint256 totalSupply,
         uint256 defaultVote,
         function(address, uint256, bool, uint256) emitEvent
     ) internal {
-        return _update(self, user, oldVote, newVote, balance, balance, totalSupply, defaultVote, emitEvent);
+        return _update(self, user, oldVote, newVote, balance, balance, defaultVote, emitEvent);
     }
 
     function updateBalance(
-        LiquidVoting.Data storage self,
+        LimitedLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         uint256 oldBalance,
         uint256 newBalance,
-        uint256 newTotalSupply,
         uint256 defaultVote,
         function(address, uint256, bool, uint256) emitEvent
     ) internal {
-        return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, newTotalSupply, defaultVote, emitEvent);
+        return _update(self, user, oldVote, newBalance == 0 ? Vote.init() : oldVote, oldBalance, newBalance, defaultVote, emitEvent);
     }
 
     function _update(
-        LiquidVoting.Data storage self,
+        LimitedLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
         uint256 oldBalance,
         uint256 newBalance,
-        uint256 newTotalSupply,
         uint256 defaultVote,
         function(address, uint256, bool, uint256) emitEvent
     ) private {
         uint256 oldWeightedSum = self._weightedSum;
         uint256 newWeightedSum = oldWeightedSum;
-        uint256 oldDefaultVotes = self._defaultVotes;
-        uint256 newDefaultVotes = oldDefaultVotes;
+        uint256 oldVotedTotalSupply = self._votedTotalSupply;
+        uint256 newVotedTotalSupply = oldVotedTotalSupply;
 
-        if (oldVote.isDefault()) {
-            newDefaultVotes = newDefaultVotes.sub(oldBalance);
-        } else {
+        if (!oldVote.isDefault()) {
             newWeightedSum = newWeightedSum.sub(oldBalance.mul(oldVote.get(defaultVote)));
+            newVotedTotalSupply = oldVotedTotalSupply.sub(oldBalance);
         }
 
-        if (newVote.isDefault()) {
-            newDefaultVotes = newDefaultVotes.add(newBalance);
-        } else {
+        if (!newVote.isDefault()) {
             newWeightedSum = newWeightedSum.add(newBalance.mul(newVote.get(defaultVote)));
+            newVotedTotalSupply = oldVotedTotalSupply.add(newBalance);
         }
 
         if (newWeightedSum != oldWeightedSum) {
             self._weightedSum = newWeightedSum;
         }
 
-        if (newDefaultVotes != oldDefaultVotes) {
-            self._defaultVotes = newDefaultVotes;
+        if (newVotedTotalSupply != oldVotedTotalSupply) {
+            self._votedTotalSupply = newVotedTotalSupply;
         }
 
         {
-            uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.add(newDefaultVotes.mul(defaultVote)).div(newTotalSupply);
+            uint256 newResult = newVotedTotalSupply == 0 ? defaultVote : newWeightedSum.div(newVotedTotalSupply);
             VirtualVote.Data memory data = self.data;
+
             if (newResult != data.result) {
                 self.data.oldResult = uint104(data.current());
                 self.data.result = uint104(newResult);
