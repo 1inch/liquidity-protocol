@@ -9,8 +9,6 @@ const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 const POOL_OWNER = {
     kovan: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     'kovan-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    test: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    coverage: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     mainnet: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
     'mainnet-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
@@ -24,6 +22,11 @@ const TOKEN = {
 
 module.exports = function (deployer, network) {
     return deployer.then(async () => {
+        if (network == 'test' || network == 'coverage') {
+            // migrations are not required for testing
+            return;
+        }
+
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = await deployer.deploy(GovernanceMothership, token.address);
 

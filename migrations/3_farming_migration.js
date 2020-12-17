@@ -1,5 +1,3 @@
-const { ether } = require('@openzeppelin/test-helpers');
-
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 const FarmingRewards = artifacts.require('./inch/farming/FarmingRewards.sol');
 
@@ -8,6 +6,8 @@ const TOKEN = {
     'kovan-fork': '0x9F6A694123e5599a07f984eb8c0F3A475F553A03',
     mainnet: '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
     'mainnet-fork': '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
+    test: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    coverage: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
 };
 
 const POOLS = {
@@ -26,15 +26,20 @@ const REWARD_DISTRIBUTION = {
 
 const REWARDS = {
     mainnet: {
-        'ETH-INCH': ether('20000'),
+        'ETH-INCH': '20000000000000000000000',
     },
     'mainnet-fork': {
-        'ETH-INCH': ether('20000'),
+        'ETH-INCH': '20000000000000000000000',
     },
 };
 
 module.exports = function (deployer, network) {
     return deployer.then(async () => {
+        if (network == 'test' || network == 'coverage') {
+            // migrations are not required for testing
+            return;
+        }
+
         const token = await TokenMock.at(TOKEN[network]);
 
         for (const [poolName, poolAddr] of Object.entries(POOLS[network])) {
