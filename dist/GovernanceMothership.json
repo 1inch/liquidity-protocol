@@ -272,7 +272,7 @@
         "id": 5114,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 9407,
+        "sourceUnit": 9410,
         "src": "58:52:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -283,7 +283,7 @@
         "id": 5115,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 9676,
+        "sourceUnit": 9679,
         "src": "111:51:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -294,7 +294,7 @@
         "id": 5116,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 10261,
+        "sourceUnit": 10264,
         "src": "163:56:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -305,7 +305,7 @@
         "id": 5117,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 11073,
+        "sourceUnit": 11076,
         "src": "220:57:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -316,7 +316,7 @@
         "id": 5118,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 6172,
+        "sourceUnit": 6175,
         "src": "278:45:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -327,7 +327,7 @@
         "id": 5119,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 8346,
+        "sourceUnit": 8349,
         "src": "324:40:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -342,10 +342,10 @@
               "id": 5120,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9406,
+              "referencedDeclaration": 9409,
               "src": "400:7:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$9406",
+                "typeIdentifier": "t_contract$_Ownable_$9409",
                 "typeString": "contract Ownable"
               }
             },
@@ -360,10 +360,10 @@
               "id": 5122,
               "name": "BalanceAccounting",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8345,
+              "referencedDeclaration": 8348,
               "src": "409:17:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BalanceAccounting_$8345",
+                "typeIdentifier": "t_contract$_BalanceAccounting_$8348",
                 "typeString": "contract BalanceAccounting"
               }
             },
@@ -373,9 +373,9 @@
           }
         ],
         "contractDependencies": [
-          8345,
-          9297,
-          9406
+          8348,
+          9300,
+          9409
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -383,9 +383,9 @@
         "id": 5402,
         "linearizedBaseContracts": [
           5402,
-          8345,
-          9406,
-          9297
+          8348,
+          9409,
+          9300
         ],
         "name": "GovernanceMothership",
         "nodeType": "ContractDefinition",
@@ -397,10 +397,10 @@
               "id": 5124,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9675,
+              "referencedDeclaration": 9678,
               "src": "439:8:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$9675",
+                "typeIdentifier": "t_contract$_SafeMath_$9678",
                 "typeString": "library SafeMath"
               }
             },
@@ -424,10 +424,10 @@
               "id": 5127,
               "name": "EnumerableSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11072,
+              "referencedDeclaration": 11075,
               "src": "471:13:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EnumerableSet_$11072",
+                "typeIdentifier": "t_contract$_EnumerableSet_$11075",
                 "typeString": "library EnumerableSet"
               }
             },
@@ -438,10 +438,10 @@
               "id": 5128,
               "name": "EnumerableSet.AddressSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10868,
+              "referencedDeclaration": 10871,
               "src": "489:24:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AddressSet_$10868_storage_ptr",
+                "typeIdentifier": "t_struct$_AddressSet_$10871_storage_ptr",
                 "typeString": "struct EnumerableSet.AddressSet"
               }
             }
@@ -549,7 +549,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$10260",
+              "typeIdentifier": "t_contract$_IERC20_$10263",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -557,10 +557,10 @@
               "id": 5138,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10260,
+              "referencedDeclaration": 10263,
               "src": "614:6:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$10260",
+                "typeIdentifier": "t_contract$_IERC20_$10263",
                 "typeString": "contract IERC20"
               }
             },
@@ -579,7 +579,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
               "typeString": "struct EnumerableSet.AddressSet"
             },
             "typeName": {
@@ -587,10 +587,10 @@
               "id": 5140,
               "name": "EnumerableSet.AddressSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10868,
+              "referencedDeclaration": 10871,
               "src": "654:24:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AddressSet_$10868_storage_ptr",
+                "typeIdentifier": "t_struct$_AddressSet_$10871_storage_ptr",
                 "typeString": "struct EnumerableSet.AddressSet"
               }
             },
@@ -620,7 +620,7 @@
                       "referencedDeclaration": 5139,
                       "src": "750:9:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -635,13 +635,13 @@
                       "referencedDeclaration": 5143,
                       "src": "762:10:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "750:22:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -675,7 +675,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IERC20_$10260",
+                    "typeIdentifier": "t_contract$_IERC20_$10263",
                     "typeString": "contract IERC20"
                   },
                   "typeName": {
@@ -683,10 +683,10 @@
                     "id": 5142,
                     "name": "IERC20",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10260,
+                    "referencedDeclaration": 10263,
                     "src": "714:6:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -963,7 +963,7 @@
                         "referencedDeclaration": 5139,
                         "src": "895:9:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$10260",
+                          "typeIdentifier": "t_contract$_IERC20_$10263",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -974,7 +974,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10241,
+                      "referencedDeclaration": 10244,
                       "src": "895:22:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -1062,7 +1062,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8280,
+                      "referencedDeclaration": 8283,
                       "src": "962:5:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -1165,7 +1165,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1020:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -1477,7 +1477,7 @@
                         "referencedDeclaration": 5139,
                         "src": "1169:9:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$10260",
+                          "typeIdentifier": "t_contract$_IERC20_$10263",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -1488,7 +1488,7 @@
                       "lValueRequested": false,
                       "memberName": "transfer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10209,
+                      "referencedDeclaration": 10212,
                       "src": "1169:18:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -1576,7 +1576,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8307,
+                      "referencedDeclaration": 8310,
                       "src": "1217:5:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -1679,7 +1679,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1275:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -1884,7 +1884,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1370:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -2028,7 +2028,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1480:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -2206,7 +2206,7 @@
                         "referencedDeclaration": 5141,
                         "src": "1606:8:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                          "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                           "typeString": "struct EnumerableSet.AddressSet storage ref"
                         }
                       },
@@ -2217,10 +2217,10 @@
                       "lValueRequested": false,
                       "memberName": "length",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10951,
+                      "referencedDeclaration": 10954,
                       "src": "1606:15:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                         "typeString": "function (struct EnumerableSet.AddressSet storage pointer) view returns (uint256)"
                       }
                     },
@@ -2488,7 +2488,7 @@
                               "name": "balanceOf",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 8254,
+                              "referencedDeclaration": 8257,
                               "src": "1775:9:11",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -2761,7 +2761,7 @@
                                       "referencedDeclaration": 5141,
                                       "src": "1893:8:11",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                                        "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                                         "typeString": "struct EnumerableSet.AddressSet storage ref"
                                       }
                                     },
@@ -2772,10 +2772,10 @@
                                     "lValueRequested": false,
                                     "memberName": "at",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 10974,
+                                    "referencedDeclaration": 10977,
                                     "src": "1893:11:11",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                                       "typeString": "function (struct EnumerableSet.AddressSet storage pointer,uint256) view returns (address)"
                                     }
                                   },
@@ -2806,10 +2806,10 @@
                                 "name": "IGovernanceModule",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6171,
+                                "referencedDeclaration": 6174,
                                 "src": "1875:17:11",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6171_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6174_$",
                                   "typeString": "type(contract IGovernanceModule)"
                                 }
                               },
@@ -2824,7 +2824,7 @@
                               "src": "1875:33:11",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IGovernanceModule_$6171",
+                                "typeIdentifier": "t_contract$_IGovernanceModule_$6174",
                                 "typeString": "contract IGovernanceModule"
                               }
                             },
@@ -2835,7 +2835,7 @@
                             "lValueRequested": false,
                             "memberName": "notifyStakesChanged",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 6170,
+                            "referencedDeclaration": 6173,
                             "src": "1875:53:11",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_array$_t_uint256_$dyn_memory_ptr_$returns$__$",
@@ -3114,7 +3114,7 @@
                             "referencedDeclaration": 5141,
                             "src": "2043:8:11",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                               "typeString": "struct EnumerableSet.AddressSet storage ref"
                             }
                           },
@@ -3125,10 +3125,10 @@
                           "lValueRequested": false,
                           "memberName": "add",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10891,
+                          "referencedDeclaration": 10894,
                           "src": "2043:12:11",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10868_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10871_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                             "typeString": "function (struct EnumerableSet.AddressSet storage pointer,address) returns (bool)"
                           }
                         },
@@ -3282,7 +3282,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9355,
+                  "referencedDeclaration": 9358,
                   "src": "2015:9:11",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3387,7 +3387,7 @@
                             "referencedDeclaration": 5141,
                             "src": "2213:8:11",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                               "typeString": "struct EnumerableSet.AddressSet storage ref"
                             }
                           },
@@ -3398,10 +3398,10 @@
                           "lValueRequested": false,
                           "memberName": "remove",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10914,
+                          "referencedDeclaration": 10917,
                           "src": "2213:15:11",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10868_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10871_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                             "typeString": "function (struct EnumerableSet.AddressSet storage pointer,address) returns (bool)"
                           }
                         },
@@ -3555,7 +3555,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9355,
+                  "referencedDeclaration": 9358,
                   "src": "2185:9:11",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3672,7 +3672,7 @@
                         "referencedDeclaration": 5141,
                         "src": "2410:8:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                          "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                           "typeString": "struct EnumerableSet.AddressSet storage ref"
                         }
                       },
@@ -3683,10 +3683,10 @@
                       "lValueRequested": false,
                       "memberName": "length",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10951,
+                      "referencedDeclaration": 10954,
                       "src": "2410:15:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                         "typeString": "function (struct EnumerableSet.AddressSet storage pointer) view returns (uint256)"
                       }
                     },
@@ -3792,7 +3792,7 @@
                                       "referencedDeclaration": 5141,
                                       "src": "2513:8:11",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                                        "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                                         "typeString": "struct EnumerableSet.AddressSet storage ref"
                                       }
                                     },
@@ -3803,10 +3803,10 @@
                                     "lValueRequested": false,
                                     "memberName": "at",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 10974,
+                                    "referencedDeclaration": 10977,
                                     "src": "2513:11:11",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                                       "typeString": "function (struct EnumerableSet.AddressSet storage pointer,uint256) view returns (address)"
                                     }
                                   },
@@ -3837,10 +3837,10 @@
                                 "name": "IGovernanceModule",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6171,
+                                "referencedDeclaration": 6174,
                                 "src": "2495:17:11",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6171_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6174_$",
                                   "typeString": "type(contract IGovernanceModule)"
                                 }
                               },
@@ -3855,7 +3855,7 @@
                               "src": "2495:33:11",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IGovernanceModule_$6171",
+                                "typeIdentifier": "t_contract$_IGovernanceModule_$6174",
                                 "typeString": "contract IGovernanceModule"
                               }
                             },
@@ -3866,7 +3866,7 @@
                             "lValueRequested": false,
                             "memberName": "notifyStakeChanged",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 6161,
+                            "referencedDeclaration": 6164,
                             "src": "2495:52:11",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -4154,7 +4154,7 @@
         "id": 5114,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 9407,
+        "sourceUnit": 9410,
         "src": "58:52:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4165,7 +4165,7 @@
         "id": 5115,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 9676,
+        "sourceUnit": 9679,
         "src": "111:51:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4176,7 +4176,7 @@
         "id": 5116,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 10261,
+        "sourceUnit": 10264,
         "src": "163:56:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4187,7 +4187,7 @@
         "id": 5117,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 11073,
+        "sourceUnit": 11076,
         "src": "220:57:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4198,7 +4198,7 @@
         "id": 5118,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 6172,
+        "sourceUnit": 6175,
         "src": "278:45:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4209,7 +4209,7 @@
         "id": 5119,
         "nodeType": "ImportDirective",
         "scope": 5403,
-        "sourceUnit": 8346,
+        "sourceUnit": 8349,
         "src": "324:40:11",
         "symbolAliases": [],
         "unitAlias": ""
@@ -4224,10 +4224,10 @@
               "id": 5120,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9406,
+              "referencedDeclaration": 9409,
               "src": "400:7:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$9406",
+                "typeIdentifier": "t_contract$_Ownable_$9409",
                 "typeString": "contract Ownable"
               }
             },
@@ -4242,10 +4242,10 @@
               "id": 5122,
               "name": "BalanceAccounting",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8345,
+              "referencedDeclaration": 8348,
               "src": "409:17:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BalanceAccounting_$8345",
+                "typeIdentifier": "t_contract$_BalanceAccounting_$8348",
                 "typeString": "contract BalanceAccounting"
               }
             },
@@ -4255,9 +4255,9 @@
           }
         ],
         "contractDependencies": [
-          8345,
-          9297,
-          9406
+          8348,
+          9300,
+          9409
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -4265,9 +4265,9 @@
         "id": 5402,
         "linearizedBaseContracts": [
           5402,
-          8345,
-          9406,
-          9297
+          8348,
+          9409,
+          9300
         ],
         "name": "GovernanceMothership",
         "nodeType": "ContractDefinition",
@@ -4279,10 +4279,10 @@
               "id": 5124,
               "name": "SafeMath",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9675,
+              "referencedDeclaration": 9678,
               "src": "439:8:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_SafeMath_$9675",
+                "typeIdentifier": "t_contract$_SafeMath_$9678",
                 "typeString": "library SafeMath"
               }
             },
@@ -4306,10 +4306,10 @@
               "id": 5127,
               "name": "EnumerableSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11072,
+              "referencedDeclaration": 11075,
               "src": "471:13:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EnumerableSet_$11072",
+                "typeIdentifier": "t_contract$_EnumerableSet_$11075",
                 "typeString": "library EnumerableSet"
               }
             },
@@ -4320,10 +4320,10 @@
               "id": 5128,
               "name": "EnumerableSet.AddressSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10868,
+              "referencedDeclaration": 10871,
               "src": "489:24:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AddressSet_$10868_storage_ptr",
+                "typeIdentifier": "t_struct$_AddressSet_$10871_storage_ptr",
                 "typeString": "struct EnumerableSet.AddressSet"
               }
             }
@@ -4431,7 +4431,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$10260",
+              "typeIdentifier": "t_contract$_IERC20_$10263",
               "typeString": "contract IERC20"
             },
             "typeName": {
@@ -4439,10 +4439,10 @@
               "id": 5138,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10260,
+              "referencedDeclaration": 10263,
               "src": "614:6:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$10260",
+                "typeIdentifier": "t_contract$_IERC20_$10263",
                 "typeString": "contract IERC20"
               }
             },
@@ -4461,7 +4461,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
               "typeString": "struct EnumerableSet.AddressSet"
             },
             "typeName": {
@@ -4469,10 +4469,10 @@
               "id": 5140,
               "name": "EnumerableSet.AddressSet",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 10868,
+              "referencedDeclaration": 10871,
               "src": "654:24:11",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_AddressSet_$10868_storage_ptr",
+                "typeIdentifier": "t_struct$_AddressSet_$10871_storage_ptr",
                 "typeString": "struct EnumerableSet.AddressSet"
               }
             },
@@ -4502,7 +4502,7 @@
                       "referencedDeclaration": 5139,
                       "src": "750:9:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -4517,13 +4517,13 @@
                       "referencedDeclaration": 5143,
                       "src": "762:10:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "750:22:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -4557,7 +4557,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IERC20_$10260",
+                    "typeIdentifier": "t_contract$_IERC20_$10263",
                     "typeString": "contract IERC20"
                   },
                   "typeName": {
@@ -4565,10 +4565,10 @@
                     "id": 5142,
                     "name": "IERC20",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10260,
+                    "referencedDeclaration": 10263,
                     "src": "714:6:11",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -4845,7 +4845,7 @@
                         "referencedDeclaration": 5139,
                         "src": "895:9:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$10260",
+                          "typeIdentifier": "t_contract$_IERC20_$10263",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -4856,7 +4856,7 @@
                       "lValueRequested": false,
                       "memberName": "transferFrom",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10241,
+                      "referencedDeclaration": 10244,
                       "src": "895:22:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -4944,7 +4944,7 @@
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8280,
+                      "referencedDeclaration": 8283,
                       "src": "962:5:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -5047,7 +5047,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1020:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -5359,7 +5359,7 @@
                         "referencedDeclaration": 5139,
                         "src": "1169:9:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_IERC20_$10260",
+                          "typeIdentifier": "t_contract$_IERC20_$10263",
                           "typeString": "contract IERC20"
                         }
                       },
@@ -5370,7 +5370,7 @@
                       "lValueRequested": false,
                       "memberName": "transfer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10209,
+                      "referencedDeclaration": 10212,
                       "src": "1169:18:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -5458,7 +5458,7 @@
                       "name": "_burn",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8307,
+                      "referencedDeclaration": 8310,
                       "src": "1217:5:11",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -5561,7 +5561,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1275:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -5766,7 +5766,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1370:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -5910,7 +5910,7 @@
                           "name": "balanceOf",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8254,
+                          "referencedDeclaration": 8257,
                           "src": "1480:9:11",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -6088,7 +6088,7 @@
                         "referencedDeclaration": 5141,
                         "src": "1606:8:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                          "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                           "typeString": "struct EnumerableSet.AddressSet storage ref"
                         }
                       },
@@ -6099,10 +6099,10 @@
                       "lValueRequested": false,
                       "memberName": "length",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10951,
+                      "referencedDeclaration": 10954,
                       "src": "1606:15:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                         "typeString": "function (struct EnumerableSet.AddressSet storage pointer) view returns (uint256)"
                       }
                     },
@@ -6370,7 +6370,7 @@
                               "name": "balanceOf",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 8254,
+                              "referencedDeclaration": 8257,
                               "src": "1775:9:11",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_internal_view$_t_address_$returns$_t_uint256_$",
@@ -6643,7 +6643,7 @@
                                       "referencedDeclaration": 5141,
                                       "src": "1893:8:11",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                                        "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                                         "typeString": "struct EnumerableSet.AddressSet storage ref"
                                       }
                                     },
@@ -6654,10 +6654,10 @@
                                     "lValueRequested": false,
                                     "memberName": "at",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 10974,
+                                    "referencedDeclaration": 10977,
                                     "src": "1893:11:11",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                                       "typeString": "function (struct EnumerableSet.AddressSet storage pointer,uint256) view returns (address)"
                                     }
                                   },
@@ -6688,10 +6688,10 @@
                                 "name": "IGovernanceModule",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6171,
+                                "referencedDeclaration": 6174,
                                 "src": "1875:17:11",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6171_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6174_$",
                                   "typeString": "type(contract IGovernanceModule)"
                                 }
                               },
@@ -6706,7 +6706,7 @@
                               "src": "1875:33:11",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IGovernanceModule_$6171",
+                                "typeIdentifier": "t_contract$_IGovernanceModule_$6174",
                                 "typeString": "contract IGovernanceModule"
                               }
                             },
@@ -6717,7 +6717,7 @@
                             "lValueRequested": false,
                             "memberName": "notifyStakesChanged",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 6170,
+                            "referencedDeclaration": 6173,
                             "src": "1875:53:11",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_array$_t_uint256_$dyn_memory_ptr_$returns$__$",
@@ -6996,7 +6996,7 @@
                             "referencedDeclaration": 5141,
                             "src": "2043:8:11",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                               "typeString": "struct EnumerableSet.AddressSet storage ref"
                             }
                           },
@@ -7007,10 +7007,10 @@
                           "lValueRequested": false,
                           "memberName": "add",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10891,
+                          "referencedDeclaration": 10894,
                           "src": "2043:12:11",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10868_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10871_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                             "typeString": "function (struct EnumerableSet.AddressSet storage pointer,address) returns (bool)"
                           }
                         },
@@ -7164,7 +7164,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9355,
+                  "referencedDeclaration": 9358,
                   "src": "2015:9:11",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -7269,7 +7269,7 @@
                             "referencedDeclaration": 5141,
                             "src": "2213:8:11",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                              "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                               "typeString": "struct EnumerableSet.AddressSet storage ref"
                             }
                           },
@@ -7280,10 +7280,10 @@
                           "lValueRequested": false,
                           "memberName": "remove",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 10914,
+                          "referencedDeclaration": 10917,
                           "src": "2213:15:11",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10868_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                            "typeIdentifier": "t_function_internal_nonpayable$_t_struct$_AddressSet_$10871_storage_ptr_$_t_address_$returns$_t_bool_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                             "typeString": "function (struct EnumerableSet.AddressSet storage pointer,address) returns (bool)"
                           }
                         },
@@ -7437,7 +7437,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9355,
+                  "referencedDeclaration": 9358,
                   "src": "2185:9:11",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -7554,7 +7554,7 @@
                         "referencedDeclaration": 5141,
                         "src": "2410:8:11",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                          "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                           "typeString": "struct EnumerableSet.AddressSet storage ref"
                         }
                       },
@@ -7565,10 +7565,10 @@
                       "lValueRequested": false,
                       "memberName": "length",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 10951,
+                      "referencedDeclaration": 10954,
                       "src": "2410:15:11",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$returns$_t_uint256_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                         "typeString": "function (struct EnumerableSet.AddressSet storage pointer) view returns (uint256)"
                       }
                     },
@@ -7674,7 +7674,7 @@
                                       "referencedDeclaration": 5141,
                                       "src": "2513:8:11",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_struct$_AddressSet_$10868_storage",
+                                        "typeIdentifier": "t_struct$_AddressSet_$10871_storage",
                                         "typeString": "struct EnumerableSet.AddressSet storage ref"
                                       }
                                     },
@@ -7685,10 +7685,10 @@
                                     "lValueRequested": false,
                                     "memberName": "at",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 10974,
+                                    "referencedDeclaration": 10977,
                                     "src": "2513:11:11",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10868_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10868_storage_ptr_$",
+                                      "typeIdentifier": "t_function_internal_view$_t_struct$_AddressSet_$10871_storage_ptr_$_t_uint256_$returns$_t_address_$bound_to$_t_struct$_AddressSet_$10871_storage_ptr_$",
                                       "typeString": "function (struct EnumerableSet.AddressSet storage pointer,uint256) view returns (address)"
                                     }
                                   },
@@ -7719,10 +7719,10 @@
                                 "name": "IGovernanceModule",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 6171,
+                                "referencedDeclaration": 6174,
                                 "src": "2495:17:11",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6171_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IGovernanceModule_$6174_$",
                                   "typeString": "type(contract IGovernanceModule)"
                                 }
                               },
@@ -7737,7 +7737,7 @@
                               "src": "2495:33:11",
                               "tryCall": false,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_IGovernanceModule_$6171",
+                                "typeIdentifier": "t_contract$_IGovernanceModule_$6174",
                                 "typeString": "contract IGovernanceModule"
                               }
                             },
@@ -7748,7 +7748,7 @@
                             "lValueRequested": false,
                             "memberName": "notifyStakeChanged",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 6161,
+                            "referencedDeclaration": 6164,
                             "src": "2495:52:11",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$__$",
@@ -8014,7 +8014,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-12-17T09:38:26.394Z",
+  "updatedAt": "2020-12-17T12:14:22.087Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

@@ -199,7 +199,7 @@
         "start": 2269
       }
     ],
-    "8683": [
+    "8686": [
       {
         "length": 32,
         "start": 1711
@@ -209,7 +209,7 @@
         "start": 2305
       }
     ],
-    "8685": [
+    "8688": [
       {
         "length": 32,
         "start": 1487
@@ -256,7 +256,7 @@
         "id": 3188,
         "nodeType": "ImportDirective",
         "scope": 3284,
-        "sourceUnit": 8650,
+        "sourceUnit": 8653,
         "src": "58:34:7",
         "symbolAliases": [],
         "unitAlias": ""
@@ -267,7 +267,7 @@
         "id": 3189,
         "nodeType": "ImportDirective",
         "scope": 3284,
-        "sourceUnit": 9275,
+        "sourceUnit": 9278,
         "src": "93:32:7",
         "symbolAliases": [],
         "unitAlias": ""
@@ -282,10 +282,10 @@
               "id": 3190,
               "name": "Converter",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9274,
+              "referencedDeclaration": 9277,
               "src": "162:9:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Converter_$9274",
+                "typeIdentifier": "t_contract$_Converter_$9277",
                 "typeString": "contract Converter"
               }
             },
@@ -295,9 +295,9 @@
           }
         ],
         "contractDependencies": [
-          9274,
-          9297,
-          9406
+          9277,
+          9300,
+          9409
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -305,9 +305,9 @@
         "id": 3283,
         "linearizedBaseContracts": [
           3283,
-          9274,
-          9406,
-          9297
+          9277,
+          9409,
+          9300
         ],
         "name": "GovernanceFeeReceiver",
         "nodeType": "ContractDefinition",
@@ -325,7 +325,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_BaseRewards_$8649",
+              "typeIdentifier": "t_contract$_BaseRewards_$8652",
               "typeString": "contract BaseRewards"
             },
             "typeName": {
@@ -333,10 +333,10 @@
               "id": 3192,
               "name": "BaseRewards",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8649,
+              "referencedDeclaration": 8652,
               "src": "178:11:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                "typeIdentifier": "t_contract$_BaseRewards_$8652",
                 "typeString": "contract BaseRewards"
               }
             },
@@ -366,7 +366,7 @@
                       "referencedDeclaration": 3193,
                       "src": "381:7:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                        "typeIdentifier": "t_contract$_BaseRewards_$8652",
                         "typeString": "contract BaseRewards"
                       }
                     },
@@ -381,13 +381,13 @@
                       "referencedDeclaration": 3197,
                       "src": "391:8:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                        "typeIdentifier": "t_contract$_BaseRewards_$8652",
                         "typeString": "contract BaseRewards"
                       }
                     },
                     "src": "381:18:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                      "typeIdentifier": "t_contract$_BaseRewards_$8652",
                       "typeString": "contract BaseRewards"
                     }
                   },
@@ -413,7 +413,7 @@
                     "referencedDeclaration": 3195,
                     "src": "336:10:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -426,7 +426,7 @@
                     "referencedDeclaration": 3199,
                     "src": "348:17:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                       "typeString": "contract IMooniswapFactory"
                     }
                   }
@@ -438,10 +438,10 @@
                   "name": "Converter",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9274,
+                  "referencedDeclaration": 9277,
                   "src": "326:9:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Converter_$9274_$",
+                    "typeIdentifier": "t_type$_t_contract$_Converter_$9277_$",
                     "typeString": "type(contract Converter)"
                   }
                 },
@@ -468,7 +468,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IERC20_$10260",
+                    "typeIdentifier": "t_contract$_IERC20_$10263",
                     "typeString": "contract IERC20"
                   },
                   "typeName": {
@@ -476,10 +476,10 @@
                     "id": 3194,
                     "name": "IERC20",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10260,
+                    "referencedDeclaration": 10263,
                     "src": "233:6:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -498,7 +498,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                    "typeIdentifier": "t_contract$_BaseRewards_$8652",
                     "typeString": "contract BaseRewards"
                   },
                   "typeName": {
@@ -506,10 +506,10 @@
                     "id": 3196,
                     "name": "BaseRewards",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 8649,
+                    "referencedDeclaration": 8652,
                     "src": "252:11:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                      "typeIdentifier": "t_contract$_BaseRewards_$8652",
                       "typeString": "contract BaseRewards"
                     }
                   },
@@ -528,7 +528,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                    "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                     "typeString": "contract IMooniswapFactory"
                   },
                   "typeName": {
@@ -536,10 +536,10 @@
                     "id": 3198,
                     "name": "IMooniswapFactory",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6206,
+                    "referencedDeclaration": 6209,
                     "src": "274:17:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                       "typeString": "contract IMooniswapFactory"
                     }
                   },
@@ -663,7 +663,7 @@
                           "lValueRequested": false,
                           "memberName": "balanceOf",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 9782,
+                          "referencedDeclaration": 9785,
                           "src": "518:19:7",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -850,7 +850,7 @@
                   "name": "validSpread",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8731,
+                  "referencedDeclaration": 8734,
                   "src": "466:11:7",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_contract$_Mooniswap_$1706_$",
@@ -968,7 +968,7 @@
                         "referencedDeclaration": 3240,
                         "src": "693:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         }
                       },
@@ -1055,7 +1055,7 @@
                               "referencedDeclaration": 3240,
                               "src": "699:4:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                                "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                                 "typeString": "contract IERC20[] memory"
                               }
                             },
@@ -1085,7 +1085,7 @@
                             "nodeType": "IndexAccess",
                             "src": "699:7:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$10260",
+                              "typeIdentifier": "t_contract$_IERC20_$10263",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -1096,10 +1096,10 @@
                           "lValueRequested": false,
                           "memberName": "uniBalanceOf",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7037,
+                          "referencedDeclaration": 7040,
                           "src": "699:20:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_view$_t_contract$_IERC20_$10260_$_t_address_$returns$_t_uint256_$bound_to$_t_contract$_IERC20_$10260_$",
+                            "typeIdentifier": "t_function_internal_view$_t_contract$_IERC20_$10263_$_t_address_$returns$_t_uint256_$bound_to$_t_contract$_IERC20_$10263_$",
                             "typeString": "function (contract IERC20,address) view returns (uint256)"
                           }
                         },
@@ -1122,7 +1122,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         },
                         {
@@ -1134,10 +1134,10 @@
                       "name": "_maxAmountForSwap",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9124,
+                      "referencedDeclaration": 9127,
                       "src": "675:17:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$_t_uint256_$returns$_t_uint256_$_t_uint256_$",
+                        "typeIdentifier": "t_function_internal_view$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$_t_uint256_$returns$_t_uint256_$_t_uint256_$",
                         "typeString": "function (contract IERC20[] memory,uint256) view returns (uint256,uint256)"
                       }
                     },
@@ -1206,7 +1206,7 @@
                         "referencedDeclaration": 3240,
                         "src": "768:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         }
                       },
@@ -1238,7 +1238,7 @@
                                 "referencedDeclaration": 3193,
                                 "src": "798:7:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                                  "typeIdentifier": "t_contract$_BaseRewards_$8652",
                                   "typeString": "contract BaseRewards"
                                 }
                               }
@@ -1246,7 +1246,7 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                                  "typeIdentifier": "t_contract$_BaseRewards_$8652",
                                   "typeString": "contract BaseRewards"
                                 }
                               ],
@@ -1337,7 +1337,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         },
                         {
@@ -1353,10 +1353,10 @@
                       "name": "_swap",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9273,
+                      "referencedDeclaration": 9276,
                       "src": "762:5:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$_t_uint256_$_t_address_payable_$returns$_t_uint256_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$_t_uint256_$_t_address_payable_$returns$_t_uint256_$",
                         "typeString": "function (contract IERC20[] memory,uint256,address payable) returns (uint256)"
                       }
                     },
@@ -1412,7 +1412,7 @@
                         "referencedDeclaration": 3193,
                         "src": "818:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                          "typeIdentifier": "t_contract$_BaseRewards_$8652",
                           "typeString": "contract BaseRewards"
                         }
                       },
@@ -1423,7 +1423,7 @@
                       "lValueRequested": false,
                       "memberName": "notifyRewardAmount",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 8636,
+                      "referencedDeclaration": 8639,
                       "src": "818:26:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$__$",
@@ -1468,7 +1468,7 @@
                     "referencedDeclaration": 3240,
                     "src": "639:4:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                       "typeString": "contract IERC20[] memory"
                     }
                   }
@@ -1480,10 +1480,10 @@
                   "name": "validPath",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8791,
+                  "referencedDeclaration": 8794,
                   "src": "629:9:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$",
+                    "typeIdentifier": "t_modifier$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$",
                     "typeString": "modifier (contract IERC20[] memory)"
                   }
                 },
@@ -1510,7 +1510,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                     "typeString": "contract IERC20[]"
                   },
                   "typeName": {
@@ -1519,10 +1519,10 @@
                       "id": 3238,
                       "name": "IERC20",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 10260,
+                      "referencedDeclaration": 10263,
                       "src": "598:6:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -1531,7 +1531,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "598:8:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_storage_ptr",
                       "typeString": "contract IERC20[]"
                     }
                   },
@@ -1588,7 +1588,7 @@
         "id": 3188,
         "nodeType": "ImportDirective",
         "scope": 3284,
-        "sourceUnit": 8650,
+        "sourceUnit": 8653,
         "src": "58:34:7",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1599,7 +1599,7 @@
         "id": 3189,
         "nodeType": "ImportDirective",
         "scope": 3284,
-        "sourceUnit": 9275,
+        "sourceUnit": 9278,
         "src": "93:32:7",
         "symbolAliases": [],
         "unitAlias": ""
@@ -1614,10 +1614,10 @@
               "id": 3190,
               "name": "Converter",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 9274,
+              "referencedDeclaration": 9277,
               "src": "162:9:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Converter_$9274",
+                "typeIdentifier": "t_contract$_Converter_$9277",
                 "typeString": "contract Converter"
               }
             },
@@ -1627,9 +1627,9 @@
           }
         ],
         "contractDependencies": [
-          9274,
-          9297,
-          9406
+          9277,
+          9300,
+          9409
         ],
         "contractKind": "contract",
         "documentation": null,
@@ -1637,9 +1637,9 @@
         "id": 3283,
         "linearizedBaseContracts": [
           3283,
-          9274,
-          9406,
-          9297
+          9277,
+          9409,
+          9300
         ],
         "name": "GovernanceFeeReceiver",
         "nodeType": "ContractDefinition",
@@ -1657,7 +1657,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_BaseRewards_$8649",
+              "typeIdentifier": "t_contract$_BaseRewards_$8652",
               "typeString": "contract BaseRewards"
             },
             "typeName": {
@@ -1665,10 +1665,10 @@
               "id": 3192,
               "name": "BaseRewards",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8649,
+              "referencedDeclaration": 8652,
               "src": "178:11:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                "typeIdentifier": "t_contract$_BaseRewards_$8652",
                 "typeString": "contract BaseRewards"
               }
             },
@@ -1698,7 +1698,7 @@
                       "referencedDeclaration": 3193,
                       "src": "381:7:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                        "typeIdentifier": "t_contract$_BaseRewards_$8652",
                         "typeString": "contract BaseRewards"
                       }
                     },
@@ -1713,13 +1713,13 @@
                       "referencedDeclaration": 3197,
                       "src": "391:8:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                        "typeIdentifier": "t_contract$_BaseRewards_$8652",
                         "typeString": "contract BaseRewards"
                       }
                     },
                     "src": "381:18:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                      "typeIdentifier": "t_contract$_BaseRewards_$8652",
                       "typeString": "contract BaseRewards"
                     }
                   },
@@ -1745,7 +1745,7 @@
                     "referencedDeclaration": 3195,
                     "src": "336:10:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -1758,7 +1758,7 @@
                     "referencedDeclaration": 3199,
                     "src": "348:17:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                       "typeString": "contract IMooniswapFactory"
                     }
                   }
@@ -1770,10 +1770,10 @@
                   "name": "Converter",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 9274,
+                  "referencedDeclaration": 9277,
                   "src": "326:9:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Converter_$9274_$",
+                    "typeIdentifier": "t_type$_t_contract$_Converter_$9277_$",
                     "typeString": "type(contract Converter)"
                   }
                 },
@@ -1800,7 +1800,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IERC20_$10260",
+                    "typeIdentifier": "t_contract$_IERC20_$10263",
                     "typeString": "contract IERC20"
                   },
                   "typeName": {
@@ -1808,10 +1808,10 @@
                     "id": 3194,
                     "name": "IERC20",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 10260,
+                    "referencedDeclaration": 10263,
                     "src": "233:6:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$10260",
+                      "typeIdentifier": "t_contract$_IERC20_$10263",
                       "typeString": "contract IERC20"
                     }
                   },
@@ -1830,7 +1830,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                    "typeIdentifier": "t_contract$_BaseRewards_$8652",
                     "typeString": "contract BaseRewards"
                   },
                   "typeName": {
@@ -1838,10 +1838,10 @@
                     "id": 3196,
                     "name": "BaseRewards",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 8649,
+                    "referencedDeclaration": 8652,
                     "src": "252:11:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                      "typeIdentifier": "t_contract$_BaseRewards_$8652",
                       "typeString": "contract BaseRewards"
                     }
                   },
@@ -1860,7 +1860,7 @@
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                    "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                     "typeString": "contract IMooniswapFactory"
                   },
                   "typeName": {
@@ -1868,10 +1868,10 @@
                     "id": 3198,
                     "name": "IMooniswapFactory",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 6206,
+                    "referencedDeclaration": 6209,
                     "src": "274:17:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6206",
+                      "typeIdentifier": "t_contract$_IMooniswapFactory_$6209",
                       "typeString": "contract IMooniswapFactory"
                     }
                   },
@@ -1995,7 +1995,7 @@
                           "lValueRequested": false,
                           "memberName": "balanceOf",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 9782,
+                          "referencedDeclaration": 9785,
                           "src": "518:19:7",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
@@ -2182,7 +2182,7 @@
                   "name": "validSpread",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8731,
+                  "referencedDeclaration": 8734,
                   "src": "466:11:7",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_contract$_Mooniswap_$1706_$",
@@ -2300,7 +2300,7 @@
                         "referencedDeclaration": 3240,
                         "src": "693:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         }
                       },
@@ -2387,7 +2387,7 @@
                               "referencedDeclaration": 3240,
                               "src": "699:4:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                                "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                                 "typeString": "contract IERC20[] memory"
                               }
                             },
@@ -2417,7 +2417,7 @@
                             "nodeType": "IndexAccess",
                             "src": "699:7:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_IERC20_$10260",
+                              "typeIdentifier": "t_contract$_IERC20_$10263",
                               "typeString": "contract IERC20"
                             }
                           },
@@ -2428,10 +2428,10 @@
                           "lValueRequested": false,
                           "memberName": "uniBalanceOf",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 7037,
+                          "referencedDeclaration": 7040,
                           "src": "699:20:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_function_internal_view$_t_contract$_IERC20_$10260_$_t_address_$returns$_t_uint256_$bound_to$_t_contract$_IERC20_$10260_$",
+                            "typeIdentifier": "t_function_internal_view$_t_contract$_IERC20_$10263_$_t_address_$returns$_t_uint256_$bound_to$_t_contract$_IERC20_$10263_$",
                             "typeString": "function (contract IERC20,address) view returns (uint256)"
                           }
                         },
@@ -2454,7 +2454,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         },
                         {
@@ -2466,10 +2466,10 @@
                       "name": "_maxAmountForSwap",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9124,
+                      "referencedDeclaration": 9127,
                       "src": "675:17:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$_t_uint256_$returns$_t_uint256_$_t_uint256_$",
+                        "typeIdentifier": "t_function_internal_view$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$_t_uint256_$returns$_t_uint256_$_t_uint256_$",
                         "typeString": "function (contract IERC20[] memory,uint256) view returns (uint256,uint256)"
                       }
                     },
@@ -2538,7 +2538,7 @@
                         "referencedDeclaration": 3240,
                         "src": "768:4:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         }
                       },
@@ -2570,7 +2570,7 @@
                                 "referencedDeclaration": 3193,
                                 "src": "798:7:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                                  "typeIdentifier": "t_contract$_BaseRewards_$8652",
                                   "typeString": "contract BaseRewards"
                                 }
                               }
@@ -2578,7 +2578,7 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                                  "typeIdentifier": "t_contract$_BaseRewards_$8652",
                                   "typeString": "contract BaseRewards"
                                 }
                               ],
@@ -2669,7 +2669,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                          "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                           "typeString": "contract IERC20[] memory"
                         },
                         {
@@ -2685,10 +2685,10 @@
                       "name": "_swap",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 9273,
+                      "referencedDeclaration": 9276,
                       "src": "762:5:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_nonpayable$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$_t_uint256_$_t_address_payable_$returns$_t_uint256_$",
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$_t_uint256_$_t_address_payable_$returns$_t_uint256_$",
                         "typeString": "function (contract IERC20[] memory,uint256,address payable) returns (uint256)"
                       }
                     },
@@ -2744,7 +2744,7 @@
                         "referencedDeclaration": 3193,
                         "src": "818:7:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_BaseRewards_$8649",
+                          "typeIdentifier": "t_contract$_BaseRewards_$8652",
                           "typeString": "contract BaseRewards"
                         }
                       },
@@ -2755,7 +2755,7 @@
                       "lValueRequested": false,
                       "memberName": "notifyRewardAmount",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 8636,
+                      "referencedDeclaration": 8639,
                       "src": "818:26:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$__$",
@@ -2800,7 +2800,7 @@
                     "referencedDeclaration": 3240,
                     "src": "639:4:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                       "typeString": "contract IERC20[] memory"
                     }
                   }
@@ -2812,10 +2812,10 @@
                   "name": "validPath",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8791,
+                  "referencedDeclaration": 8794,
                   "src": "629:9:7",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_modifier$_t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr_$",
+                    "typeIdentifier": "t_modifier$_t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr_$",
                     "typeString": "modifier (contract IERC20[] memory)"
                   }
                 },
@@ -2842,7 +2842,7 @@
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_memory_ptr",
+                    "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_memory_ptr",
                     "typeString": "contract IERC20[]"
                   },
                   "typeName": {
@@ -2851,10 +2851,10 @@
                       "id": 3238,
                       "name": "IERC20",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 10260,
+                      "referencedDeclaration": 10263,
                       "src": "598:6:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$10260",
+                        "typeIdentifier": "t_contract$_IERC20_$10263",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -2863,7 +2863,7 @@
                     "nodeType": "ArrayTypeName",
                     "src": "598:8:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10260_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_contract$_IERC20_$10263_$dyn_storage_ptr",
                       "typeString": "contract IERC20[]"
                     }
                   },
@@ -2898,7 +2898,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.2",
-  "updatedAt": "2020-12-17T09:38:26.365Z",
+  "updatedAt": "2020-12-17T12:14:22.056Z",
   "devdoc": {
     "kind": "dev",
     "methods": {

@@ -7,7 +7,7 @@ import "./VirtualVote.sol";
 import "./Vote.sol";
 
 
-library LimitedLiquidVoting {
+library ExplicitLiquidVoting {
     using SafeMath for uint256;
     using Vote for Vote.Data;
     using VirtualVote for VirtualVote.Data;
@@ -15,12 +15,12 @@ library LimitedLiquidVoting {
     struct Data {
         VirtualVote.Data data;
         uint256 _weightedSum;
-        uint256 _votedTotalSupply;
+        uint256 _votedSupply;
         mapping(address => Vote.Data) votes;
     }
 
     function updateVote(
-        LimitedLiquidVoting.Data storage self,
+        ExplicitLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
@@ -32,7 +32,7 @@ library LimitedLiquidVoting {
     }
 
     function updateBalance(
-        LimitedLiquidVoting.Data storage self,
+        ExplicitLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         uint256 oldBalance,
@@ -44,7 +44,7 @@ library LimitedLiquidVoting {
     }
 
     function _update(
-        LimitedLiquidVoting.Data storage self,
+        ExplicitLiquidVoting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
@@ -55,29 +55,29 @@ library LimitedLiquidVoting {
     ) private {
         uint256 oldWeightedSum = self._weightedSum;
         uint256 newWeightedSum = oldWeightedSum;
-        uint256 oldVotedTotalSupply = self._votedTotalSupply;
-        uint256 newVotedTotalSupply = oldVotedTotalSupply;
+        uint256 oldVotedSupply = self._votedSupply;
+        uint256 newVotedSupply = oldVotedSupply;
 
         if (!oldVote.isDefault()) {
             newWeightedSum = newWeightedSum.sub(oldBalance.mul(oldVote.get(defaultVote)));
-            newVotedTotalSupply = oldVotedTotalSupply.sub(oldBalance);
+            newVotedSupply = oldVotedSupply.sub(oldBalance);
         }
 
         if (!newVote.isDefault()) {
             newWeightedSum = newWeightedSum.add(newBalance.mul(newVote.get(defaultVote)));
-            newVotedTotalSupply = oldVotedTotalSupply.add(newBalance);
+            newVotedSupply = oldVotedSupply.add(newBalance);
         }
 
         if (newWeightedSum != oldWeightedSum) {
             self._weightedSum = newWeightedSum;
         }
 
-        if (newVotedTotalSupply != oldVotedTotalSupply) {
-            self._votedTotalSupply = newVotedTotalSupply;
+        if (newVotedSupply != oldVotedSupply) {
+            self._votedSupply = newVotedSupply;
         }
 
         {
-            uint256 newResult = newVotedTotalSupply == 0 ? defaultVote : newWeightedSum.div(newVotedTotalSupply);
+            uint256 newResult = newVotedSupply == 0 ? defaultVote : newWeightedSum.div(newVotedSupply);
             VirtualVote.Data memory data = self.data;
 
             if (newResult != data.result) {

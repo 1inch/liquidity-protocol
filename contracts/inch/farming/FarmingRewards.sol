@@ -14,6 +14,7 @@ contract FarmingRewards is MooniswapConstants, BaseRewards {
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
     event FeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
+
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
     event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
 
@@ -75,14 +76,14 @@ contract FarmingRewards is MooniswapConstants, BaseRewards {
         require(vote <= _MAX_FEE, "Fee vote is too high");
 
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
-        mooniswap.feeVote(_fee.result);
+        _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
     }
 
     function slippageFeeVote(uint256 vote) external {
         require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
-        mooniswap.slippageFeeVote(_slippageFee.result);
+        _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
     function decayPeriodVote(uint256 vote) external {
@@ -90,7 +91,7 @@ contract FarmingRewards is MooniswapConstants, BaseRewards {
         require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
 
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
-        mooniswap.decayPeriodVote(_decayPeriod.result);
+        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
     function discardFeeVote() external {

@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
-import "../libraries/LimitedLiquidVoting.sol";
+import "../libraries/ExplicitLiquidVoting.sol";
 import "../MooniswapConstants.sol";
 import "../utils/BalanceAccounting.sol";
 import "./BaseGovernanceModule.sol";
@@ -12,7 +12,7 @@ import "./BaseGovernanceModule.sol";
 
 contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, MooniswapConstants, BalanceAccounting, Ownable {
     using Vote for Vote.Data;
-    using LimitedLiquidVoting for LimitedLiquidVoting.Data;
+    using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
     using SafeMath for uint256;
 
@@ -24,11 +24,11 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     event GovernanceFeeReceiverUpdate(address governanceFeeReceiver);
     event ReferralFeeReceiverUpdate(address referralFeeReceiver);
 
-    LimitedLiquidVoting.Data private _defaultFee;
-    LimitedLiquidVoting.Data private _defaultSlippageFee;
-    LimitedLiquidVoting.Data private _defaultDecayPeriod;
-    LimitedLiquidVoting.Data private _referralShare;
-    LimitedLiquidVoting.Data private _governanceShare;
+    ExplicitLiquidVoting.Data private _defaultFee;
+    ExplicitLiquidVoting.Data private _defaultSlippageFee;
+    ExplicitLiquidVoting.Data private _defaultDecayPeriod;
+    ExplicitLiquidVoting.Data private _referralShare;
+    ExplicitLiquidVoting.Data private _governanceShare;
     address public override governanceFeeReceiver;
     address public override referralFeeReceiver;
 
