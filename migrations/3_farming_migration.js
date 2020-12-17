@@ -37,11 +37,11 @@ module.exports = function (deployer, network) {
     return deployer.then(async () => {
         const token = await TokenMock.at(TOKEN[network]);
 
-        for (const [pool_name, pool_addr] of Object.entries(POOLS[network])) {
-            const pool_rewards = await deployer.deploy(FarmingRewards, pool_addr, token.address);
-            await pool_rewards.setRewardDistribution(REWARD_DISTRIBUTION[network]);
-            await token.transfer(pool_rewards.address, REWARDS[network][pool_name]);
-            await pool_rewards.notifyRewardAmount(REWARDS[network][pool_name]);
+        for (const [poolName, poolAddr] of Object.entries(POOLS[network])) {
+            const poolRewards = await deployer.deploy(FarmingRewards, poolAddr, token.address);
+            await poolRewards.setRewardDistribution(REWARD_DISTRIBUTION[network]);
+            await token.transfer(poolRewards.address, REWARDS[network][poolName]);
+            await poolRewards.notifyRewardAmount(REWARDS[network][poolName]);
         }
     });
 };
