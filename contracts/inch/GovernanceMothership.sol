@@ -71,9 +71,9 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     }
 
     function _notifyFor(address account, uint256 balance) private {
-        uint256 modulesLength = _modules.length();
-        for (uint256 i = 0; i < modulesLength; ++i) {
-            IGovernanceModule(_modules.at(i)).notifyStakeChanged(account, balance);
+        bytes32[] memory cached = _modules._inner._values;
+        for (uint256 i = 0; i < cached.length; ++i) {
+            IGovernanceModule(address(uint256(cached[i]))).notifyStakeChanged(account, balance);
         }
     }
 }
