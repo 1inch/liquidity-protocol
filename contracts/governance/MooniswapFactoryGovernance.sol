@@ -5,6 +5,7 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/ExplicitLiquidVoting.sol";
+import "../libraries/SafeCast.sol";
 import "../MooniswapConstants.sol";
 import "../utils/BalanceAccounting.sol";
 import "./BaseGovernanceModule.sol";
@@ -15,6 +16,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
     using SafeMath for uint256;
+    using SafeCast for uint256;
 
     event DefaultFeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
     event DefaultSlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
@@ -33,11 +35,11 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     address public override referralFeeReceiver;
 
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
-        _defaultFee.data.result = uint104(_DEFAULT_FEE);
-        _defaultSlippageFee.data.result = uint104(_DEFAULT_SLIPPAGE_FEE);
-        _defaultDecayPeriod.data.result = uint104(_DEFAULT_DECAY_PERIOD);
-        _referralShare.data.result = uint104(_DEFAULT_REFERRAL_SHARE);
-        _governanceShare.data.result = uint104(_DEFAULT_GOVERNANCE_SHARE);
+        _defaultFee.data.result = _DEFAULT_FEE.toUint104();
+        _defaultSlippageFee.data.result = _DEFAULT_SLIPPAGE_FEE.toUint104();
+        _defaultDecayPeriod.data.result = _DEFAULT_DECAY_PERIOD.toUint104();
+        _referralShare.data.result = _DEFAULT_REFERRAL_SHARE.toUint104();
+        _governanceShare.data.result = _DEFAULT_GOVERNANCE_SHARE.toUint104();
     }
 
     function parameters() external view override returns(uint256, uint256, address, address) {

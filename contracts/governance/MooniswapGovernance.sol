@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/LiquidVoting.sol";
+import "../libraries/SafeCast.sol";
 import "../MooniswapConstants.sol";
 
 
@@ -13,6 +14,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
+    using SafeCast for uint256;
 
     event FeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
@@ -25,9 +27,9 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
 
     constructor(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
         mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
-        _fee.data.result = uint104(_mooniswapFactoryGovernance.defaultFee());
-        _slippageFee.data.result = uint104(_mooniswapFactoryGovernance.defaultSlippageFee());
-        _decayPeriod.data.result = uint104(_mooniswapFactoryGovernance.defaultDecayPeriod());
+        _fee.data.result = _mooniswapFactoryGovernance.defaultFee().toUint104();
+        _slippageFee.data.result = _mooniswapFactoryGovernance.defaultSlippageFee().toUint104();
+        _decayPeriod.data.result = _mooniswapFactoryGovernance.defaultDecayPeriod().toUint104();
     }
 
     function fee() public view returns(uint256) {
