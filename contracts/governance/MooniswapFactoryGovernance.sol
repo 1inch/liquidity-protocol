@@ -174,12 +174,12 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.updateBalance(account, _governanceShare.votes[account], balance, newBalance, _DEFAULT_GOVERNANCE_SHARE, _emitGovernanceShareVoteUpdate);
     }
 
-    function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaulFee, bool isDefault, uint256 balance) private {
-        emit DefaultFeeVoteUpdate(user, newDefaulFee, isDefault, balance);
+    function _emitDefaultFeeVoteUpdate(address user, uint256 newDefaultFee, bool isDefault, uint256 balance) private {
+        emit DefaultFeeVoteUpdate(user, newDefaultFee, isDefault, balance);
     }
 
-    function _emitDefaultSlippageFeeVoteUpdate(address user, uint256 newDefaulSlippageFee, bool isDefault, uint256 balance) private {
-        emit DefaultSlippageFeeVoteUpdate(user, newDefaulSlippageFee, isDefault, balance);
+    function _emitDefaultSlippageFeeVoteUpdate(address user, uint256 newDefaultSlippageFee, bool isDefault, uint256 balance) private {
+        emit DefaultSlippageFeeVoteUpdate(user, newDefaultSlippageFee, isDefault, balance);
     }
 
     function _emitDefaultDecayPeriodVoteUpdate(address user, uint256 newDefaultDecayPeriod, bool isDefault, uint256 balance) private {
