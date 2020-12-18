@@ -320,10 +320,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         }
         if (amount > 0 && src == token0 && dst == token1) {
             uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
-            uint256 taxedSrcBalance = srcBalance.add(taxedAmount);
-            uint256 ret = taxedAmount.mul(dstBalance).div(taxedSrcBalance);
-            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee.mul(taxedAmount));
-            uint256 feeDenominator = _FEE_DENOMINATOR.mul(taxedSrcBalance);
+            uint256 srcBalancePlusTaxedAmount = srcBalance.add(taxedAmount);
+            uint256 ret = taxedAmount.mul(dstBalance).div(srcBalancePlusTaxedAmount);
+            uint256 feeNumerator = _FEE_DENOMINATOR.mul(srcBalancePlusTaxedAmount).sub(slippageFee.mul(taxedAmount));
+            uint256 feeDenominator = _FEE_DENOMINATOR.mul(srcBalancePlusTaxedAmount);
             return ret.mul(feeNumerator).div(feeDenominator);
         }
     }
