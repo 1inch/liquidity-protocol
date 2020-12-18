@@ -3,12 +3,14 @@
 pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeCast.sol";
 import "./VirtualVote.sol";
 import "./Vote.sol";
 
 
 library ExplicitLiquidVoting {
     using SafeMath for uint256;
+    using SafeCast for uint256;
     using Vote for Vote.Data;
     using VirtualVote for VirtualVote.Data;
 
@@ -81,9 +83,9 @@ library ExplicitLiquidVoting {
             VirtualVote.Data memory data = self.data;
 
             if (newResult != data.result) {
-                self.data.oldResult = uint104(data.current());
-                self.data.result = uint104(newResult);
-                self.data.time = uint48(block.timestamp);
+                self.data.oldResult = data.current().toUint104();
+                self.data.result = newResult.toUint104();
+                self.data.time = block.timestamp.toUint48();
             }
         }
 
