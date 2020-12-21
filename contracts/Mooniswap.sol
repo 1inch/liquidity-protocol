@@ -233,8 +233,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             slippageFee: slippageFee()
         });
         (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, fees);
-        _mintRewards(confirmed, result, referral, balances, fees);
         emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
+        _mintRewards(confirmed, result, referral, balances, fees);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
