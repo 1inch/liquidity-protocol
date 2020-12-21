@@ -137,9 +137,11 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
             newTotalSupply: newTotalSupply
         });
 
-        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultFee, _emitFeeVoteUpdate, _fee);
-        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultSlippageFee, _emitSlippageFeeVoteUpdate, _slippageFee);
-        _updateOnTransfer(params, mooniswapFactoryGovernance.defaultDecayPeriod, _emitDecayPeriodVoteUpdate, _decayPeriod);
+        (uint256 defaultFee, uint256 defaultSlippageFee, uint256 defaultDecayPeriod) = mooniswapFactoryGovernance.defaults();
+
+        _updateOnTransfer(params, defaultFee, _emitFeeVoteUpdate, _fee);
+        _updateOnTransfer(params, defaultSlippageFee, _emitSlippageFeeVoteUpdate, _slippageFee);
+        _updateOnTransfer(params, defaultDecayPeriod, _emitDecayPeriodVoteUpdate, _decayPeriod);
     }
 
     struct ParamsHelper {
@@ -155,14 +157,12 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
 
     function _updateOnTransfer(
         ParamsHelper memory params,
-        function() external view returns (uint256) defaultValueGetter,
+        uint256 defaultValue,
         function(address, uint256, bool, uint256) internal emitEvent,
         LiquidVoting.Data storage votingData
     ) private {
         Vote.Data memory voteFrom = votingData.votes[params.from];
         Vote.Data memory voteTo = votingData.votes[params.to];
-
-        uint256 defaultValue = defaultValueGetter();
 
         if (voteFrom.isDefault() && voteTo.isDefault() && params.updateFrom && params.updateTo) {
             emitEvent(params.from, voteFrom.get(defaultValue), true, params.balanceFrom.sub(params.amount));

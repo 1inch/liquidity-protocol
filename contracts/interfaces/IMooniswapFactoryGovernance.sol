@@ -4,7 +4,8 @@ pragma solidity ^0.6.0;
 
 
 interface IMooniswapFactoryGovernance {
-    function parameters() external view returns(uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver);
+    function shareParameters() external view returns(uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver);
+    function defaults() external view returns(uint256 defaultFee, uint256 defaultSlippageFee, uint256 defaultDecayPeriod);
 
     function defaultFee() external view returns(uint256);
     function defaultSlippageFee() external view returns(uint256);

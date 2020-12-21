@@ -44,8 +44,12 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _governanceShare.data.result = _DEFAULT_GOVERNANCE_SHARE.toUint104();
     }
 
-    function parameters() external view override returns(uint256, uint256, address, address) {
+    function shareParameters() external view override returns(uint256, uint256, address, address) {
         return (_referralShare.data.current(), _governanceShare.data.current(), governanceFeeReceiver, referralFeeReceiver);
+    }
+
+    function defaults() external view override returns(uint256, uint256, uint256) {
+        return (_defaultFee.data.current(), _defaultSlippageFee.data.current(), _defaultDecayPeriod.data.current());
     }
 
     function defaultFee() external view override returns(uint256) {
