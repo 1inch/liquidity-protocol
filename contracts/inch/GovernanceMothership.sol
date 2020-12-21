@@ -14,10 +14,14 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    event Transfer(address indexed src, address indexed dst, uint256 amount);
     event AddModule(address indexed module);
     event RemoveModule(address indexed module);
 
     IERC20 public immutable inchToken;
+    string public constant name = "1INCH Token (Staked)";
+    string public constant symbol = "st1INCH";
+    uint8 public constant decimals = 18;
 
     EnumerableSet.AddressSet private _modules;
 
@@ -31,6 +35,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
         inchToken.transferFrom(msg.sender, address(this), amount);
         _mint(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        emit Transfer(address(0), msg.sender, amount);
     }
 
     function unstake(uint256 amount) external {
@@ -39,6 +44,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
         inchToken.transfer(msg.sender, amount);
         _burn(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        emit Transfer(msg.sender, address(0), amount);
     }
 
     function notify() external {
