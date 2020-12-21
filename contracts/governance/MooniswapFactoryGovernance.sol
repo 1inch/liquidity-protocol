@@ -34,6 +34,8 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     address public override governanceFeeReceiver;
     address public override referralFeeReceiver;
 
+    mapping(address => bool) public override isFeeReceiver;
+
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
         _defaultFee.data.result = _DEFAULT_FEE.toUint104();
         _defaultSlippageFee.data.result = _DEFAULT_SLIPPAGE_FEE.toUint104();
@@ -108,11 +110,13 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function setGovernanceFeeReceiver(address newGovernanceFeeReceiver) external onlyOwner {
         governanceFeeReceiver = newGovernanceFeeReceiver;
+        isFeeReceiver[newGovernanceFeeReceiver] = true;
         emit GovernanceFeeReceiverUpdate(newGovernanceFeeReceiver);
     }
 
     function setReferralFeeReceiver(address newReferralFeeReceiver) external onlyOwner {
         referralFeeReceiver = newReferralFeeReceiver;
+        isFeeReceiver[newReferralFeeReceiver] = true;
         emit ReferralFeeReceiverUpdate(newReferralFeeReceiver);
     }
 

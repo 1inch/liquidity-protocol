@@ -13,4 +13,6 @@ interface IMooniswapFactoryGovernance {
     function governanceShare() external view returns(uint256);
     function governanceFeeReceiver() external view returns(address);
     function referralFeeReceiver() external view returns(address);
+
+    function isFeeReceiver(address) external view returns(bool);
 }
