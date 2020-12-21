@@ -37,6 +37,8 @@ library UniERC20 {
         if (amount > 0) {
             if (isETH(token)) {
                 require(msg.value >= amount, "UniERC20: not enough value");
+                require(from == msg.sender, "from is not msg.sender");
+                require(to == address(this), "to is not this");
                 if (msg.value > amount) {
                     // Return remainder if exist
                     from.transfer(msg.value.sub(amount));
