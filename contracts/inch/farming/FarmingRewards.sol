@@ -7,7 +7,7 @@ import "../../libraries/Voting.sol";
 import "../../utils/BaseRewards.sol";
 
 
-contract FarmingRewards is MooniswapConstants, BaseRewards {
+contract FarmingRewards is GovernanceConstants, BaseRewards {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
 

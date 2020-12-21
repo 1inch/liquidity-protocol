@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/LiquidVoting.sol";
 import "../libraries/SafeCast.sol";
-import "../MooniswapConstants.sol";
+import "../GovernanceConstants.sol";
 
 
-abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConstants {
+abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, GovernanceConstants {
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;

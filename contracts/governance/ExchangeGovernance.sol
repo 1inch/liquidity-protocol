@@ -2,20 +2,18 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IExchangeGovernance.sol";
 import "../libraries/ExplicitLiquidVoting.sol";
 import "../libraries/SafeCast.sol";
-import "../MooniswapConstants.sol";
 import "../utils/BalanceAccounting.sol";
+import "../GovernanceConstants.sol";
 import "./BaseGovernanceModule.sol";
 
 
-contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, MooniswapConstants, BalanceAccounting, Ownable {
+contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, GovernanceConstants, BalanceAccounting {
     using Vote for Vote.Data;
     using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
-    using SafeMath for uint256;
     using SafeCast for uint256;
 
     event LeftoverReferralShareUpdate(address indexed user, uint256 vote, bool isDefault, uint256 amount);

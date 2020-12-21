@@ -6,12 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/ExplicitLiquidVoting.sol";
 import "../libraries/SafeCast.sol";
-import "../MooniswapConstants.sol";
+import "../GovernanceConstants.sol";
 import "../utils/BalanceAccounting.sol";
 import "./BaseGovernanceModule.sol";
 
 
-contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, MooniswapConstants, BalanceAccounting, Ownable {
+contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, GovernanceConstants, BalanceAccounting, Ownable {
     using Vote for Vote.Data;
     using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
