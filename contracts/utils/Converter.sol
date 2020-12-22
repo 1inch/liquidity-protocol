@@ -41,6 +41,13 @@ contract Converter is Ownable {
         _;
     }
 
+    modifier validPool(Mooniswap mooniswap) {
+        IERC20[] memory tokens = mooniswap.getTokens();
+        require(mooniswapFactory.pools(tokens[0], tokens[1]) == mooniswap, "Invalid mooniswap address");
+
+        _;
+    }
+
     modifier validPath(IERC20[] memory path) {
         require(path.length > 0, "Min path length is 1");
         require(path.length < 5, "Max path length is 4");
