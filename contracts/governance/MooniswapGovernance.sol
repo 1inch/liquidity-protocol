@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/LiquidVoting.sol";
+import "../libraries/MooniswapConstants.sol";
 import "../libraries/SafeCast.sol";
-import "../GovernanceConstants.sol";
 
 
-abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, GovernanceConstants {
+abstract contract MooniswapGovernance is ERC20, ReentrancyGuard {
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
@@ -69,20 +69,20 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, GovernanceConst
     }
 
     function feeVote(uint256 vote) external {
-        require(vote <= _MAX_FEE, "Fee vote is too high");
+        require(vote <= MooniswapConstants._MAX_FEE, "Fee vote is too high");
 
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
     }
 
     function slippageFeeVote(uint256 vote) external {
-        require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
+        require(vote <= MooniswapConstants._MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
     }
 
     function decayPeriodVote(uint256 vote) external {
-        require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
-        require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
+        require(vote <= MooniswapConstants._MAX_DECAY_PERIOD, "Decay period vote is too high");
+        require(vote >= MooniswapConstants._MIN_DECAY_PERIOD, "Decay period vote is too low");
 
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }

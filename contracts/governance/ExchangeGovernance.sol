@@ -3,14 +3,14 @@
 pragma solidity ^0.6.0;
 
 import "../interfaces/IExchangeGovernance.sol";
+import "../libraries/ExchangeConstants.sol";
 import "../libraries/ExplicitLiquidVoting.sol";
 import "../libraries/SafeCast.sol";
 import "../utils/BalanceAccounting.sol";
-import "../GovernanceConstants.sol";
 import "./BaseGovernanceModule.sol";
 
 
-contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, GovernanceConstants, BalanceAccounting {
+contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, BalanceAccounting {
     using Vote for Vote.Data;
     using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
@@ -21,7 +21,7 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Govern
     ExplicitLiquidVoting.Data private _leftoverReferralShare;
 
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
-        _leftoverReferralShare.data.result = _DEFAULT_LEFTOVER_REFERRAL_SHARE.toUint104();
+        _leftoverReferralShare.data.result = ExchangeConstants._DEFAULT_LEFTOVER_REFERRAL_SHARE.toUint104();
     }
 
     function parameters() external view override returns(uint256) {
@@ -33,7 +33,7 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Govern
     }
 
     function leftoverReferralShareVotes(address user) external view returns(uint256) {
-        return _leftoverReferralShare.votes[user].get(_DEFAULT_LEFTOVER_REFERRAL_SHARE);
+        return _leftoverReferralShare.votes[user].get(ExchangeConstants._DEFAULT_LEFTOVER_REFERRAL_SHARE);
     }
 
     function virtualLeftoverReferralShare() external view returns(uint104, uint104, uint48) {
@@ -41,13 +41,27 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Govern
     }
 
     function leftoverReferralShareVote(uint256 vote) external {
-        require(vote >= _MIN_LEFTOVER_REFERRAL_SHARE, "Fee share vote is too low");
-        require(vote <= _MAX_LEFTOVER_REFERRAL_SHARE, "Fee share vote is too high");
-        _leftoverReferralShare.updateVote(msg.sender, _leftoverReferralShare.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), _DEFAULT_LEFTOVER_REFERRAL_SHARE, _emitLeftoverReferralShareVoteUpdate);
+        require(vote >= ExchangeConstants._MIN_LEFTOVER_REFERRAL_SHARE, "Fee share vote is too low");
+        require(vote <= ExchangeConstants._MAX_LEFTOVER_REFERRAL_SHARE, "Fee share vote is too high");
+        _leftoverReferralShare.updateVote(
+            msg.sender,
+            _leftoverReferralShare.votes[msg.sender],
+            Vote.init(vote),
+            balanceOf(msg.sender),
+            ExchangeConstants._DEFAULT_LEFTOVER_REFERRAL_SHARE,
+            _emitLeftoverReferralShareVoteUpdate
+        );
     }
 
     function discardLeftoverReferralShareVote() external {
-       _leftoverReferralShare.updateVote(msg.sender, _leftoverReferralShare.votes[msg.sender], Vote.init(), balanceOf(msg.sender), _DEFAULT_LEFTOVER_REFERRAL_SHARE, _emitLeftoverReferralShareVoteUpdate);
+       _leftoverReferralShare.updateVote(
+           msg.sender,
+           _leftoverReferralShare.votes[msg.sender],
+           Vote.init(),
+           balanceOf(msg.sender),
+           ExchangeConstants._DEFAULT_LEFTOVER_REFERRAL_SHARE,
+           _emitLeftoverReferralShareVoteUpdate
+        );
     }
 
     function _notifyStakeChanged(address account, uint256 newBalance) internal override {
@@ -56,7 +70,14 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Govern
             return;
         }
 
-        _leftoverReferralShare.updateBalance(account, _leftoverReferralShare.votes[account], balance, newBalance, _DEFAULT_LEFTOVER_REFERRAL_SHARE, _emitLeftoverReferralShareVoteUpdate);
+        _leftoverReferralShare.updateBalance(
+            account,
+            _leftoverReferralShare.votes[account],
+            balance,
+            newBalance,
+            ExchangeConstants._DEFAULT_LEFTOVER_REFERRAL_SHARE,
+            _emitLeftoverReferralShareVoteUpdate
+        );
     }
 
     function _emitLeftoverReferralShareVoteUpdate(address user, uint256 newDefaultShare, bool isDefault, uint256 balance) private {
