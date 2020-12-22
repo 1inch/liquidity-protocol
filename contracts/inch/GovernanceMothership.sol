@@ -19,14 +19,23 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     event RemoveModule(address indexed module);
 
     IERC20 public immutable inchToken;
-    string public constant name = "1INCH Token (Staked)";
-    string public constant symbol = "st1INCH";
-    uint8 public constant decimals = 18;
 
     EnumerableSet.AddressSet private _modules;
 
     constructor(IERC20 _inchToken) public {
         inchToken = _inchToken;
+    }
+
+    function name() external pure returns(string memory) {
+        return "1INCH Token (Staked)";
+    }
+
+    function symbol() external pure returns(string memory) {
+        return "st1INCH";
+    }
+
+    function decimals() external pure returns(uint8) {
+        return 18;
     }
 
     function stake(uint256 amount) external {
