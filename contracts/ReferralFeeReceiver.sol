@@ -49,23 +49,21 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         _collectProcessedEpochs(user, token, mooniswap, currentEpoch);
     }
 
-    function freezeEpoch(Mooniswap mooniswap) external validSpread(mooniswap) {
+    function freezeEpoch(Mooniswap mooniswap) external validPool(mooniswap) validSpread(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 currentEpoch = token.currentEpoch;
         require(token.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finalized");
 
-        token.currentEpoch = currentEpoch.add(1);
-
-        // Withdraw LP tokens
         IERC20[] memory tokens = mooniswap.getTokens();
         uint256 token0Balance = tokens[0].uniBalanceOf(address(this));
         uint256 token1Balance = tokens[1].uniBalanceOf(address(this));
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
         token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
         token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
+        token.currentEpoch = currentEpoch.add(1);
     }
 
-    function trade(Mooniswap mooniswap, IERC20[] memory path) external {
+    function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
         EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];
@@ -81,9 +79,26 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
             revert("Invalid first token");
         }
 
-        uint256 amount = _maxAmountForSwap(path, availableBalance);
-        uint256 receivedAmount = _swap(path, amount, payable(address(this)));
-        epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
+        (uint256 amount, uint256 returnAmount) = _maxAmountForSwap(path, availableBalance);
+        if (returnAmount == 0) {
+            // get rid of dust
+            if (availableBalance > 0) {
+                require(availableBalance == amount, "availableBalance is not dust");
+                for (uint256 i = 0; i + 1 < path.length; i += 1) {
+                    Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
+                    require(_validateSpread(_mooniswap), "Spread is too high");
+                }
+                if (path[0].isETH()) {
+                    tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin
+                } else {
+                    path[0].safeTransfer(address(mooniswap), availableBalance);
+                }
+            }
+        } else {
+            uint256 receivedAmount = _swap(path, amount, payable(address(this)));
+            epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
+        }
+
         if (path[0] == tokens[0]) {
             epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);
         } else {
@@ -111,7 +126,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimCurrentEpoch(Mooniswap mooniswap) external {
+    function claimCurrentEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 currentEpoch = token.currentEpoch;
@@ -123,7 +138,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimFrozenEpoch(Mooniswap mooniswap) external {
+    function claimFrozenEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;

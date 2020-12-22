@@ -5,10 +5,12 @@ pragma solidity ^0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/math/Math.sol";
+import "./SafeCast.sol";
 
 
 library VirtualBalance {
     using SafeMath for uint256;
+    using SafeCast for uint256;
 
     struct Data {
         uint216 balance;
@@ -16,8 +18,8 @@ library VirtualBalance {
     }
 
     function set(VirtualBalance.Data storage self, uint256 balance) internal {
-        self.balance = uint216(balance);
-        self.time = uint40(block.timestamp);
+        self.balance = balance.toUint216();
+        self.time = block.timestamp.toUint40();
     }
 
     function update(VirtualBalance.Data storage self, uint256 decayPeriod, uint256 realBalance) internal {

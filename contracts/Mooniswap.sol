@@ -66,7 +66,9 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 srcBalance,
         uint256 dstBalance,
         uint256 fee,
-        uint256 slippageFee
+        uint256 slippageFee,
+        uint256 referralShare,
+        uint256 governanceShare
     );
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
@@ -231,9 +233,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             slippageFee: slippageFee()
         });
         (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, fees);
-        _mintRewards(confirmed, result, referral, balances);
-        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee);
         emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
+        _mintRewards(confirmed, result, referral, balances, fees);
 
         // Overflow of uint128 is desired
         volumes[src].confirmed += uint128(confirmed);
@@ -266,8 +267,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         virtualBalancesForAddition[dst].update(_decayPeriod, balances.dst);
     }
 
-    function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.parameters();
+    function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
+        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.shareParameters();
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -278,7 +279,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
             if (referral != address(0)) {
-                referralShare = invIncrease.mul(referralShare).div(_FEE_DENOMINATOR);
+                referralShare = invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     if (referralFeeReceiver != address(0)) {
                         _mint(referralFeeReceiver, referralShare);
@@ -290,12 +291,14 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             }
 
             if (governanceFeeReceiver != address(0)) {
-                governanceShare = invIncrease.mul(governanceShare).div(_FEE_DENOMINATOR);
+                governanceShare = invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR);
                 if (governanceShare > 0) {
                     _mint(governanceFeeReceiver, governanceShare);
                 }
             }
         }
+
+        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, referralShare, governanceShare);
     }
 
     /*
@@ -316,11 +319,11 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             (src, dst) = (dst, src);
         }
         if (amount > 0 && src == token0 && dst == token1) {
-            uint256 taxedAmount = amount.sub(amount.mul(fee).div(_FEE_DENOMINATOR));
-            uint256 taxedSrcBalance = srcBalance.add(taxedAmount);
-            uint256 ret = taxedAmount.mul(dstBalance).div(taxedSrcBalance);
-            uint256 feeNumerator = _FEE_DENOMINATOR.mul(taxedSrcBalance).sub(slippageFee.mul(taxedAmount));
-            uint256 feeDenominator = _FEE_DENOMINATOR.mul(taxedSrcBalance);
+            uint256 taxedAmount = amount.sub(amount.mul(fee).div(MooniswapConstants._FEE_DENOMINATOR));
+            uint256 srcBalancePlusTaxedAmount = srcBalance.add(taxedAmount);
+            uint256 ret = taxedAmount.mul(dstBalance).div(srcBalancePlusTaxedAmount);
+            uint256 feeNumerator = MooniswapConstants._FEE_DENOMINATOR.mul(srcBalancePlusTaxedAmount).sub(slippageFee.mul(taxedAmount));
+            uint256 feeDenominator = MooniswapConstants._FEE_DENOMINATOR.mul(srcBalancePlusTaxedAmount);
             return ret.mul(feeNumerator).div(feeDenominator);
         }
     }

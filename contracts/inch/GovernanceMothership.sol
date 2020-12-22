@@ -14,6 +14,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    event Transfer(address indexed src, address indexed dst, uint256 amount);
     event AddModule(address indexed module);
     event RemoveModule(address indexed module);
 
@@ -25,12 +26,25 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
         inchToken = _inchToken;
     }
 
+    function name() external pure returns(string memory) {
+        return "1INCH Token (Staked)";
+    }
+
+    function symbol() external pure returns(string memory) {
+        return "st1INCH";
+    }
+
+    function decimals() external pure returns(uint8) {
+        return 18;
+    }
+
     function stake(uint256 amount) external {
         require(amount > 0, "Empty stake is not allowed");
 
         inchToken.transferFrom(msg.sender, address(this), amount);
         _mint(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        emit Transfer(address(0), msg.sender, amount);
     }
 
     function unstake(uint256 amount) external {
@@ -39,6 +53,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
         inchToken.transfer(msg.sender, amount);
         _burn(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        emit Transfer(msg.sender, address(0), amount);
     }
 
     function notify() external {
@@ -46,7 +61,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     }
 
     function notifyFor(address account) external {
-        _notifyFor(account, balanceOf(msg.sender));
+        _notifyFor(account, balanceOf(account));
     }
 
     function batchNotifyFor(address[] memory accounts) external {
@@ -71,9 +86,9 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     }
 
     function _notifyFor(address account, uint256 balance) private {
-        uint256 modulesLength = _modules.length();
-        for (uint256 i = 0; i < modulesLength; ++i) {
-            IGovernanceModule(_modules.at(i)).notifyStakeChanged(account, balance);
+        bytes32[] memory cached = _modules._inner._values;
+        for (uint256 i = 0; i < cached.length; ++i) {
+            IGovernanceModule(address(uint256(cached[i]))).notifyStakeChanged(account, balance);
         }
     }
 }

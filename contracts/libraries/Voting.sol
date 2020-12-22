@@ -2,27 +2,24 @@
 
 pragma solidity ^0.6.12;
 
+import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./SafeCast.sol";
-import "./VirtualVote.sol";
 import "./Vote.sol";
 
 
-library LiquidVoting {
+library Voting {
     using SafeMath for uint256;
-    using SafeCast for uint256;
     using Vote for Vote.Data;
-    using VirtualVote for VirtualVote.Data;
 
     struct Data {
-        VirtualVote.Data data;
+        uint256 result;
         uint256 _weightedSum;
         uint256 _defaultVotes;
         mapping(address => Vote.Data) votes;
     }
 
     function updateVote(
-        LiquidVoting.Data storage self,
+        Voting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
@@ -35,7 +32,7 @@ library LiquidVoting {
     }
 
     function updateBalance(
-        LiquidVoting.Data storage self,
+        Voting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         uint256 oldBalance,
@@ -48,7 +45,7 @@ library LiquidVoting {
     }
 
     function _update(
-        LiquidVoting.Data storage self,
+        Voting.Data storage self,
         address user,
         Vote.Data memory oldVote,
         Vote.Data memory newVote,
@@ -83,14 +80,10 @@ library LiquidVoting {
             self._defaultVotes = newDefaultVotes;
         }
 
-        {
-            uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.add(newDefaultVotes.mul(defaultVote)).div(newTotalSupply);
-            VirtualVote.Data memory data = self.data;
-            if (newResult != data.result) {
-                self.data.oldResult = data.current().toUint104();
-                self.data.result = newResult.toUint104();
-                self.data.time = block.timestamp.toUint48();
-            }
+        uint256 newResult = newTotalSupply == 0 ? defaultVote : newWeightedSum.add(newDefaultVotes.mul(defaultVote)).div(newTotalSupply);
+
+        if (newResult != self.result) {
+            self.result = newResult;
         }
 
         if (!newVote.eq(oldVote)) {

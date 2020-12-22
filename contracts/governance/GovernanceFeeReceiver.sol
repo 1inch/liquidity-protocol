@@ -2,19 +2,14 @@
 
 pragma solidity ^0.6.0;
 
+import "../utils/BaseRewards.sol";
 import "../utils/Converter.sol";
-import "./rewards/RewardDistributionRecipient.sol";
 
 
 contract GovernanceFeeReceiver is Converter {
-    RewardDistributionRecipient public immutable rewards;
+    BaseRewards public immutable rewards;
 
-    receive() external payable {
-        // solhint-disable-next-line avoid-tx-origin
-        require(msg.sender != tx.origin, "ETH transfer forbidden");
-    }
-
-    constructor(IERC20 _inchToken, RewardDistributionRecipient _rewards, IMooniswapFactory _mooniswapFactory)
+    constructor(IERC20 _inchToken, BaseRewards _rewards, IMooniswapFactory _mooniswapFactory)
         public Converter(_inchToken, _mooniswapFactory)
     {
         rewards = _rewards;
@@ -24,8 +19,8 @@ contract GovernanceFeeReceiver is Converter {
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
     }
 
-    function swap(IERC20[] memory path) external {
-        uint256 amount = _maxAmountForSwap(path, path[0].uniBalanceOf(address(this)));
+    function swap(IERC20[] memory path) external validPath(path) {
+        (uint256 amount,) = _maxAmountForSwap(path, path[0].uniBalanceOf(address(this)));
         uint256 result = _swap(path, amount, payable(address(rewards)));
         rewards.notifyRewardAmount(result);
     }

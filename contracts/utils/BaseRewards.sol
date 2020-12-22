@@ -1,28 +1,23 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts/math/Math.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "./RewardDistributionRecipient.sol";
-import "../BaseGovernanceModule.sol";
-import "../../utils/BalanceAccounting.sol";
+import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./BalanceAccounting.sol";
 
 
-contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAccounting {
-    using SafeMath for uint256;
-    using SafeERC20 for IERC20;
-
+contract BaseRewards is Ownable, BalanceAccounting {
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed user, uint256 reward);
 
     uint256 public constant DURATION = 7 days;
-    IERC20 public immutable gift;
 
-    uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
+    address public rewardDistribution;
+    IERC20 public immutable gift;
+    uint256 public periodFinish;
+    uint256 public rewardRate;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
     mapping(address => uint256) public userRewardPerTokenPaid;
@@ -39,7 +34,12 @@ contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAc
         _;
     }
 
-    constructor(IERC20 _gift, address _mothership) public BaseGovernanceModule(_mothership) {
+    modifier onlyRewardDistribution() {
+        require(_msgSender() == rewardDistribution, "Access denied");
+        _;
+    }
+
+    constructor(IERC20 _gift) public {
         gift = _gift;
     }
 
@@ -69,30 +69,16 @@ contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAc
                 .add(rewards[account]);
     }
 
-    function _notifyStakeChanged(address account, uint256 newBalance) internal override updateReward(account) {
-        uint256 balance = balanceOf(account);
-        if (newBalance > balance) {
-            _mint(account, newBalance.sub(balance));
-        } else if (newBalance < balance) {
-            _burn(account, balance.sub(newBalance));
-        }
-    }
-
-    function getReward() external updateReward(msg.sender) {
+    function getReward() public updateReward(msg.sender) {
         uint256 reward = earned(msg.sender);
         if (reward > 0) {
             rewards[msg.sender] = 0;
-            gift.safeTransfer(msg.sender, reward);
+            gift.transfer(msg.sender, reward);
             emit RewardPaid(msg.sender, reward);
         }
     }
 
-    function notifyRewardAmount(uint256 reward)
-        external
-        override
-        onlyRewardDistribution
-        updateReward(address(0))
-    {
+    function notifyRewardAmount(uint256 reward) external onlyRewardDistribution updateReward(address(0)) {
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(DURATION);
         } else {
@@ -103,5 +89,9 @@ contract Rewards is RewardDistributionRecipient, BaseGovernanceModule, BalanceAc
         lastUpdateTime = block.timestamp;
         periodFinish = block.timestamp.add(DURATION);
         emit RewardAdded(reward);
+    }
+
+    function setRewardDistribution(address _rewardDistribution) external onlyOwner {
+        rewardDistribution = _rewardDistribution;
     }
 }

@@ -22,18 +22,18 @@
         "eslint-plugin-promise": "^4.0.1",
         "eslint-plugin-standard": "^4.0.0",
         "eth-gas-reporter": "^0.2.17",
-        "ganache-cli": "^6.10.1",
+        "ganache-cli": "^6.12.1",
         "solc": "^0.6.12",
         "solhint": "^3.3.2",
         "solidity-coverage": "^0.7.10",
-        "truffle": "^5.1.41",
-        "truffle-flattener": "^1.4.4",
-        "truffle-hdwallet-provider": "^1.0.17",
-        "truffle-hdwallet-provider-privkey": "^0.3.0"
+        "truffle": "^5.1.58",
+        "truffle-flattener": "^1.5.0",
+        "@truffle/hdwallet-provider": "^1.2.0"
     },
     "scripts": {
         "test": "truffle test --stacktrace",
         "deploy:kovan": "truffle migrate --network kovan --reset",
+        "deploy:mainnet": "truffle migrate --network mainnet --reset",
         "coverage": "truffle run coverage",
         "coveralls": "truffle run coverage && cat coverage/lcov.info | coveralls",
         "lint:js": "eslint .",
@@ -42,7 +42,7 @@
         "lint:sol:fix": "solhint --max-warnings 0 \"contracts/**/*.sol\" --fix",
         "lint": "yarn run lint:js && yarn run lint:sol",
         "lint:fix": "yarn run lint:js:fix && yarn run lint:sol:fix",
-        "dist": "rm -rf build && yarn truffle compile && mkdir -p dist && cp build/contracts/Mooniswap.json dist/ && cp build/contracts/MooniswapFactory.json dist/ && cp build/contracts/GovernanceMothership.json dist/ && cp build/contracts/Rewards.json dist/ && cp build/contracts/ReferralFeeReceiver.json dist/ && cp build/contracts/GovernanceFeeReceiver.json dist/ && cp build/contracts/TokenMock.json dist/",
+        "dist": "rm -rf build && yarn truffle compile && mkdir -p dist && cp build/contracts/Mooniswap.json dist/ && cp build/contracts/MooniswapFactory.json dist/ && cp build/contracts/GovernanceMothership.json dist/ && cp build/contracts/GovernanceRewards.json dist/ && cp build/contracts/ReferralFeeReceiver.json dist/ && cp build/contracts/GovernanceFeeReceiver.json dist/ && cp build/contracts/TokenMock.json dist/ && cp build/contracts/FarmingRewards.json dist/ && cp build/contracts/ExchangeGovernance.json dist/",
         "flatten:mooniswap": "truffle-flattener ./contracts/Mooniswap.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./Mooniswap.full.sol && solcjs --bin --abi --optimize ./Mooniswap.full.sol && mv ./__Mooniswap_full_sol_Mooniswap.bin ./Mooniswap.full.bin && mv ./__Mooniswap_full_sol_Mooniswap.abi ./Mooniswap.full.abi && rm ./*_sol_*",
         "flatten:factory": "truffle-flattener ./contracts/MooniFactory.sol |  awk '/SPDX-License-Identifier/&&c++>0 {next} 1' > ./MooniFactory.full.sol && solcjs --bin --abi --optimize ./MooniFactory.full.sol && mv ./__MooniFactory_full_sol_MooniFactory.bin ./MooniFactory.full.bin && mv ./__MooniFactory_full_sol_MooniFactory.abi ./MooniFactory.full.abi && rm ./*_sol_*"
     }
