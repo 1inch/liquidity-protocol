@@ -42,8 +42,7 @@ contract Converter is Ownable {
     }
 
     modifier validPool(Mooniswap mooniswap) {
-        IERC20[] memory tokens = mooniswap.getTokens();
-        require(mooniswapFactory.pools(tokens[0], tokens[1]) == mooniswap, "Invalid mooniswap address");
+        require(mooniswapFactory.isPool(mooniswap), "Invalid mooniswap");
 
         _;
     }

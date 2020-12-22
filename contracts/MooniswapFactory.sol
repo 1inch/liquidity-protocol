@@ -21,7 +21,7 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
     IMooniswapDeployer public immutable mooniswapDeployer;
     address public immutable poolOwner;
     Mooniswap[] public allPools;
-    mapping(Mooniswap => bool) public isPool;
+    mapping(Mooniswap => bool) public override isPool;
     mapping(IERC20 => mapping(IERC20 => Mooniswap)) private _pools;
 
     constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
