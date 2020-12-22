@@ -140,11 +140,11 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
             await this.factory.defaultFeeVote(money.weth('0.003'));
         });
 
-        it('referral reward should be 1/20 of value increase', async function () {
+        it('referral reward should be 1/10 of value increase', async function () {
             await this.mooniswap.deposit([new BN('1000'), new BN('1000')], [money.zero, money.zero], { from: wallet1 });
             await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
             await this.mooniswap.swap(this.WETH.address, this.DAI.address, new BN('1000000000000'), money.zero, wallet3, { from: wallet2 });
-            expect(await this.mooniswap.balanceOf(wallet3)).to.be.bignumber.equal('4995');
+            expect(await this.mooniswap.balanceOf(wallet3)).to.be.bignumber.equal('9990');
         });
     });
 

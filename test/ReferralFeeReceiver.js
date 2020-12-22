@@ -23,7 +23,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
         await this.feeReceiver.updatePathWhitelist(constants.ZERO_ADDRESS, true);
 
         this.factory.notifyStakeChanged(wallet1, '1');
-        await this.factory.defaultFeeVote(ether('0.1'));
+        await this.factory.defaultFeeVote(ether('0.01'));
         await timeIncreaseTo((await time.latest()).addn(86500));
 
         await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
@@ -44,7 +44,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     });
 
     it('should receive referral fee', async function () {
-        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', wallet1, { value: ether('1'), from: wallet2 });
+        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('0.1'), '0', wallet1, { value: ether('0.1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
         await this.feeReceiver.freezeEpoch(this.mooniswap.address);
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
@@ -65,7 +65,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
             wallet1,
             () => this.feeReceiver.claim([this.mooniswap.address]),
         );
-        expect(received).to.be.bignumber.equal('768280189852540105');
+        expect(received).to.be.bignumber.equal('105530055456189700');
 
         const { firstUnprocessedEpoch, currentEpoch } = await this.feeReceiver.tokenInfo(this.mooniswap.address);
         expect(firstUnprocessedEpoch).to.be.bignumber.equal('1');
