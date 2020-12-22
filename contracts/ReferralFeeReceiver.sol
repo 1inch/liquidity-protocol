@@ -18,8 +18,8 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
 
     struct EpochBalance {
         uint256 totalSupply;
-        uint256 token0Balance;
-        uint256 token1Balance;
+        uint256 token0Share;
+        uint256 token1Share;
         uint256 inchBalance;
     }
 
@@ -31,6 +31,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
 
     mapping(address => UserInfo) public userInfo;
     mapping(IERC20 => TokenInfo) public tokenInfo;
+    mapping(IERC20 => uint256) public tokenTotalShares;
 
     // solhint-disable-next-line no-empty-blocks
     constructor(IERC20 _inchToken, IMooniswapFactory _mooniswapFactory) public Converter(_inchToken, _mooniswapFactory) {}
@@ -57,10 +58,34 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         IERC20[] memory tokens = mooniswap.getTokens();
         uint256 token0Balance = tokens[0].uniBalanceOf(address(this));
         uint256 token1Balance = tokens[1].uniBalanceOf(address(this));
+
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
-        token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
-        token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
+
+        (tokenTotalShares[tokens[0]], token.epochBalance[currentEpoch].token0Share) = _increaseShare(
+            token0Balance,
+            tokenTotalShares[tokens[0]],
+            tokens[0].uniBalanceOf(address(this)).sub(token0Balance)
+        );
+        (tokenTotalShares[tokens[1]], token.epochBalance[currentEpoch].token1Share) = _increaseShare(
+            token1Balance,
+            tokenTotalShares[tokens[1]],
+            tokens[1].uniBalanceOf(address(this)).sub(token1Balance)
+        );
+
         token.currentEpoch = currentEpoch.add(1);
+    }
+
+    function _increaseShare(uint256 tokenBalance, uint256 totalShares, uint256 balance) private view returns(uint256 /*returnTotalShares*/, uint256 /*share*/) {
+        if (totalShares == 0) {
+            return (balance, balance);
+        }
+
+        if (tokenBalance == 0) {
+            return (0, balance);
+        }
+
+        uint256 share = balance.mul(totalShares).div(tokenBalance);
+        return (totalShares.add(share), share);
     }
 
     function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {
@@ -71,10 +96,16 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
 
         IERC20[] memory tokens = mooniswap.getTokens();
         uint256 availableBalance;
+        uint256 totalShares;
+        uint256 share;
         if (path[0] == tokens[0]) {
-            availableBalance = epochBalance.token0Balance;
+            share = epochBalance.token0Share;
+            totalShares = tokenTotalShares[tokens[0]];
+            availableBalance = tokens[0].uniBalanceOf(address(this)).mul(share).div(totalShares);
         } else if (path[0] == tokens[1]) {
-            availableBalance = epochBalance.token1Balance;
+            share = epochBalance.token1Share;
+            totalShares = tokenTotalShares[tokens[1]];
+            availableBalance = tokens[1].uniBalanceOf(address(this)).mul(share).div(totalShares);
         } else {
             revert("Invalid first token");
         }
@@ -99,13 +130,16 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
             epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
         }
 
+        uint256 deductedShare = share.mul(amount).div(availableBalance);
         if (path[0] == tokens[0]) {
-            epochBalance.token0Balance = epochBalance.token0Balance.sub(amount);
+            epochBalance.token0Share = share.sub(deductedShare);
+            tokenTotalShares[tokens[0]] = totalShares.sub(deductedShare);
         } else {
-            epochBalance.token1Balance = epochBalance.token1Balance.sub(amount);
+            epochBalance.token1Share = share.sub(deductedShare);
+            tokenTotalShares[tokens[0]] = totalShares.sub(deductedShare);
         }
 
-        if (epochBalance.token0Balance == 0 && epochBalance.token1Balance == 0) {
+        if (epochBalance.token0Share == 0 && epochBalance.token1Share == 0) {
             token.firstUnprocessedEpoch = firstUnprocessedEpoch.add(1);
         }
     }
@@ -156,11 +190,25 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
             user.share[mooniswap][firstUnprocessedEpoch] = 0;
             epochBalance.totalSupply = totalSupply.sub(share);
 
+            uint256 token0Share = epochBalance.token0Share;
+            uint256 token1Share = epochBalance.token1Share;
+            uint256 inchBalance = epochBalance.inchBalance;
+            epochBalance.token0Share = 0;
+            epochBalance.token1Share = 0;
+            epochBalance.inchBalance = 0;
+
             IERC20[] memory tokens = mooniswap.getTokens();
-            epochBalance.token0Balance = _transferTokenShare(tokens[0], epochBalance.token0Balance, share, totalSupply);
-            epochBalance.token1Balance = _transferTokenShare(tokens[1], epochBalance.token1Balance, share, totalSupply);
-            epochBalance.inchBalance = _transferTokenShare(inchToken, epochBalance.inchBalance, share, totalSupply);
+            _transferTokenShare(tokens[0], _balanceOfShare(tokens[0], token0Share), share, totalSupply);
+            _transferTokenShare(tokens[1], _balanceOfShare(tokens[1], token1Share), share, totalSupply);
+            _transferTokenShare(inchToken, inchBalance, share, totalSupply);
+
+            tokenTotalShares[tokens[0]] = tokenTotalShares[tokens[0]].sub(token0Share);
+            tokenTotalShares[tokens[1]] = tokenTotalShares[tokens[1]].sub(token1Share);
         }
+    }
+
+    function _balanceOfShare(IERC20 token, uint256 share) private view returns(uint256) {
+        return token.uniBalanceOf(address(this)).mul(share).div(tokenTotalShares[token]);
     }
 
     function _transferTokenShare(IERC20 token, uint256 balance, uint256 share, uint256 totalSupply) private returns(uint256 newBalance) {
