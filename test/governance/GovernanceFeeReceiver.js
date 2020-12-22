@@ -24,14 +24,14 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         await this.factory.setGovernanceFeeReceiver(this.feeReceiver.address);
         this.factory.notifyStakeChanged(wallet1, '1');
         this.rewards.notifyStakeChanged(wallet1, '1');
-        await this.factory.defaultFeeVote(ether('0.1'));
+        await this.factory.defaultFeeVote(ether('0.01'));
         expect(await this.factory.defaultFee()).to.be.bignumber.equal('0');
         await timeIncreaseTo((await time.latest()).addn(86500));
-        expect(await this.factory.defaultFee()).to.be.bignumber.equal(ether('0.1'));
-        await this.factory.governanceShareVote(ether('0.25'));
+        expect(await this.factory.defaultFee()).to.be.bignumber.equal(ether('0.01'));
+        await this.factory.governanceShareVote(ether('0.1'));
         expect(await this.factory.governanceShare()).to.be.bignumber.equal('0');
         await timeIncreaseTo((await time.latest()).addn(86500));
-        expect(await this.factory.governanceShare()).to.be.bignumber.equal(ether('0.25'));
+        expect(await this.factory.governanceShare()).to.be.bignumber.equal(ether('0.1'));
 
         await this.factory.deploy(constants.ZERO_ADDRESS, this.DAI.address);
         this.mooniswap = await Mooniswap.at(await this.factory.pools(constants.ZERO_ADDRESS, this.DAI.address));
@@ -51,24 +51,26 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
     });
 
     it('test', async function () {
-        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('1'), '0', constants.ZERO_ADDRESS, { value: ether('1'), from: wallet2 });
+        await this.mooniswap.swap(constants.ZERO_ADDRESS, this.DAI.address, ether('0.1'), '0', constants.ZERO_ADDRESS, { value: ether('0.1'), from: wallet2 });
         await timeIncreaseTo((await time.latest()).add(await this.mooniswap.decayPeriod()));
         await this.feeReceiver.unwrapLPTokens(this.mooniswap.address);
+        await timeIncreaseTo((await time.latest()).addn(86500));
         await this.feeReceiver.swap([constants.ZERO_ADDRESS, this.token.address]);
+        await timeIncreaseTo((await time.latest()).addn(86500));
         await this.feeReceiver.swap([this.DAI.address, constants.ZERO_ADDRESS, this.token.address]);
         await timeIncreaseTo((await time.latest()).add((await this.rewards.DURATION()).divn(2)));
         const earned = await this.rewards.earned(wallet1);
-        expect(earned).to.be.bignumber.gt(ether('0.88'));
-        expect(earned).to.be.bignumber.lt(ether('0.9'));
+        expect(earned).to.be.bignumber.gt(ether('0.05'));
+        expect(earned).to.be.bignumber.lt(ether('0.06'));
         await timeIncreaseTo((await time.latest()).add(await this.rewards.DURATION()).addn(10000));
-        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('1778086948475779200');
+        expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('105530055455570982');
 
         const received = await trackReceivedToken(
             this.token,
             wallet1,
             () => this.rewards.getReward(),
         );
-        expect(received).to.be.bignumber.equal('1778086948475779200');
+        expect(received).to.be.bignumber.equal('105530055455570982');
         expect(await this.rewards.earned(wallet1)).to.be.bignumber.equal('0');
     });
 });
