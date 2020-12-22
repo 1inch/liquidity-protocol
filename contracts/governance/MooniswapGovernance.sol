@@ -113,7 +113,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         if (from == to) {
-            // do not handle transfers to self
+            // ignore transfers to self
             return;
         }
 
