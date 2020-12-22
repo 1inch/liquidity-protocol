@@ -115,7 +115,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
         bool updateFrom = !(from == address(0) || mooniswapFactoryGovernance.isFeeReceiver(from));
         bool updateTo = !(to == address(0) || mooniswapFactoryGovernance.isFeeReceiver(to));
 
-        if (!(updateFrom || updateTo)) {
+        if (!updateFrom && !updateTo)) {
             // mint to feeReceiver or burn from feeReceiver
             return;
         }
