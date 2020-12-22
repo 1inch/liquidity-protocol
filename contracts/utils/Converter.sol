@@ -18,7 +18,7 @@ contract Converter is Ownable {
     using VirtualBalance for VirtualBalance.Data;
 
     uint256 private constant _ONE = 1e18;
-    uint256 private constant _SPREAD_FEE_MULTIPLIER = 10;
+    uint256 private constant _MAX_SPREAD = 0.01e18;
     uint256 private constant _MAX_LIQUIDITY_SHARE = 100;
 
     IERC20 public immutable inchToken;
@@ -82,7 +82,7 @@ contract Converter is Ownable {
             spotPrice = _ONE.mul(token1Balance).div(token0Balance);
         }
 
-        return buyPrice.sub(sellPrice).mul(_ONE) < mooniswap.fee().mul(_SPREAD_FEE_MULTIPLIER).mul(spotPrice);
+        return buyPrice.sub(sellPrice).mul(_ONE) < _MAX_SPREAD.mul(spotPrice);
     }
 
     function _maxAmountForSwap(IERC20[] memory path, uint256 amount) internal view returns(uint256 srcAmount, uint256 dstAmount) {
