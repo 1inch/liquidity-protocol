@@ -49,7 +49,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         _collectProcessedEpochs(user, token, mooniswap, currentEpoch);
     }
 
-    function freezeEpoch(Mooniswap mooniswap) external validSpread(mooniswap) {
+    function freezeEpoch(Mooniswap mooniswap) external validPool(mooniswap) validSpread(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 currentEpoch = token.currentEpoch;
         require(token.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finalized");
@@ -63,7 +63,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         token.currentEpoch = currentEpoch.add(1);
     }
 
-    function trade(Mooniswap mooniswap, IERC20[] memory path) external validPath(path) {
+    function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
         EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];
@@ -126,7 +126,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimCurrentEpoch(Mooniswap mooniswap) external {
+    function claimCurrentEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 currentEpoch = token.currentEpoch;
@@ -138,7 +138,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimFrozenEpoch(Mooniswap mooniswap) external {
+    function claimFrozenEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
