@@ -1,4 +1,5 @@
 const GovernanceMothership = artifacts.require('./inch/GovernanceMothership.sol');
+const ExchangeGovernance = artifacts.require('./ExchangeGovernance.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
@@ -29,6 +30,11 @@ module.exports = function (deployer, network) {
 
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = await deployer.deploy(GovernanceMothership, token.address);
+
+        // Exchange Governance
+
+        const exchangeGovernance = await deployer.deploy(ExchangeGovernance, governanceMothership.address);
+        await governanceMothership.addModule(exchangeGovernance.address);
 
         // Mooniswap Factory
 

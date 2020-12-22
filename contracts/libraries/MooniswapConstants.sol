@@ -3,7 +3,7 @@
 pragma solidity ^0.6.0;
 
 
-contract MooniswapConstants {
+library MooniswapConstants {
     uint256 internal constant _FEE_DENOMINATOR = 1e18;
 
     uint256 internal constant _MIN_REFERRAL_SHARE = 0.0001e18; // 0.01%

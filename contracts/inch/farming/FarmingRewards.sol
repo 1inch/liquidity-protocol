@@ -3,11 +3,12 @@
 pragma solidity ^0.6.12;
 
 import "../../Mooniswap.sol";
+import "../../libraries/MooniswapConstants.sol";
 import "../../libraries/Voting.sol";
 import "../../utils/BaseRewards.sol";
 
 
-contract FarmingRewards is MooniswapConstants, BaseRewards {
+contract FarmingRewards is BaseRewards {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
 
@@ -73,22 +74,22 @@ contract FarmingRewards is MooniswapConstants, BaseRewards {
     }
 
     function feeVote(uint256 vote) external {
-        require(vote <= _MAX_FEE, "Fee vote is too high");
+        require(vote <= MooniswapConstants._MAX_FEE, "Fee vote is too high");
 
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
     }
 
     function slippageFeeVote(uint256 vote) external {
-        require(vote <= _MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
+        require(vote <= MooniswapConstants._MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
     function decayPeriodVote(uint256 vote) external {
-        require(vote <= _MAX_DECAY_PERIOD, "Decay period vote is too high");
-        require(vote >= _MIN_DECAY_PERIOD, "Decay period vote is too low");
+        require(vote <= MooniswapConstants._MAX_DECAY_PERIOD, "Decay period vote is too high");
+        require(vote >= MooniswapConstants._MIN_DECAY_PERIOD, "Decay period vote is too low");
 
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
         _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
@@ -124,11 +125,11 @@ contract FarmingRewards is MooniswapConstants, BaseRewards {
     }
 
     function _updateVotes(address account, uint256 balance, uint256 newBalance, uint256 newTotalSupply) private {
-        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_FEE, _emitFeeVoteUpdate);
+        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_FEE, _emitFeeVoteUpdate);
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
-        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_SLIPPAGE_FEE, _emitSlippageFeeVoteUpdate);
+        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_SLIPPAGE_FEE, _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
-        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, _DEFAULT_DECAY_PERIOD, _emitDecayPeriodVoteUpdate);
+        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_DECAY_PERIOD, _emitDecayPeriodVoteUpdate);
         _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
