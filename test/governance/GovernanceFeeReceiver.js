@@ -10,7 +10,7 @@ const GovernanceFeeReceiver = artifacts.require('GovernanceFeeReceiver');
 const GovernanceRewards = artifacts.require('GovernanceRewards');
 const TokenMock = artifacts.require('TokenMock');
 
-contract.only('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
+contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
     beforeEach(async function () {
         this.DAI = await TokenMock.new('DAI', 'DAI', 18);
         this.token = await TokenMock.new('INCH', 'INCH', 18);
