@@ -112,10 +112,15 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard, MooniswapConsta
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+        if (from == to) {
+            // ignore transfers to self
+            return;
+        }
+
         bool updateFrom = !(from == address(0) || mooniswapFactoryGovernance.isFeeReceiver(from));
         bool updateTo = !(to == address(0) || mooniswapFactoryGovernance.isFeeReceiver(to));
 
-        if (!updateFrom && !updateTo)) {
+        if (!updateFrom && !updateTo) {
             // mint to feeReceiver or burn from feeReceiver
             return;
         }

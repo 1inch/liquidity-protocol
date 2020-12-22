@@ -13,9 +13,9 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
     using UniERC20 for IERC20;
 
     event Deployed(
-        address indexed mooniswap,
-        address indexed token1,
-        address indexed token2
+        Mooniswap indexed mooniswap,
+        IERC20 indexed token1,
+        IERC20 indexed token2
     );
 
     IMooniswapDeployer public immutable mooniswapDeployer;
@@ -58,11 +58,7 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
         allPools.push(pool);
         isPool[pool] = true;
 
-        emit Deployed(
-            address(pool),
-            address(token1),
-            address(token2)
-        );
+        emit Deployed(pool, token1, token2);
     }
 
     function sortTokens(IERC20 tokenA, IERC20 tokenB) public pure returns(IERC20, IERC20) {

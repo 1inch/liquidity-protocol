@@ -16,8 +16,8 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
     address public rewardDistribution;
     IERC20 public immutable gift;
-    uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
+    uint256 public periodFinish;
+    uint256 public rewardRate;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
     mapping(address => uint256) public userRewardPerTokenPaid;
