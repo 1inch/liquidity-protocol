@@ -2,12 +2,13 @@
 
 pragma solidity ^0.6.0;
 
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IReferralFeeReceiver.sol";
 import "./libraries/UniERC20.sol";
 import "./utils/Converter.sol";
 
 
-contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
+contract ReferralFeeReceiver is IReferralFeeReceiver, Converter, ReentrancyGuard {
     using UniERC20 for IERC20;
 
     struct UserInfo {
@@ -49,7 +50,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         _collectProcessedEpochs(user, token, mooniswap, currentEpoch);
     }
 
-    function freezeEpoch(Mooniswap mooniswap) external validPool(mooniswap) validSpread(mooniswap) {
+    function freezeEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) validSpread(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 currentEpoch = token.currentEpoch;
         require(token.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finalized");
@@ -63,7 +64,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         token.currentEpoch = currentEpoch.add(1);
     }
 
-    function trade(Mooniswap mooniswap, IERC20[] memory path) external validPool(mooniswap) validPath(path) {
+    function trade(Mooniswap mooniswap, IERC20[] memory path) external nonReentrant validPool(mooniswap) validPath(path) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
         EpochBalance storage epochBalance = token.epochBalance[firstUnprocessedEpoch];
@@ -126,7 +127,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimCurrentEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
+    function claimCurrentEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 currentEpoch = token.currentEpoch;
@@ -138,7 +139,7 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter {
         }
     }
 
-    function claimFrozenEpoch(Mooniswap mooniswap) external validPool(mooniswap) {
+    function claimFrozenEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;

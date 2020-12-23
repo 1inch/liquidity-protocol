@@ -14,7 +14,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event Transfer(address indexed src, address indexed dst, uint256 amount);
+    event Transfer(address indexed from, address indexed to, uint256 value);
     event AddModule(address indexed module);
     event RemoveModule(address indexed module);
 
@@ -50,9 +50,9 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     function unstake(uint256 amount) external {
         require(amount > 0, "Empty unstake is not allowed");
 
-        inchToken.transfer(msg.sender, amount);
         _burn(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        inchToken.transfer(msg.sender, amount);
         emit Transfer(msg.sender, address(0), amount);
     }
 

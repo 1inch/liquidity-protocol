@@ -16,4 +16,5 @@ interface IMooniswapFactoryGovernance {
     function referralFeeReceiver() external view returns(address);
 
     function isFeeReceiver(address) external view returns(bool);
+    function isActive() external view returns (bool);
 }

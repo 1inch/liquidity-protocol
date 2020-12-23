@@ -294,6 +294,22 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 expect(received).to.be.bignumber.equal(money.dai('135'));
             });
 
+            it('should fail after shutting down factory', async function () {
+                const wethAdditionBalance = await this.mooniswap.getBalanceForAddition(this.WETH.address);
+                const daiRemovalBalance = await this.mooniswap.getBalanceForRemoval(this.DAI.address);
+                const result = await this.mooniswap.getReturn(this.WETH.address, this.DAI.address, money.weth('1'));
+                expect(wethAdditionBalance).to.be.bignumber.equal(money.weth('1'));
+                expect(daiRemovalBalance).to.be.bignumber.equal(money.dai('270'));
+                expect(result).to.be.bignumber.equal(money.dai('135'));
+
+                await this.factory.shutdown({ from: wallet1 });
+
+                await expectRevert(
+                    this.mooniswap.swap(this.WETH.address, this.DAI.address, money.weth('1'), money.zero, constants.ZERO_ADDRESS, { from: wallet2 }),
+                    'Mooniswap: factory shutdown',
+                );
+            });
+
             it('should give additive results for the swaps of the same direction', async function () {
                 // Pre-second swap checks
                 const wethAdditionBalance1 = await this.mooniswap.getBalanceForAddition(this.WETH.address);

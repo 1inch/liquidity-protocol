@@ -79,6 +79,11 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
+    modifier whenNotShutdown {
+        require(mooniswapFactoryGovernance.isActive(), "Mooniswap: factory shutdown");
+        _;
+    }
+
     constructor(
         IERC20 _token0,
         IERC20 _token1,
@@ -219,7 +224,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         return swapFor(src, dst, amount, minReturn, referral, msg.sender);
     }
 
-    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant returns(uint256 result) {
+    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant whenNotShutdown returns(uint256 result) {
         require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
 
         Balances memory balances = Balances({
@@ -307,7 +312,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         slippage = (spot_ret - uni_ret) / spot_ret
         slippage = dx * dx * y / (x * (x + dx)) / (dx * y / x)
         slippage = dx / (x + dx)
-        ret = uni_ret * (1 - fee_percentage * slippage)
+        ret = uni_ret * (1 - slip_fee * slippage)
         ret = dx * y / (x + dx) * (1 - slip_fee * dx / (x + dx))
         ret = dx * y / (x + dx) * (x + dx - slip_fee * dx) / (x + dx)
 

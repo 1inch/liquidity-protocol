@@ -24,11 +24,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-ABC-XYZ');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (ABC-XYZ)');
+                expect(await pool.symbol()).to.be.equal('1LP-ABC-XYZ');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (ABC-XYZ)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-XYZ-ABC');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (XYZ-ABC)');
+                expect(await pool.symbol()).to.be.equal('1LP-XYZ-ABC');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (XYZ-ABC)');
             }
         });
 
@@ -39,11 +39,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-012345678901234567890123456789123-XYZ');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (012345678901234567890123456789123-XYZ)');
+                expect(await pool.symbol()).to.be.equal('1LP-012345678901234567890123456789123-XYZ');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (012345678901234567890123456789123-XYZ)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-XYZ-012345678901234567890123456789123');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (XYZ-012345678901234567890123456789123)');
+                expect(await pool.symbol()).to.be.equal('1LP-XYZ-012345678901234567890123456789123');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (XYZ-012345678901234567890123456789123)');
             }
         });
 
@@ -54,11 +54,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-' + token1.address.toLowerCase() + '-XYZ');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (' + token1.address.toLowerCase() + '-XYZ)');
+                expect(await pool.symbol()).to.be.equal('1LP-' + token1.address.toLowerCase() + '-XYZ');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (' + token1.address.toLowerCase() + '-XYZ)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-XYZ-' + token1.address.toLowerCase());
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (XYZ-' + token1.address.toLowerCase() + ')');
+                expect(await pool.symbol()).to.be.equal('1LP-XYZ-' + token1.address.toLowerCase());
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (XYZ-' + token1.address.toLowerCase() + ')');
             }
         });
 
@@ -69,11 +69,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-' + token1.address.toLowerCase() + '-XYZ');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (' + token1.address.toLowerCase() + '-XYZ)');
+                expect(await pool.symbol()).to.be.equal('1LP-' + token1.address.toLowerCase() + '-XYZ');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (' + token1.address.toLowerCase() + '-XYZ)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-XYZ-' + token1.address.toLowerCase());
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (XYZ-' + token1.address.toLowerCase() + ')');
+                expect(await pool.symbol()).to.be.equal('1LP-XYZ-' + token1.address.toLowerCase());
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (XYZ-' + token1.address.toLowerCase() + ')');
             }
         });
 
@@ -84,11 +84,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-' + token1.address.toLowerCase() + '-XYZ');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (' + token1.address.toLowerCase() + '-XYZ)');
+                expect(await pool.symbol()).to.be.equal('1LP-' + token1.address.toLowerCase() + '-XYZ');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (' + token1.address.toLowerCase() + '-XYZ)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-XYZ-' + token1.address.toLowerCase());
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (XYZ-' + token1.address.toLowerCase() + ')');
+                expect(await pool.symbol()).to.be.equal('1LP-XYZ-' + token1.address.toLowerCase());
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (XYZ-' + token1.address.toLowerCase() + ')');
             }
         });
 
@@ -99,11 +99,11 @@ contract('MooniswapFactory', function ([_, wallet1, wallet2]) {
 
             const pool = await Mooniswap.at(await this.factory.pools(token1.address, token2.address));
             if (token1.address.localeCompare(token2.address, undefined, { sensitivity: 'base' }) < 0) {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-caps1-caps2');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (caps1-caps2)');
+                expect(await pool.symbol()).to.be.equal('1LP-caps1-caps2');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (caps1-caps2)');
             } else {
-                expect(await pool.symbol()).to.be.equal('MOON-V2-caps2-caps1');
-                expect(await pool.name()).to.be.equal('Mooniswap V2 (caps2-caps1)');
+                expect(await pool.symbol()).to.be.equal('1LP-caps2-caps1');
+                expect(await pool.name()).to.be.equal('1inch Liquidity Pool (caps2-caps1)');
             }
         });
     });
