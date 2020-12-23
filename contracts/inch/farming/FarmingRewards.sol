@@ -16,6 +16,7 @@ contract FarmingRewards is BaseRewards {
     event Withdrawn(address indexed user, uint256 amount);
     event FeeVoteUpdate(address indexed user, uint256 fee, bool isDefault, uint256 amount);
 
+    event Transfer(address indexed from, address indexed to, uint256 value);
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
     event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
 
@@ -30,11 +31,24 @@ contract FarmingRewards is BaseRewards {
         mooniswapFactoryGovernance = _mooniswap.mooniswapFactoryGovernance();
     }
 
+    function name() external view returns(string memory) {
+        return string(abi.encodePacked("Farming: ", mooniswap.name()));
+    }
+
+    function symbol() external view returns(string memory) {
+        return string(abi.encodePacked("farm-", mooniswap.symbol()));
+    }
+
+    function decimals() external view returns(uint8) {
+        return mooniswap.decimals();
+    }
+
     function stake(uint256 amount) public updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
-        _mint(msg.sender, amount);
         mooniswap.transferFrom(msg.sender, address(this), amount);
+        _mint(msg.sender, amount);
         emit Staked(msg.sender, amount);
+        emit Transfer(address(0), msg.sender, amount);
     }
 
     function withdraw(uint256 amount) public updateReward(msg.sender) {
@@ -42,6 +56,7 @@ contract FarmingRewards is BaseRewards {
         _burn(msg.sender, amount);
         mooniswap.transfer(msg.sender, amount);
         emit Withdrawn(msg.sender, amount);
+        emit Transfer(msg.sender, address(0), amount);
     }
 
     function exit() external {
