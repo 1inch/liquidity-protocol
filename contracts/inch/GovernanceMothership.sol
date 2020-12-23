@@ -50,9 +50,9 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     function unstake(uint256 amount) external {
         require(amount > 0, "Empty unstake is not allowed");
 
-        inchToken.transfer(msg.sender, amount);
         _burn(msg.sender, amount);
         _notifyFor(msg.sender, balanceOf(msg.sender));
+        inchToken.transfer(msg.sender, amount);
         emit Transfer(msg.sender, address(0), amount);
     }
 
