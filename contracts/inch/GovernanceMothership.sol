@@ -14,7 +14,7 @@ contract GovernanceMothership is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event Transfer(address indexed src, address indexed dst, uint256 amount);
+    event Transfer(address indexed from, address indexed to, uint256 value);
     event AddModule(address indexed module);
     event RemoveModule(address indexed module);
 
