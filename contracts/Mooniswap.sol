@@ -307,7 +307,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         slippage = (spot_ret - uni_ret) / spot_ret
         slippage = dx * dx * y / (x * (x + dx)) / (dx * y / x)
         slippage = dx / (x + dx)
-        ret = uni_ret * (1 - fee_percentage * slippage)
+        ret = uni_ret * (1 - slip_fee * slippage)
         ret = dx * y / (x + dx) * (1 - slip_fee * dx / (x + dx))
         ret = dx * y / (x + dx) * (x + dx - slip_fee * dx) / (x + dx)
 
