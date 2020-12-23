@@ -3,6 +3,7 @@
 pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
 import "../libraries/ExplicitLiquidVoting.sol";
 import "../libraries/MooniswapConstants.sol";
@@ -11,7 +12,7 @@ import "../utils/BalanceAccounting.sol";
 import "./BaseGovernanceModule.sol";
 
 
-contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, BalanceAccounting, Ownable {
+contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernanceModule, BalanceAccounting, Ownable, Pausable {
     using Vote for Vote.Data;
     using ExplicitLiquidVoting for ExplicitLiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
@@ -42,6 +43,14 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _defaultDecayPeriod.data.result = MooniswapConstants._DEFAULT_DECAY_PERIOD.toUint104();
         _referralShare.data.result = MooniswapConstants._DEFAULT_REFERRAL_SHARE.toUint104();
         _governanceShare.data.result = MooniswapConstants._DEFAULT_GOVERNANCE_SHARE.toUint104();
+    }
+
+    function shutdown() external onlyOwner {
+        _pause();
+    }
+
+    function isActive() external view override returns (bool) {
+        return !paused();
     }
 
     function shareParameters() external view override returns(uint256, uint256, address, address) {

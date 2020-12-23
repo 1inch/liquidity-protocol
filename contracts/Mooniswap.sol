@@ -79,6 +79,11 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
+    modifier whenNotShutdown {
+        require(mooniswapFactoryGovernance.isActive(), "Mooniswap: factory shutdown");
+        _;
+    }
+
     constructor(
         IERC20 _token0,
         IERC20 _token1,
@@ -219,7 +224,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         return swapFor(src, dst, amount, minReturn, referral, msg.sender);
     }
 
-    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant returns(uint256 result) {
+    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant whenNotShutdown returns(uint256 result) {
         require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
 
         Balances memory balances = Balances({
