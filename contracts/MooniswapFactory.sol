@@ -50,8 +50,8 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
         pool = mooniswapDeployer.deploy(
             token1,
             token2,
-            string(abi.encodePacked("Mooniswap V2 (", symbol1, "-", symbol2, ")")),
-            string(abi.encodePacked("MOON-V2-", symbol1, "-", symbol2)),
+            string(abi.encodePacked("1inch Liquidity Pool (", symbol1, "-", symbol2, ")")),
+            string(abi.encodePacked("1LP-", symbol1, "-", symbol2)),
             poolOwner
         );
 
