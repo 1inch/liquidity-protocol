@@ -27,7 +27,7 @@ module.exports = {
                 });
             },
             gas: 6000000,
-            gasPrice: 80000000000,
+            gasPrice: 90000000000,
             network_id: 1
         }
     },
@@ -42,7 +42,13 @@ module.exports = {
             }
         }
     },
-    plugins: ['solidity-coverage'],
+    plugins: [
+        'solidity-coverage',
+        'truffle-plugin-verify'
+    ],
+    api_keys: {
+        etherscan: 'DTH5NTHIRUVSIQ8Q7PYAKPYSP3W25QHIZ7'
+    },
     mocha: { // https://github.com/cgewecke/eth-gas-reporter
         reporter: 'eth-gas-reporter',
         reporterOptions: {
