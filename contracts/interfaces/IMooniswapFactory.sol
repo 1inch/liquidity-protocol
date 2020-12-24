@@ -2,7 +2,6 @@
 
 pragma solidity ^0.6.0;
 
-import "./IMooniswapFactory.sol";
 import "../Mooniswap.sol";
 
 interface IMooniswapFactory is IMooniswapFactoryGovernance {
