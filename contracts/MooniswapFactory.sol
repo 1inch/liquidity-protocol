@@ -27,7 +27,6 @@ contract MooniswapFactory is IMooniswapFactory, MooniswapFactoryGovernance {
     constructor (address _poolOwner, IMooniswapDeployer _mooniswapDeployer, address _governanceMothership) public MooniswapFactoryGovernance(_governanceMothership) {
         poolOwner = _poolOwner;
         mooniswapDeployer = _mooniswapDeployer;
-        transferOwnership(_poolOwner);
     }
 
     function getAllPools() external view returns(Mooniswap[] memory) {

@@ -302,7 +302,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 expect(daiRemovalBalance).to.be.bignumber.equal(money.dai('270'));
                 expect(result).to.be.bignumber.equal(money.dai('135'));
 
-                await this.factory.shutdown({ from: wallet1 });
+                await this.factory.shutdown();
 
                 await expectRevert(
                     this.mooniswap.swap(this.WETH.address, this.DAI.address, money.weth('1'), money.zero, constants.ZERO_ADDRESS, { from: wallet2 }),

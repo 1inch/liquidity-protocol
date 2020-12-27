@@ -62,12 +62,12 @@ library ExplicitLiquidVoting {
 
         if (!oldVote.isDefault()) {
             newWeightedSum = newWeightedSum.sub(oldBalance.mul(oldVote.get(defaultVote)));
-            newVotedSupply = oldVotedSupply.sub(oldBalance);
+            newVotedSupply = newVotedSupply.sub(oldBalance);
         }
 
         if (!newVote.isDefault()) {
             newWeightedSum = newWeightedSum.add(newBalance.mul(newVote.get(defaultVote)));
-            newVotedSupply = oldVotedSupply.add(newBalance);
+            newVotedSupply = newVotedSupply.add(newBalance);
         }
 
         if (newWeightedSum != oldWeightedSum) {
