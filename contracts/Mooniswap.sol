@@ -287,8 +287,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                 referralShare = invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR);
                 if (referralShare > 0) {
                     if (referralFeeReceiver != address(0)) {
-                        _mint(referralFeeReceiver, referralShare);
-                        IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
+                        try IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare) {
+                            _mint(referralFeeReceiver, referralShare);
+                        }
+                        catch {} // solhint-disable-line no-empty-blocks
                     } else {
                         _mint(referral, referralShare);
                     }
