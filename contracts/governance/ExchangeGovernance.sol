@@ -118,7 +118,7 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Balanc
         _emitLeftoverTeamShareVoteUpdate(msg.sender, teamShare, false, balance);
     }
 
-    function discardLeftoverReferralShareVote() external {
+    function discardLeftoverShareVote() external {
         uint256 balance = balanceOf(msg.sender);
         uint256 supply = totalSupply();
 
@@ -155,7 +155,7 @@ contract ExchangeGovernance is IExchangeGovernance, BaseGovernanceModule, Balanc
         Vote.Data memory refShareVote = _leftoverReferralShare.votes[account];
         uint256 teamShare = ExchangeConstants._LEFTOVER_TOTAL_SHARE
             .sub(govShareVote.get(ExchangeConstants._DEFAULT_LEFTOVER_GOV_SHARE))
-            .sub(govShareVote.get(ExchangeConstants._DEFAULT_LEFTOVER_REF_SHARE));
+            .sub(refShareVote.get(ExchangeConstants._DEFAULT_LEFTOVER_REF_SHARE));
         uint256 supply = totalSupply();
 
         _leftoverGovernanceShare.updateBalance(
