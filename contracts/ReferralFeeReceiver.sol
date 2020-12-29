@@ -199,14 +199,16 @@ contract ReferralFeeReceiver is IReferralFeeReceiver, Converter, ReentrancyGuard
     }
 
     function _collectEpoch(UserInfo storage user, TokenInfo storage token, Mooniswap mooniswap, uint256 epoch) private returns(uint256 collected) {
-        uint256 inchBalance = token.epochBalance[epoch].inchBalance;
         uint256 share = user.share[mooniswap][epoch];
-        uint256 totalSupply = token.epochBalance[epoch].totalSupply;
+        if (share > 0) {
+            uint256 inchBalance = token.epochBalance[epoch].inchBalance;
+            uint256 totalSupply = token.epochBalance[epoch].totalSupply;
 
-        collected = inchBalance.mul(share).div(totalSupply);
+            collected = inchBalance.mul(share).div(totalSupply);
 
-        user.share[mooniswap][epoch] = 0;
-        token.epochBalance[epoch].totalSupply = totalSupply.sub(share);
-        token.epochBalance[epoch].inchBalance = inchBalance.sub(collected);
+            user.share[mooniswap][epoch] = 0;
+            token.epochBalance[epoch].totalSupply = totalSupply.sub(share);
+            token.epochBalance[epoch].inchBalance = inchBalance.sub(collected);
+        }
     }
 }
