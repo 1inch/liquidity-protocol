@@ -10,12 +10,12 @@ contract('ExchangeGovernance', function ([_, wallet1, wallet2]) {
         await this.exchangeGovernance.notifyStakeChanged(_, ether('1'));
     });
 
-    async function checkDefaultParams(exchangeGovernance) {
+    async function checkDefaultParams (exchangeGovernance) {
         return checkParams(exchangeGovernance, ether('0.34'), ether('0.33'), ether('0.33'));
     }
 
-    async function checkParams(exchangeGovernance, govShare, refShare, teamShare) {
-        let params = await exchangeGovernance.parameters();
+    async function checkParams (exchangeGovernance, govShare, refShare, teamShare) {
+        const params = await exchangeGovernance.parameters();
         return params[0].eq(govShare) && params[1].eq(refShare) && params[2].eq(teamShare);
     }
 
