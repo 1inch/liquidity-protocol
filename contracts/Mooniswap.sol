@@ -10,6 +10,7 @@ import "./interfaces/IReferralFeeReceiver.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
+import "./libraries/RevertReasonParser.sol";
 import "./governance/MooniswapGovernance.sol";
 
 
@@ -33,6 +34,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 fee;
         uint256 slippageFee;
     }
+
+    event Error(string reason);
 
     event Deposited(
         address indexed sender,
@@ -290,7 +293,9 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                         try IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare) {
                             _mint(referralFeeReceiver, referralShare);
                         }
-                        catch {} // solhint-disable-line no-empty-blocks
+                        catch (bytes memory reason) {
+                            emit Error(RevertReasonParser.parse(reason, "Wrapped route failed: "));
+                        }
                     } else {
                         _mint(referral, referralShare);
                     }
