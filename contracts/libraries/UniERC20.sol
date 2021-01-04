@@ -49,6 +49,47 @@ library UniERC20 {
         }
     }
 
+    function uniDecimals(IERC20 token) internal view returns(uint256) {
+        if (isETH(token)) {
+            return 18;
+        }
+
+        (bool success, bytes memory data) = address(token).staticcall{ gas: 20000 }(
+            abi.encodeWithSignature("decimals()")
+        );
+        if (!success) {
+            (success, data) = address(token).staticcall{ gas: 20000 }(
+                abi.encodeWithSignature("DECIMALS()")
+            );
+        }
+
+        return success ? abi.decode(data, (uint256)) : 18;
+    }
+
+    function uniName(IERC20 token) internal view returns(string memory) {
+        if (isETH(token)) {
+            return "ETH";
+        }
+
+        (bool success, bytes memory data) = address(token).staticcall{ gas: 20000 }(
+            abi.encodeWithSignature("name()")
+        );
+        if (!success) {
+            (success, data) = address(token).staticcall{ gas: 20000 }(
+                abi.encodeWithSignature("NAME()")
+            );
+        }
+
+        if (success && data.length >= 96) {
+            (uint256 offset, uint256 len) = abi.decode(data, (uint256, uint256));
+            if (offset == 0x20 && len > 0 && len <= 256) {
+                return string(abi.decode(data, (bytes)));
+            }
+        }
+
+        return _toHex(address(token));
+    }
+
     function uniSymbol(IERC20 token) internal view returns(string memory) {
         if (isETH(token)) {
             return "ETH";
