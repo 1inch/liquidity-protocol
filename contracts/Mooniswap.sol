@@ -2,7 +2,6 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -13,7 +12,7 @@ import "./libraries/VirtualBalance.sol";
 import "./governance/MooniswapGovernance.sol";
 
 
-contract Mooniswap is MooniswapGovernance, Ownable {
+contract Mooniswap is MooniswapGovernance {
     using Sqrt for uint256;
     using SafeMath for uint256;
     using UniERC20 for IERC20;

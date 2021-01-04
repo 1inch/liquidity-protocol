@@ -2,6 +2,7 @@
 
 pragma solidity ^0.6.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../interfaces/IMooniswapFactoryGovernance.sol";
@@ -10,7 +11,7 @@ import "../libraries/MooniswapConstants.sol";
 import "../libraries/SafeCast.sol";
 
 
-abstract contract MooniswapGovernance is ERC20, ReentrancyGuard {
+abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
     using VirtualVote for VirtualVote.Data;
@@ -20,12 +21,16 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard {
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
     event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
 
-    IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
+    IMooniswapFactoryGovernance public mooniswapFactoryGovernance;
     LiquidVoting.Data private _fee;
     LiquidVoting.Data private _slippageFee;
     LiquidVoting.Data private _decayPeriod;
 
     constructor(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
+        setMooniswapFactoryGovernance(_mooniswapFactoryGovernance);
+    }
+
+    function setMooniswapFactoryGovernance(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) public onlyOwner {
         mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
         _fee.data.result = _mooniswapFactoryGovernance.defaultFee().toUint104();
         _slippageFee.data.result = _mooniswapFactoryGovernance.defaultSlippageFee().toUint104();
@@ -117,8 +122,9 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard {
             return;
         }
 
-        bool updateFrom = !(from == address(0) || mooniswapFactoryGovernance.isFeeReceiver(from));
-        bool updateTo = !(to == address(0) || mooniswapFactoryGovernance.isFeeReceiver(to));
+        IMooniswapFactoryGovernance _mooniswapFactoryGovernance = mooniswapFactoryGovernance;
+        bool updateFrom = !(from == address(0) || _mooniswapFactoryGovernance.isFeeReceiver(from));
+        bool updateTo = !(to == address(0) || _mooniswapFactoryGovernance.isFeeReceiver(to));
 
         if (!updateFrom && !updateTo) {
             // mint to feeReceiver or burn from feeReceiver
@@ -142,7 +148,7 @@ abstract contract MooniswapGovernance is ERC20, ReentrancyGuard {
             newTotalSupply: newTotalSupply
         });
 
-        (uint256 defaultFee, uint256 defaultSlippageFee, uint256 defaultDecayPeriod) = mooniswapFactoryGovernance.defaults();
+        (uint256 defaultFee, uint256 defaultSlippageFee, uint256 defaultDecayPeriod) = _mooniswapFactoryGovernance.defaults();
 
         _updateOnTransfer(params, defaultFee, _emitFeeVoteUpdate, _fee);
         _updateOnTransfer(params, defaultSlippageFee, _emitSlippageFeeVoteUpdate, _slippageFee);
