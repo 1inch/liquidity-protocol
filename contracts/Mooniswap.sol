@@ -294,7 +294,7 @@ contract Mooniswap is MooniswapGovernance, Ownable {
                             _mint(referralFeeReceiver, referralShare);
                         }
                         catch (bytes memory reason) {
-                            emit Error(RevertReasonParser.parse(reason, "Wrapped route failed: "));
+                            emit Error(RevertReasonParser.parse(reason, "updateReward failed: "));
                         }
                     } else {
                         _mint(referral, referralShare);
