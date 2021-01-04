@@ -138,7 +138,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         _defaultFee.updateVote(msg.sender, _defaultFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), MooniswapConstants._DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
     }
 
-   function discardDefaultFeeVote() external {
+    function discardDefaultFeeVote() external {
        _defaultFee.updateVote(msg.sender, _defaultFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), MooniswapConstants._DEFAULT_FEE, _emitDefaultFeeVoteUpdate);
     }
 
