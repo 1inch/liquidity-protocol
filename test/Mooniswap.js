@@ -205,15 +205,14 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
             });
 
-            it('should give the same shares for the same deposits', async function () {
+            it.only('should give the same shares for the same deposits', async function () {
                 const tx1 = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
+                expect(await countInstructions(tx1.transactionHash, ['SSTORE', 'SLOAD'])).to.be.deep.equal([18, 56]);
 
                 const tx2 = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.weth('1'), money.dai('270')], { from: wallet2 });
                 expect(await this.mooniswap.balanceOf(wallet2)).to.be.bignumber.equal(money.dai('270').addn(1000));
-
-                expect(await countInstructions(tx1.transactionHash, 'SSTORE')).to.be.equal(18);
-                expect(await countInstructions(tx2.transactionHash, 'SSTORE')).to.be.equal(21);
+                expect(await countInstructions(tx2.transactionHash, ['SSTORE', 'SLOAD'])).to.be.deep.equal([17, 45]);
             });
 
             it('should give the proportional shares for the proportional deposits', async function () {
@@ -297,6 +296,8 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 );
 
                 expect(received).to.be.bignumber.equal(money.dai('135'));
+                expect(await countInstructions(tx.transactionHash, 'SSTORE')).to.be.equal(10);
+                expect(await countInstructions(tx.transactionHash, 'SLOAD')).to.be.equal(26);
             });
 
             it('should fail after shutting down factory', async function () {

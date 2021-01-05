@@ -83,9 +83,12 @@ library ExplicitLiquidVoting {
             VirtualVote.Data memory data = self.data;
 
             if (newResult != data.result) {
-                self.data.oldResult = data.current().toUint104();
-                self.data.result = newResult.toUint104();
-                self.data.time = block.timestamp.toUint48();
+                VirtualVote.Data storage sdata = self.data;
+                (sdata.oldResult, sdata.result, sdata.time) = (
+                    data.current().toUint104(),
+                    newResult.toUint104(),
+                    block.timestamp.toUint48()
+                );
             }
         }
 
