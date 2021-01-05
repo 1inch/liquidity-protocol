@@ -118,7 +118,7 @@ module.exports = function (deployer, network) {
         await govRewards.setRewardDistribution(governanceFeeReceiver.address);
 
         const referralFeeReceiver = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
-        await mooniswapFactory.setReferralFeeReceiver(referralFeeReceiver.address);
+        await mooniswapFactory.setFeeCollector(referralFeeReceiver.address);
 
         // Transfer Ownership
 

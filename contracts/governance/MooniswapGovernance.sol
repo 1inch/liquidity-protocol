@@ -126,8 +126,8 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
         }
 
         IMooniswapFactoryGovernance _mooniswapFactoryGovernance = mooniswapFactoryGovernance;
-        bool updateFrom = !(from == address(0) || _mooniswapFactoryGovernance.isFeeReceiver(from));
-        bool updateTo = !(to == address(0) || _mooniswapFactoryGovernance.isFeeReceiver(to));
+        bool updateFrom = !(from == address(0) || _mooniswapFactoryGovernance.isFeeCollector(from));
+        bool updateTo = !(to == address(0) || _mooniswapFactoryGovernance.isFeeCollector(to));
 
         if (!updateFrom && !updateTo) {
             // mint to feeReceiver or burn from feeReceiver

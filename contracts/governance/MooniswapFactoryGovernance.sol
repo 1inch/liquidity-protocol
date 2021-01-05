@@ -24,18 +24,18 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     event DefaultDecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
     event ReferralShareVoteUpdate(address indexed user, uint256 referralShare, bool isDefault, uint256 amount);
     event GovernanceShareVoteUpdate(address indexed user, uint256 governanceShare, bool isDefault, uint256 amount);
-    event GovernanceFeeReceiverUpdate(address governanceFeeReceiver);
-    event ReferralFeeReceiverUpdate(address referralFeeReceiver);
+    event GovernanceWalletUpdate(address governanceWallet);
+    event FeeCollectorUpdate(address feeCollector);
 
     ExplicitLiquidVoting.Data private _defaultFee;
     ExplicitLiquidVoting.Data private _defaultSlippageFee;
     ExplicitLiquidVoting.Data private _defaultDecayPeriod;
     ExplicitLiquidVoting.Data private _referralShare;
     ExplicitLiquidVoting.Data private _governanceShare;
-    address public override governanceFeeReceiver;
-    address public override referralFeeReceiver;
+    address public override governanceWallet;
+    address public override feeCollector;
 
-    mapping(address => bool) public override isFeeReceiver;
+    mapping(address => bool) public override isFeeCollector;
 
     constructor(address _mothership) public BaseGovernanceModule(_mothership) {
         _defaultFee.data.result = MooniswapConstants._DEFAULT_FEE.toUint104();
@@ -54,7 +54,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
     }
 
     function shareParameters() external view override returns(uint256, uint256, address, address) {
-        return (_referralShare.data.current(), _governanceShare.data.current(), governanceFeeReceiver, referralFeeReceiver);
+        return (_referralShare.data.current(), _governanceShare.data.current(), governanceWallet, feeCollector);
     }
 
     function defaults() external view override returns(uint256, uint256, uint256) {
@@ -121,16 +121,16 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return (_governanceShare.data.oldResult, _governanceShare.data.result, _governanceShare.data.time);
     }
 
-    function setGovernanceFeeReceiver(address newGovernanceFeeReceiver) external onlyOwner {
-        governanceFeeReceiver = newGovernanceFeeReceiver;
-        isFeeReceiver[newGovernanceFeeReceiver] = true;
-        emit GovernanceFeeReceiverUpdate(newGovernanceFeeReceiver);
+    function setGovernanceWallet(address newGovernanceWallet) external onlyOwner {
+        governanceWallet = newGovernanceWallet;
+        isFeeCollector[newGovernanceWallet] = true;
+        emit GovernanceWalletUpdate(newGovernanceWallet);
     }
 
-    function setReferralFeeReceiver(address newReferralFeeReceiver) external onlyOwner {
-        referralFeeReceiver = newReferralFeeReceiver;
-        isFeeReceiver[newReferralFeeReceiver] = true;
-        emit ReferralFeeReceiverUpdate(newReferralFeeReceiver);
+    function setFeeCollector(address newFeeCollector) external onlyOwner {
+        feeCollector = newFeeCollector;
+        isFeeCollector[newFeeCollector] = true;
+        emit FeeCollectorUpdate(newFeeCollector);
     }
 
     function defaultFeeVote(uint256 vote) external {

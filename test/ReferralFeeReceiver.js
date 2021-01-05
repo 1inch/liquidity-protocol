@@ -19,7 +19,7 @@ contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     beforeEach(async function () {
         this.factory = await MooniswapFactory.new(wallet1, this.deployer.address, wallet1);
         this.feeReceiver = await ReferralFeeReceiver.new(this.token.address, this.factory.address);
-        await this.factory.setReferralFeeReceiver(this.feeReceiver.address);
+        await this.factory.setFeeCollector(this.feeReceiver.address);
         await this.feeReceiver.updatePathWhitelist(constants.ZERO_ADDRESS, true);
 
         this.factory.notifyStakeChanged(wallet1, '1');
