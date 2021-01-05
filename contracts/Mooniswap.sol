@@ -33,6 +33,8 @@ contract Mooniswap is MooniswapGovernance {
         uint256 slippageFee;
     }
 
+    event Error(string reason);
+
     event Deposited(
         address indexed sender,
         address indexed receiver,
@@ -272,7 +274,7 @@ contract Mooniswap is MooniswapGovernance {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address feeCollector) = mooniswapFactoryGovernance.shareParameters();
+        (uint256 referralShare, uint256 governanceShare, address govWallet, address feeCollector) = mooniswapFactoryGovernance.shareParameters();
 
         uint256 refReward;
         uint256 govReward;
@@ -286,27 +288,34 @@ contract Mooniswap is MooniswapGovernance {
             uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
             refReward = (referral != address(0)) ? invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
-            govReward = (governanceFeeReceiver != address(0)) ? invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
+            govReward = (govWallet != address(0)) ? invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
 
             if (feeCollector == address(0)) {
-                if (referral != address(0)) {
+                if (refReward > 0) {
                     _mint(referral, refReward);
                 }
-                if (governanceFeeReceiver != address(0)) {
-                    _mint(governanceFeeReceiver, govReward);
+                if (govReward > 0) {
+                    _mint(govWallet, govReward);
                 }
             }
-            else {
-                address[] memory wallets = new address[](2);
+            else if (refReward > 0 || govReward > 0) {
+                uint256 len = (refReward > 0 ? 1 : 0) + (govReward > 0 ? 1 : 0);
+                address[] memory wallets = new address[](len);
+                uint256[] memory rewards = new uint256[](len);
+
                 wallets[0] = referral;
-                wallets[1] = governanceFeeReceiver;
-
-                uint256[] memory rewards = new uint256[](2);
                 rewards[0] = refReward;
-                rewards[1] = govReward;
+                if (govReward > 0) {
+                    wallets[len - 1] = govWallet;
+                    rewards[len - 1] = govReward;
+                }
 
-                _mint(feeCollector, rewards[0].add(rewards[1]));
-                IFeeCollector(feeCollector).updateRewards(wallets, rewards);
+                try IFeeCollector(feeCollector).updateRewards(wallets, rewards) {
+                    _mint(feeCollector, refReward.add(govReward));
+                }
+                catch {
+                    emit Error("IFeeCollector.updateRewards(...) failed");
+                }
             }
         }
 
