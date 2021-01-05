@@ -314,7 +314,7 @@ contract Mooniswap is MooniswapGovernance {
                     _mint(feeCollector, refReward.add(govReward));
                 }
                 catch {
-                    emit Error("IFeeCollector.updateRewards(...) failed");
+                    emit Error("updateRewards() failed");
                 }
             }
         }
