@@ -46,7 +46,16 @@ async function countInstructions (txHash, instruction) {
         params: [txHash, {}],
         id: new Date().getTime(),
     });
-    return JSON.stringify(trace).split('"' + instruction.toUpperCase() + '"').length - 1;
+
+    const str = JSON.stringify(trace);
+
+    if (Array.isArray(instruction)) {
+        return instruction.map(instr => {
+            return str.split('"' + instr.toUpperCase() + '"').length - 1;
+        });
+    }
+
+    return str.split('"' + instruction.toUpperCase() + '"').length - 1;
 }
 
 module.exports = {
