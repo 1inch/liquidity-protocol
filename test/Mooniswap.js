@@ -205,7 +205,7 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
             });
 
-            it.only('should give the same shares for the same deposits', async function () {
+            it('should give the same shares for the same deposits', async function () {
                 const tx1 = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
                 expect(await countInstructions(tx1.transactionHash, ['SSTORE', 'SLOAD'])).to.be.deep.equal([18, 56]);
@@ -618,7 +618,8 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 const result = await this.mooniswap.getReturn(this.WETH.address, this.DAI.address, money.eth('1'));
                 expect(result).to.be.bignumber.equal(money.dai('135'));
 
-                await this.mooniswap.feeVote(money.weth('0.003'), { from: wallet1 });
+                const tx = await this.mooniswap.feeVote(money.weth('0.003'), { from: wallet1 });
+                expect(await countInstructions(tx.transactionHash, ['SSTORE', 'SLOAD'])).to.be.deep.equal([4, 9]);
                 await timeIncreaseTo((await time.latest()).addn(86500));
 
                 const result2 = await this.mooniswap.getReturn(this.WETH.address, this.DAI.address, money.eth('1'));
