@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./interfaces/IReferralFeeReceiver.sol";
+import "./interfaces/IFeeCollector.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
@@ -272,7 +272,10 @@ contract Mooniswap is MooniswapGovernance {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.shareParameters();
+        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address feeCollector) = mooniswapFactoryGovernance.shareParameters();
+
+        uint256 refReward;
+        uint256 govReward;
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -282,27 +285,32 @@ contract Mooniswap is MooniswapGovernance {
             invariantRatio = invariantRatio.sqrt();
             uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
-            if (referral != address(0)) {
-                referralShare = invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR);
-                if (referralShare > 0) {
-                    if (referralFeeReceiver != address(0)) {
-                        _mint(referralFeeReceiver, referralShare);
-                        IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
-                    } else {
-                        _mint(referral, referralShare);
-                    }
+            refReward = (referral != address(0)) ? invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
+            govReward = (governanceFeeReceiver != address(0)) ? invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
+
+            if (feeCollector == address(0)) {
+                if (referral != address(0)) {
+                    _mint(referral, refReward);
+                }
+                if (governanceFeeReceiver != address(0)) {
+                    _mint(governanceFeeReceiver, govReward);
                 }
             }
+            else {
+                address[] memory wallets = new address[](2);
+                wallets[0] = referral;
+                wallets[1] = governanceFeeReceiver;
 
-            if (governanceFeeReceiver != address(0)) {
-                governanceShare = invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR);
-                if (governanceShare > 0) {
-                    _mint(governanceFeeReceiver, governanceShare);
-                }
+                uint256[] memory rewards = new uint256[](2);
+                rewards[0] = refReward;
+                rewards[1] = govReward;
+
+                _mint(feeCollector, rewards[0].add(rewards[1]));
+                IFeeCollector(feeCollector).updateRewards(wallets, rewards);
             }
         }
 
-        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, referralShare, governanceShare);
+        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, refReward, govReward);
     }
 
     /*
