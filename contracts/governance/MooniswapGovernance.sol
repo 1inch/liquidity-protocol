@@ -27,14 +27,17 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
     LiquidVoting.Data private _decayPeriod;
 
     constructor(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
+        mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
         _fee.data.result = _mooniswapFactoryGovernance.defaultFee().toUint104();
         _slippageFee.data.result = _mooniswapFactoryGovernance.defaultSlippageFee().toUint104();
         _decayPeriod.data.result = _mooniswapFactoryGovernance.defaultDecayPeriod().toUint104();
-        _setMooniswapFactoryGovernance(_mooniswapFactoryGovernance);
     }
 
-    function setMooniswapFactoryGovernance(IMooniswapFactoryGovernance newMooniswapFactoryGovernance) public onlyOwner {
-        _setMooniswapFactoryGovernance(newMooniswapFactoryGovernance);
+    function setMooniswapFactoryGovernance(IMooniswapFactoryGovernance newMooniswapFactoryGovernance) external onlyOwner {
+        mooniswapFactoryGovernance = newMooniswapFactoryGovernance;
+        this.discardFeeVote();
+        this.discardSlippageFeeVote();
+        this.discardDecayPeriodVote();
     }
 
     function fee() public view returns(uint256) {
@@ -187,17 +190,6 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
 
         if (params.updateTo) {
             votingData.updateBalance(params.to, voteTo, params.balanceTo, params.balanceTo.add(params.amount), params.newTotalSupply, defaultValue, emitEvent);
-        }
-    }
-
-    function _setMooniswapFactoryGovernance(IMooniswapFactoryGovernance newMooniswapFactoryGovernance) private {
-        IMooniswapFactoryGovernance oldMooniswapFactoryGovernance = mooniswapFactoryGovernance;
-        mooniswapFactoryGovernance = newMooniswapFactoryGovernance;
-
-        if (oldMooniswapFactoryGovernance != IMooniswapFactoryGovernance(0)) {
-            this.discardFeeVote();
-            this.discardSlippageFeeVote();
-            this.discardDecayPeriodVote();
         }
     }
 }
