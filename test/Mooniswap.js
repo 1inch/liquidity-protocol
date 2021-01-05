@@ -1,7 +1,7 @@
 const { constants, time, ether, expectRevert, BN } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
 
-const { trackReceivedToken, timeIncreaseTo } = require('./helpers/utils.js');
+const { trackReceivedToken, trackReceivedTokenAndTx, countInstructions, timeIncreaseTo } = require('./helpers/utils.js');
 
 async function checkBalances (mooniswap, token, expectedBalance, expectedAdditionBalance, expectedRemovalBalance) {
     const balance = await token.balanceOf(mooniswap.address);
@@ -195,8 +195,9 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
             });
 
             it('should be allowed with zero minReturn', async function () {
-                await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
+                const tx = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
+                expect(await countInstructions(tx.transactionHash, 'SSTORE')).to.be.equal(18);
             });
 
             it('should be allowed with strict minReturn', async function () {
@@ -205,11 +206,14 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
             });
 
             it('should give the same shares for the same deposits', async function () {
-                await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
+                const tx1 = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.zero, money.zero], { from: wallet1 });
                 expect(await this.mooniswap.balanceOf(wallet1)).to.be.bignumber.equal(money.dai('270'));
 
-                await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.weth('1'), money.dai('270')], { from: wallet2 });
+                const tx2 = await this.mooniswap.deposit([money.weth('1'), money.dai('270')], [money.weth('1'), money.dai('270')], { from: wallet2 });
                 expect(await this.mooniswap.balanceOf(wallet2)).to.be.bignumber.equal(money.dai('270').addn(1000));
+
+                expect(await countInstructions(tx1.transactionHash, 'SSTORE')).to.be.equal(18);
+                expect(await countInstructions(tx2.transactionHash, 'SSTORE')).to.be.equal(21);
             });
 
             it('should give the proportional shares for the proportional deposits', async function () {
@@ -286,11 +290,12 @@ contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
                 expect(daiRemovalBalance).to.be.bignumber.equal(money.dai('270'));
                 expect(result).to.be.bignumber.equal(money.dai('135'));
 
-                const received = await trackReceivedToken(
+                const [received, tx] = await trackReceivedTokenAndTx(
                     this.DAI,
                     wallet2,
                     () => this.mooniswap.swap(this.WETH.address, this.DAI.address, money.weth('1'), money.zero, constants.ZERO_ADDRESS, { from: wallet2 }),
                 );
+
                 expect(received).to.be.bignumber.equal(money.dai('135'));
             });
 
