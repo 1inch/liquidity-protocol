@@ -3,7 +3,6 @@ const ExchangeGovernance = artifacts.require('./ExchangeGovernance.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
-const GovernanceFeeReceiver = artifacts.require('./governance/GovernanceFeeReceiver.sol');
 const GovernanceRewards = artifacts.require('./governance/GovernanceRewards.sol');
 const FarmingRewards = artifacts.require('./inch/FarmingRewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
@@ -79,7 +78,7 @@ const DEPLOYER = {
 const GOV_WALLET = {
     mainnet: '',
     'mainnet-fork': '',
-}
+};
 
 const FACTORY = {
     mainnet: '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
