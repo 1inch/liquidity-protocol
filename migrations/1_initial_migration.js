@@ -76,6 +76,11 @@ const DEPLOYER = {
     'mainnet-fork': '0xffD3a027EceDB619E08Bbf5aADb4F1898FE093a7',
 };
 
+const GOV_WALLET = {
+    mainnet: '',
+    'mainnet-fork': '',
+}
+
 const FACTORY = {
     mainnet: '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
     'mainnet-fork': '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
@@ -113,9 +118,8 @@ module.exports = function (deployer, network) {
         const govRewards = (network in GOV_REWARDS) ? await GovernanceRewards.at(GOV_REWARDS[network]) : await deployer.deploy(GovernanceRewards, token.address, governanceMothership.address);
         await governanceMothership.addModule(govRewards.address);
 
-        const governanceFeeReceiver = await deployer.deploy(GovernanceFeeReceiver, token.address, govRewards.address, mooniswapFactory.address);
-        await mooniswapFactory.setGovernanceFeeReceiver(governanceFeeReceiver.address);
-        await govRewards.setRewardDistribution(governanceFeeReceiver.address);
+        await mooniswapFactory.setGovernanceWallet(GOV_WALLET[network]);
+        await govRewards.setRewardDistribution(GOV_WALLET[network]);
 
         const referralFeeReceiver = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
         await mooniswapFactory.setFeeCollector(referralFeeReceiver.address);
