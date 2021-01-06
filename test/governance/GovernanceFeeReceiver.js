@@ -10,7 +10,7 @@ const GovernanceFeeReceiver = artifacts.require('GovernanceFeeReceiver');
 const GovernanceRewards = artifacts.require('GovernanceRewards');
 const TokenMock = artifacts.require('TokenMock');
 
-contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
+contract('GovernanceFeeReceiver', function ([wallet1, wallet2, governanceWallet]) {
     beforeEach(async function () {
         this.DAI = await TokenMock.new('DAI', 'DAI', 18);
         this.token = await TokenMock.new('INCH', 'INCH', 18);
@@ -21,7 +21,7 @@ contract('GovernanceFeeReceiver', function ([wallet1, wallet2]) {
         await this.rewards.setRewardDistribution(this.feeReceiver.address);
         await this.feeReceiver.updatePathWhitelist(constants.ZERO_ADDRESS, true);
 
-        await this.factory.setGovernanceFeeReceiver(this.feeReceiver.address);
+        await this.factory.setGovernanceWallet(governanceWallet);
         this.factory.notifyStakeChanged(wallet1, '1');
         this.rewards.notifyStakeChanged(wallet1, '1');
         await this.factory.defaultFeeVote(ether('0.01'));

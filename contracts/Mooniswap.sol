@@ -2,18 +2,17 @@
 
 pragma solidity ^0.6.0;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./interfaces/IReferralFeeReceiver.sol";
+import "./interfaces/IFeeCollector.sol";
 import "./libraries/UniERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
 import "./governance/MooniswapGovernance.sol";
 
 
-contract Mooniswap is MooniswapGovernance, Ownable {
+contract Mooniswap is MooniswapGovernance {
     using Sqrt for uint256;
     using SafeMath for uint256;
     using UniERC20 for IERC20;
@@ -33,6 +32,8 @@ contract Mooniswap is MooniswapGovernance, Ownable {
         uint256 fee;
         uint256 slippageFee;
     }
+
+    event Error(string reason);
 
     event Deposited(
         address indexed sender,
@@ -273,7 +274,10 @@ contract Mooniswap is MooniswapGovernance, Ownable {
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
-        (uint256 referralShare, uint256 governanceShare, address governanceFeeReceiver, address referralFeeReceiver) = mooniswapFactoryGovernance.shareParameters();
+        (uint256 referralShare, uint256 governanceShare, address govWallet, address feeCollector) = mooniswapFactoryGovernance.shareParameters();
+
+        uint256 refReward;
+        uint256 govReward;
 
         uint256 invariantRatio = uint256(1e36);
         invariantRatio = invariantRatio.mul(balances.src.add(confirmed)).div(balances.src);
@@ -283,27 +287,39 @@ contract Mooniswap is MooniswapGovernance, Ownable {
             invariantRatio = invariantRatio.sqrt();
             uint256 invIncrease = totalSupply().mul(invariantRatio.sub(1e18)).div(invariantRatio);
 
-            if (referral != address(0)) {
-                referralShare = invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR);
-                if (referralShare > 0) {
-                    if (referralFeeReceiver != address(0)) {
-                        _mint(referralFeeReceiver, referralShare);
-                        IReferralFeeReceiver(referralFeeReceiver).updateReward(referral, referralShare);
-                    } else {
-                        _mint(referral, referralShare);
-                    }
+            refReward = (referral != address(0)) ? invIncrease.mul(referralShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
+            govReward = (govWallet != address(0)) ? invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR) : 0;
+
+            if (feeCollector == address(0)) {
+                if (refReward > 0) {
+                    _mint(referral, refReward);
+                }
+                if (govReward > 0) {
+                    _mint(govWallet, govReward);
                 }
             }
+            else if (refReward > 0 || govReward > 0) {
+                uint256 len = (refReward > 0 ? 1 : 0) + (govReward > 0 ? 1 : 0);
+                address[] memory wallets = new address[](len);
+                uint256[] memory rewards = new uint256[](len);
 
-            if (governanceFeeReceiver != address(0)) {
-                governanceShare = invIncrease.mul(governanceShare).div(MooniswapConstants._FEE_DENOMINATOR);
-                if (governanceShare > 0) {
-                    _mint(governanceFeeReceiver, governanceShare);
+                wallets[0] = referral;
+                rewards[0] = refReward;
+                if (govReward > 0) {
+                    wallets[len - 1] = govWallet;
+                    rewards[len - 1] = govReward;
+                }
+
+                try IFeeCollector(feeCollector).updateRewards(wallets, rewards) {
+                    _mint(feeCollector, refReward.add(govReward));
+                }
+                catch {
+                    emit Error("updateRewards() failed");
                 }
             }
         }
 
-        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, referralShare, governanceShare);
+        emit Sync(balances.src, balances.dst, fees.fee, fees.slippageFee, refReward, govReward);
     }
 
     /*
