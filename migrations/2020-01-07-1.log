@@ -1,0 +1,73 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12499930 (0xbebbda)
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'MooniswapDeployer'
+   -----------------------------
+   > transaction hash:    0xd81065e185fdaee5ba9d9df2e4dca98bec9280c42cd9b7be1a17b06595453ade
+   > Blocks: 4            Seconds: 13
+   > contract address:    0xCB06dF7F0Be5B8Bb261d294Cf87C794EB9Da85b1
+   > block number:        11607075
+   > block timestamp:     1610016244
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             3.713035873432142908
+   > gas used:            5154812 (0x4ea7fc)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.5154812 ETH
+
+
+   Deploying 'MooniswapFactory'
+   ----------------------------
+   > transaction hash:    0x2e7653163e412fe53e90b89c78af6aefa8a0b45791ba4a0e933cc2c799102103
+   > Blocks: 1            Seconds: 21
+   > contract address:    0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3
+   > block number:        11607077
+   > block timestamp:     1610016254
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             3.421572073432142908
+   > gas used:            2914638 (0x2c794e)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2914638 ETH
+
+Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:
+ - governanceMothership = 0x37216868Bfb4e70Ec290e18e2C7F5D7d9901F7bF
+ - mooniswapFactory = 0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3
+ - governanceMothership.owner() = 0x1cB37a0606003654b302bbD8fea408BFa066c6Ef
+
+Do not forget to govRewards.setRewardDistribution(GOV_WALLET[network]), where:
+ - govRewards = 0xd120D5171d1BcceA4fEE705289Df5fc0C3721100
+ - GOV_WALLET[network] = 0x7e11a8887A2c445883AcC453738635bC3aCDAdb6
+ - govRewards.owner() = 0x1cB37a0606003654b302bbD8fea408BFa066c6Ef
+
+
+   Deploying 'ReferralFeeReceiver'
+   -------------------------------
+   > transaction hash:    0x562300c236a371ab47cd072636c90abc8ed98a5336b798acd5fb3a363e037f89
+   > Blocks: 1            Seconds: 9
+   > contract address:    0xF5ab9Bf279284fB8e3De1C3BF0B0b4A6Fb0Bb538
+   > block number:        11607080
+   > block timestamp:     1610016321
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             3.105572173432142908
+   > gas used:            3094590 (0x2f383e)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.309459 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:            1.116404 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          1.116404 ETH
