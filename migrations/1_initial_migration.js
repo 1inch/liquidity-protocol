@@ -8,8 +8,8 @@ const FarmingRewards = artifacts.require('./inch/FarmingRewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
 const POOL_OWNER = {
-    mainnet: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    'mainnet-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    mainnet: '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
+    'mainnet-fork': '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
 };
 
 const REWARD_DISTRIBUTION = {
@@ -18,13 +18,13 @@ const REWARD_DISTRIBUTION = {
 };
 
 const TOKEN = {
-    mainnet: '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
-    'mainnet-fork': '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
+    mainnet: '0x111111111117dC0aa78b770fA6A738034120C302',
+    'mainnet-fork': '0x111111111117dC0aa78b770fA6A738034120C302',
 };
 
 const MOTHERSHIP = {
-    mainnet: '0x37216868Bfb4e70Ec290e18e2C7F5D7d9901F7bF',
-    'mainnet-fork': '0x37216868Bfb4e70Ec290e18e2C7F5D7d9901F7bF',
+    mainnet: '0xA0446D8804611944F1B527eCD37d7dcbE442caba',
+    'mainnet-fork': '0xA0446D8804611944F1B527eCD37d7dcbE442caba',
 };
 
 const EXCHANGE_GOV = {
@@ -33,8 +33,8 @@ const EXCHANGE_GOV = {
 }
 
 const GOV_REWARDS = {
-    mainnet: '0xd120D5171d1BcceA4fEE705289Df5fc0C3721100',
-    'mainnet-fork': '0xd120D5171d1BcceA4fEE705289Df5fc0C3721100',
+    mainnet: '0x0F85A912448279111694F4Ba4F85dC641c54b594',
+    'mainnet-fork': '0x0F85A912448279111694F4Ba4F85dC641c54b594',
 };
 
 const FEE_COLLECTOR = {
