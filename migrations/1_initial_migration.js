@@ -27,10 +27,17 @@ const MOTHERSHIP = {
     'mainnet-fork': '0x37216868Bfb4e70Ec290e18e2C7F5D7d9901F7bF',
 };
 
+const EXCHANGE_GOV = {
+    mainnet: '0xB33839E05CE9Fc53236Ae325324A27612F4d110D',
+    'mainnet-fork': '0xB33839E05CE9Fc53236Ae325324A27612F4d110D',
+}
+
 const GOV_REWARDS = {
     mainnet: '0xd120D5171d1BcceA4fEE705289Df5fc0C3721100',
     'mainnet-fork': '0xd120D5171d1BcceA4fEE705289Df5fc0C3721100',
 };
+
+const FEE_COLLECTOR = {};
 
 const POOLS = {
     mainnet: {
@@ -39,7 +46,7 @@ const POOLS = {
         // 'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7'],
         // 'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'],
         // 'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN.mainnet],
-        'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN.mainnet],
+        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN.mainnet],
     },
     'mainnet-fork': {
         // 'ETH-DAI': ['0x0000000000000000000000000000000000000000', '0x6B175474E89094C44Da98b954EedeAC495271d0F'],
@@ -47,7 +54,7 @@ const POOLS = {
         // 'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7'],
         // 'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'],
         // 'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN['mainnet-fork']],
-        'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN['mainnet-fork']],
+        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN['mainnet-fork']],
     },
 };
 
@@ -58,7 +65,7 @@ const FARM_REWARDS = {
         // 'ETH-USDT': '0',
         // 'ETH-WBTC': '0',
         // 'ETH-1INCH': '20000000000000000000000',
-        'DAI-1INCH': '20000000000000000000000',
+        // 'DAI-1INCH': '20000000000000000000000',
     },
     'mainnet-fork': {
         // 'ETH-DAI': '0',
@@ -66,23 +73,23 @@ const FARM_REWARDS = {
         // 'ETH-USDT': '0',
         // 'ETH-WBTC': '0',
         // 'ETH-1INCH': '20000000000000000000000',
-        'DAI-1INCH': '20000000000000000000000',
+        // 'DAI-1INCH': '20000000000000000000000',
     },
 };
 
 const DEPLOYER = {
-    mainnet: '0xffD3a027EceDB619E08Bbf5aADb4F1898FE093a7',
-    'mainnet-fork': '0xffD3a027EceDB619E08Bbf5aADb4F1898FE093a7',
+    // mainnet: '0xffD3a027EceDB619E08Bbf5aADb4F1898FE093a7',
+    // 'mainnet-fork': '0xffD3a027EceDB619E08Bbf5aADb4F1898FE093a7',
 };
 
 const GOV_WALLET = {
-    mainnet: '',
-    'mainnet-fork': '',
+    mainnet: '0x7e11a8887A2c445883AcC453738635bC3aCDAdb6',
+    'mainnet-fork': '0x7e11a8887A2c445883AcC453738635bC3aCDAdb6',
 };
 
 const FACTORY = {
-    mainnet: '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
-    'mainnet-fork': '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
+    // mainnet: '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
+    // 'mainnet-fork': '0x5a8C574Bfb9ACdA1AbAa4bAA28b49C2f52C3909e',
 };
 
 module.exports = function (deployer, network) {
@@ -92,41 +99,146 @@ module.exports = function (deployer, network) {
             return;
         }
 
+        // TODO: rm
+        if (network === 'mainnet') {
+            return;
+        }
+
+        const accounts = ['0x11799622F4D98A24514011E8527B969f7488eF47'];
+
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = (network in MOTHERSHIP) ? await GovernanceMothership.at(MOTHERSHIP[network]) : await deployer.deploy(GovernanceMothership, token.address);
 
         // Exchange Governance
 
-        const exchangeGovernance = await deployer.deploy(ExchangeGovernance, governanceMothership.address);
-        await governanceMothership.addModule(exchangeGovernance.address);
+        let exchangeGovernance;
+        if (network in EXCHANGE_GOV) {
+            exchangeGovernance = await ExchangeGovernance.at(EXCHANGE_GOV[network]);
+        } else {
+            exchangeGovernance = await deployer.deploy(ExchangeGovernance, governanceMothership.address);
+
+            if ((await governanceMothership.owner()) == accounts[0]) {
+                await governanceMothership.addModule(exchangeGovernance.address);
+            } else {
+                console.log(
+                    'Do not forget to governanceMothership.addModule(exchangeGovernance.address), where:\n' +
+                    ` - governanceMothership = ${governanceMothership.address}\n` +
+                    ` - exchangeGovernance = ${exchangeGovernance.address}\n` +
+                    ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`
+                );
+            }
+        }
 
         // Mooniswap Factory
 
         const mooniswapDeployer = (network in DEPLOYER) ? await MooniswapDeployer.at(DEPLOYER[network]) : await deployer.deploy(MooniswapDeployer);
-        const mooniswapFactory = (network in FACTORY) ? await MooniswapFactory.at(FACTORY[network]) : await deployer.deploy(
-            MooniswapFactory,
-            POOL_OWNER[network],
-            mooniswapDeployer.address,
-            governanceMothership.address,
-        );
-        await governanceMothership.addModule(mooniswapFactory.address);
+        let mooniswapFactory;
+        if (network in FACTORY) {
+            mooniswapFactory = await MooniswapFactory.at(FACTORY[network]);
+        } else {
+            mooniswapFactory = await deployer.deploy(
+                MooniswapFactory,
+                POOL_OWNER[network],
+                mooniswapDeployer.address,
+                governanceMothership.address,
+            );
+
+            if ((await governanceMothership.owner()) == accounts[0]) {
+                await governanceMothership.addModule(mooniswapFactory.address);
+            } else {
+                console.log(
+                    'Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:\n' +
+                    ` - governanceMothership = ${governanceMothership.address}\n` +
+                    ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
+                    ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`
+                );
+            }
+        }
         // await governanceMothership.removeModule('0xDA3ed1906ddC653b39d5ef05111c46F5D0EEB8b2'); // old mooniswapFactory
 
         // Governance
 
-        const govRewards = (network in GOV_REWARDS) ? await GovernanceRewards.at(GOV_REWARDS[network]) : await deployer.deploy(GovernanceRewards, token.address, governanceMothership.address);
-        await governanceMothership.addModule(govRewards.address);
+        let govRewards;
+        if (network in GOV_REWARDS) {
+            govRewards = await GovernanceRewards.at(GOV_REWARDS[network]);
+        } else {
+            govRewards = await deployer.deploy(GovernanceRewards, token.address, governanceMothership.address);
 
-        await mooniswapFactory.setGovernanceWallet(GOV_WALLET[network]);
-        await govRewards.setRewardDistribution(GOV_WALLET[network]);
+            if ((await governanceMothership.owner()) == accounts[0]) {
+                await governanceMothership.addModule(govRewards.address);
+            } else {
+                console.log(
+                    'Do not forget to governanceMothership.addModule(govRewards.address), where:\n' +
+                    ` - governanceMothership = ${governanceMothership.address}\n` +
+                    ` - govRewards = ${govRewards.address}\n` +
+                    ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`
+                );
+            }
+        }
 
-        const referralFeeReceiver = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
-        await mooniswapFactory.setFeeCollector(referralFeeReceiver.address);
+        if ((await mooniswapFactory.owner()) == accounts[0]) {
+            await mooniswapFactory.setGovernanceWallet(GOV_WALLET[network]);
+        } else {
+            console.log(
+                'Do not forget to mooniswapFactory.setGovernanceWallet(GOV_WALLET[network]), where:\n' +
+                ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
+                ` - GOV_WALLET[network] = ${GOV_WALLET[network]}\n` +
+                ` - mooniswapFactory.owner() = ${await mooniswapFactory.owner()}\n`
+            );
+        }
+
+        if ((await govRewards.owner()) == accounts[0]) {
+            await govRewards.setRewardDistribution(GOV_WALLET[network]);
+        } else {
+            console.log(
+                'Do not forget to govRewards.setRewardDistribution(GOV_WALLET[network]), where:\n' +
+                ` - govRewards = ${govRewards.address}\n` +
+                ` - GOV_WALLET[network] = ${GOV_WALLET[network]}\n` +
+                ` - govRewards.owner() = ${await govRewards.owner()}\n`
+            );
+        }
+
+        let feeCollector;
+        if (network in FEE_COLLECTOR) {
+            feeCollector = await ReferralFeeReceiver.at(FEE_COLLECTOR[network]);
+        } else {
+            feeCollector = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
+
+            if ((await mooniswapFactory.owner()) == accounts[0]) {
+                await mooniswapFactory.setFeeCollector(feeCollector.address);
+            } else {
+                console.log(
+                    'Do not forget to mooniswapFactory.setFeeCollector(feeCollector.address), where:\n' +
+                    ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
+                    ` - feeCollector = ${feeCollector.address}\n` +
+                    ` - mooniswapFactory.owner() = ${await mooniswapFactory.owner()}\n`
+                );
+            }
+        }
 
         // Transfer Ownership
 
-        await governanceMothership.transferOwnership(POOL_OWNER[network]);
-        await govRewards.transferOwnership(POOL_OWNER[network]);
+        if ((await governanceMothership.owner()) == accounts[0]) {
+            await governanceMothership.transferOwnership(POOL_OWNER[network]);
+        } else if ((await governanceMothership.owner()) != POOL_OWNER[network]) {
+            console.log(
+                'Do not forget to governanceMothership.transferOwnership(POOL_OWNER[network]), where:\n' +
+                ` - governanceMothership = ${governanceMothership.address}\n` +
+                ` - POOL_OWNER[network] = ${POOL_OWNER[network]}\n` +
+                ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`
+            );
+        }
+
+        if ((await govRewards.owner()) == accounts[0]) {
+            await govRewards.transferOwnership(POOL_OWNER[network]);
+        } else if ((await govRewards.owner()) != POOL_OWNER[network]) {
+            console.log(
+                'Do not forget to govRewards.transferOwnership(POOL_OWNER[network]), where:\n' +
+                ` - govRewards = ${govRewards.address}\n` +
+                ` - POOL_OWNER[network] = ${POOL_OWNER[network]}\n` +
+                ` - govRewards.owner() = ${await govRewards.owner()}\n`
+            );
+        }
 
         for (const [, [token0, token1]] of Object.entries(POOLS[network])) {
             await mooniswapFactory.deploy(token0, token1);
