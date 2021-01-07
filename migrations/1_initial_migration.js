@@ -108,8 +108,8 @@ module.exports = function (deployer, network) {
         }
 
         const account = '0x11799622F4D98A24514011E8527B969f7488eF47';
-        console.log('Deployer account:', account);
-        console.log('Deployer balance:', await web3.eth.getBalance(account));
+        console.log('Deployer account: ' + account);
+        console.log('Deployer balance: ' + (await web3.eth.getBalance(account)) / 1e18 + ' ETH');
 
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = (network in MOTHERSHIP) ? await GovernanceMothership.at(MOTHERSHIP[network]) : await deployer.deploy(GovernanceMothership, token.address);
@@ -245,14 +245,21 @@ module.exports = function (deployer, network) {
             );
         }
 
+        await Promise.all(
+            Object.entries(POOLS[network]).map(
+                ([, [token0, token1]]) => mooniswapFactory.deploy(token0, token1)
+            )
+        );
+
+        const pools = {};
         for (const [pair, [token0, token1]] of Object.entries(POOLS[network])) {
-            await mooniswapFactory.deploy(token0, token1);
             const pool = await mooniswapFactory.pools(token0, token1);
             console.log(`Deployed pool (${pair}): ${pool}`);
+            pools[pair] = pool;
         }
 
         for (const [pair, [token0, token1, reward]] of Object.entries(FARM_REWARDS[network])) {
-            const pool = await mooniswapFactory.pools(token0, token1);
+            const pool = pools[pair];
             console.log(`Deploying farm for pool (${pair}): ${pool}`);
             const poolRewards = await deployer.deploy(FarmingRewards, pool, token.address);
             if (reward != '0') {
