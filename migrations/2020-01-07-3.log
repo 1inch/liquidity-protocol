@@ -1,0 +1,117 @@
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 4.694162673432142 ETH
+
+   Replacing 'MooniswapFactory'
+   ----------------------------
+   > transaction hash:    0x7f4833214a62e810f8ee7625c876fb82c96ca3c82508f489b2bb8fbea149ccbd
+   > Blocks: 8            Seconds: 57
+   > contract address:    0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643
+   > block number:        11607841
+   > block timestamp:     1610026408
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.402697673432142908
+   > gas used:            2914650 (0x2c795a)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.291465 ETH
+
+Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:
+ - governanceMothership = 0xA0446D8804611944F1B527eCD37d7dcbE442caba
+ - mooniswapFactory = 0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643
+ - governanceMothership.owner() = 0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1
+
+Do not forget to govRewards.setRewardDistribution(GOV_WALLET[network]), where:
+ - govRewards = 0x0F85A912448279111694F4Ba4F85dC641c54b594
+ - GOV_WALLET[network] = 0x7e11a8887A2c445883AcC453738635bC3aCDAdb6
+ - govRewards.owner() = 0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1
+
+Replacing 'ReferralFeeReceiver'
+   -------------------------------
+   > transaction hash:    0x0f1d1f55c70b2bfaedd4657b8543ae6362233955ded108857d865ca7f23c40dc
+   > Blocks: 4            Seconds: 105
+   > contract address:    0x2eeA44E40930b1984F42078E836c659A12301E40
+   > block number:        11607872
+   > block timestamp:     1610026879
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             8.962914173432142908
+   > gas used:            3094590 (0x2f383e)
+   > gas price:           140 gwei
+   > value sent:          0 ETH
+   > total cost:          0.4332426 ETH
+
+Deployed pool (ETH-DAI): 0x7566126f2fD0f2Dddae01Bb8A6EA49b760383D5A
+Deployed pool (ETH-USDC): 0xb4dB55a20E0624eDD82A0Cf356e3488B4669BD27
+Deployed pool (ETH-USDT): 0xbBa17b81aB4193455Be10741512d0E71520F43cB
+Deployed pool (ETH-WBTC): 0x6a11F3E5a01D129e566d783A7b6E8862bFD66CcA
+Deployed pool (ETH-1INCH): 0x0EF1B8a0E726Fc3948E15b23993015eB1627f210
+
+Deploying farm for pool (ETH-DAI): 0x7566126f2fD0f2Dddae01Bb8A6EA49b760383D5A
+
+Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xa6839c7fc4fb2d953714c80992dcca7525b37625bc9f07c1b13959b08586f65d
+   > Blocks: 4            Seconds: 33
+   > contract address:    0x4dab1Ba9609C1546A0A69a76F00eD935b0b9C45e
+   > block number:        11607941
+   > block timestamp:     1610027696
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             5.003591813432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           140 gwei
+   > value sent:          0 ETH
+   > total cost:          0.30272382 ETH
+
+Deploying farm for pool (ETH-USDC): 0xb4dB55a20E0624eDD82A0Cf356e3488B4669BD27
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x390a55a1f274ffefd8948abf98e67d98dbdb2d40e025947ba2f6d92906de6912
+   > Blocks: 1            Seconds: 25
+   > contract address:    0x0DA1b305d7101359434d71eCEAab71E1fF5437e6
+   > block number:        11607946
+   > block timestamp:     1610027737
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.694780093432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           140 gwei
+   > value sent:          0 ETH
+   > total cost:          0.30272382 ETH
+
+Deploying farm for pool (ETH-USDT): 0xbBa17b81aB4193455Be10741512d0E71520F43cB
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xc643da59b5971670fe42a1923975da566236f44653f4e9d85999c27884bad332
+   > Blocks: 3            Seconds: 24
+   > contract address:    0xA83fCeA9229C7f1e02Acb46ABe8D6889259339e8
+   > block number:        11607952
+   > block timestamp:     1610027832
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.385968373432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           140 gwei
+   > value sent:          0 ETH
+   > total cost:          0.30272382 ETH
+
+Deploying farm for pool (ETH-WBTC): 0x6a11F3E5a01D129e566d783A7b6E8862bFD66CcA
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x27a0f27464d5677da71865e10c3c1eb6d77f255178ce4b1c3819fecb2046cddb
+   > Blocks: 3            Seconds: 13
+   > contract address:    0x98484d4259A70B73af58180521f2eB71a3F00Ae6
+   > block number:        11608012
+   > block timestamp:     1610028509
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.077156653432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           140 gwei
+   > value sent:          0 ETH
+   > total cost:          0.30272382 ETH
+
+Deploying farm for pool (ETH-1INCH): 0x0EF1B8a0E726Fc3948E15b23993015eB1627f210
+
+Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x88e7e6e244e78b80bbde036232b1c77b9b9d1bfcb94148669f2d5edf3ea38121
+   > contract address:    0x9070832CF729A5150BB26825c2927e7D343EabD9

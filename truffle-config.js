@@ -15,7 +15,7 @@ module.exports = {
                 });
             },
             gas: 5000000,
-            gasPrice: 100000000000, // 100 wgei
+            gasPrice: 160000000000, // 160 wgei
             network_id: 42
         },
         mainnet: {
@@ -27,7 +27,7 @@ module.exports = {
                 });
             },
             gas: 6000000,
-            gasPrice: 100000000000, // 100 wgei
+            gasPrice: 160000000000, // 160 wgei
             network_id: 1
         }
     },
