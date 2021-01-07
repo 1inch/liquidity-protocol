@@ -36,6 +36,7 @@
         "deploy:kovan": "truffle migrate --network kovan --reset",
         "deploy:mainnet": "truffle migrate --network mainnet --reset",
         "verify:kovan": "truffle run verify ExchangeGovernance --network kovan",
+        "verify:mainnet": "truffle run verify ExchangeGovernance --network mainnet",
         "coverage": "truffle run coverage",
         "coveralls": "truffle run coverage && cat coverage/lcov.info | coveralls",
         "lint:js": "eslint .",

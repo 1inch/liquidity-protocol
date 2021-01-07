@@ -2,91 +2,107 @@ const GovernanceMothership = artifacts.require('./inch/GovernanceMothership.sol'
 const ExchangeGovernance = artifacts.require('./ExchangeGovernance.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
+const Mooniswap = artifacts.require('./Mooniswap.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
 const GovernanceRewards = artifacts.require('./governance/GovernanceRewards.sol');
 const FarmingRewards = artifacts.require('./inch/FarmingRewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
+const TOKENS = {
+    ETH: '0x0000000000000000000000000000000000000000',
+    DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    WBTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    YFI: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e'
+}
+
 const POOL_OWNER = {
-    mainnet: '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
-    'mainnet-fork': '0x1cB37a0606003654b302bbD8fea408BFa066c6Ef',
+    // mainnet: '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
+    // 'mainnet-fork': '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
 };
 
 const TOKEN = {
-    mainnet: '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
-    'mainnet-fork': '0x28ed0b47EeE1F467D182620a333Fe69415Ba9AC9',
+    // mainnet: '0x111111111117dC0aa78b770fA6A738034120C302',
+    // 'mainnet-fork': '0x111111111117dC0aa78b770fA6A738034120C302',
 };
 
 const MOTHERSHIP = {
-    mainnet: '0xA8AB44d72F7De35b06EDCb162eB846Acc9Fe3474',
-    'mainnet-fork': '0xA8AB44d72F7De35b06EDCb162eB846Acc9Fe3474',
+    mainnet: '0xA0446D8804611944F1B527eCD37d7dcbE442caba',
+    'mainnet-fork': '0xA0446D8804611944F1B527eCD37d7dcbE442caba',
 };
 
 const GOV_REWARDS = {
-    mainnet: '0x62796829e6f3458a89aF007078f7564958B6e517',
-    'mainnet-fork': '0x62796829e6f3458a89aF007078f7564958B6e517',
+    // mainnet: '0x0F85A912448279111694F4Ba4F85dC641c54b594',
+    // 'mainnet-fork': '0x0F85A912448279111694F4Ba4F85dC641c54b594',
 };
 
 const POOLS = {
     mainnet: {
-        // 'ETH-DAI': ['0x0000000000000000000000000000000000000000', '0x6B175474E89094C44Da98b954EedeAC495271d0F'],
-        // 'ETH-USDC': ['0x0000000000000000000000000000000000000000', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'],
-        // 'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7'],
-        // 'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'],
-        'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN.mainnet],
-        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN.mainnet],
+        // 'ETH-USDC': [TOKENS.ETH, TOKENS.USDC],
+        // 'ETH-DAI': [TOKENS.ETH, TOKENS.DAI],
+        // 'ETH-USDT': [TOKENS.ETH, TOKENS.USDT],
+        // '1INCH-ETH': [TOKENS.ETH, TOKEN.mainnet],
+        // '1INCH-DAI': [TOKENS.DAI, TOKEN.mainnet],
+        // '1INCH-WBTC': [TOKENS.WBTC, TOKEN.mainnet],
+        // '1INCH-USDC': [TOKENS.USDC, TOKEN.mainnet],
+        // '1INCH-USDT': [TOKENS.USDT, TOKEN.mainnet],
+        // '1INCH-YFI': [TOKENS.YFI, TOKEN.mainnet],
     },
     'mainnet-fork': {
-        // 'ETH-DAI': ['0x0000000000000000000000000000000000000000', '0x6B175474E89094C44Da98b954EedeAC495271d0F'],
-        // 'ETH-USDC': ['0x0000000000000000000000000000000000000000', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'],
-        // 'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7'],
-        // 'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'],
-        'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN['mainnet-fork']],
-        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN['mainnet-fork']],
+        // 'ETH-USDC': [TOKENS.ETH, TOKENS.USDC],
+        // 'ETH-DAI': [TOKENS.ETH, TOKENS.DAI],
+        // 'ETH-USDT': [TOKENS.ETH, TOKENS.USDT],
+        // '1INCH-ETH': [TOKENS.ETH, TOKEN['mainnet-fork']],
+        // '1INCH-DAI': [TOKENS.DAI, TOKEN['mainnet-fork']],
+        // '1INCH-WBTC': [TOKENS.WBTC, TOKEN['mainnet-fork']],
+        // '1INCH-USDC': [TOKENS.USDC, TOKEN['mainnet-fork']],
+        // '1INCH-USDT': [TOKENS.USDT, TOKEN['mainnet-fork']],
+        // '1INCH-YFI': [TOKENS.YFI, TOKEN['mainnet-fork']],
     },
 };
 
-const FARM_REWARDS = {
-    mainnet: {
-        // 'ETH-DAI': '0',
-        // 'ETH-USDC': '0',
-        // 'ETH-USDT': '0',
-        // 'ETH-WBTC': '0',
-        'ETH-1INCH': '2000000000000000000000',
-        'DAI-1INCH': '2000000000000000000000',
-    },
-    'mainnet-fork': {
-        // 'ETH-DAI': '0',
-        // 'ETH-USDC': '0',
-        // 'ETH-USDT': '0',
-        // 'ETH-WBTC': '0',
-        'ETH-1INCH': '2000000000000000000000',
-        'DAI-1INCH': '2000000000000000000000',
-    },
-};
+// const FARM_REWARDS = {
+//     mainnet: {
+//         // '1INCH-ETH': '',
+//         // '1INCH-DAI': '',
+//         // '1INCH-WBTC': '',
+//         // '1INCH-USDC': '',
+//         // '1INCH-USDT': '',
+//         // '1INCH-YFI': '',
+//     },
+//     'mainnet-fork': {
+//         // '1INCH-ETH': '',
+//         // '1INCH-DAI': '',
+//         // '1INCH-WBTC': '',
+//         // '1INCH-USDC': '',
+//         // '1INCH-USDT': '',
+//         // '1INCH-YFI': '',
+//     },
+// };
 
-const FARMING_REWARDS = {
-    mainnet: {
-        // 'ETH-DAI': '0',
-        // 'ETH-USDC': '0',
-        // 'ETH-USDT': '0',
-        // 'ETH-WBTC': '0',
-        'ETH-1INCH': '0x50a77b39Cd6cB7F14108aD508A324C05cD8D2aF6',
-        'DAI-1INCH': '0xE6038497d598a91B0A130C492A3C4D1E560A9cF1',
-    },
-    'mainnet-fork': {
-        // 'ETH-DAI': '0',
-        // 'ETH-USDC': '0',
-        // 'ETH-USDT': '0',
-        // 'ETH-WBTC': '0',
-        'ETH-1INCH': '0x50a77b39Cd6cB7F14108aD508A324C05cD8D2aF6',
-        'DAI-1INCH': '0xE6038497d598a91B0A130C492A3C4D1E560A9cF1',
-    },
-};
+// const FARMING_REWARDS = {
+//     mainnet: {
+//         // '1INCH-ETH': '',
+//         // '1INCH-DAI': '',
+//         // '1INCH-WBTC': '',
+//         // '1INCH-USDC': '',
+//         // '1INCH-USDT': '',
+//         // '1INCH-YFI': '',
+//     },
+//     'mainnet-fork': {
+//         // '1INCH-ETH': '',
+//         // '1INCH-DAI': '',
+//         // '1INCH-WBTC': '',
+//         // '1INCH-USDC': '',
+//         // '1INCH-USDT': '',
+//         // '1INCH-YFI': '',
+//     },
+// };
 
 const DEPLOYER = {
-    mainnet: '0x7424365a961287324EE66c7C554c4Ca57577C366',
-    'mainnet-fork': '0x7424365a961287324EE66c7C554c4Ca57577C366',
+    // mainnet: '',
+    // 'mainnet-fork': '',
 };
 
 const GOV_WALLET = {
@@ -95,8 +111,8 @@ const GOV_WALLET = {
 };
 
 const FACTORY = {
-    mainnet: '0x0D4B41Ea6b9408CfcF817DEb7fE3d568A1D9582D',
-    'mainnet-fork': '0x0D4B41Ea6b9408CfcF817DEb7fE3d568A1D9582D',
+    // mainnet: '0xC4A8B7e29E3C8ec560cd4945c1cF3461a85a148d',
+    // 'mainnet-fork': '0xC4A8B7e29E3C8ec560cd4945c1cF3461a85a148d',
 };
 
 module.exports = function (deployer, network) {
@@ -106,29 +122,29 @@ module.exports = function (deployer, network) {
             return;
         }
 
-        const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
+        // const token = await TokenMock.at(TOKEN[network]);
+        // console.assert(await token.owner() == POOL_OWNER[network], "Invalid owner");
         const governanceMothership = (network in MOTHERSHIP) ? await GovernanceMothership.at(MOTHERSHIP[network]) : await deployer.deploy(GovernanceMothership, token.address);
 
         // Exchange Governance
 
-        // const exchangeGovernance = await deployer.deploy(ExchangeGovernance, governanceMothership.address);
+        const exchangeGovernance = await deployer.deploy(ExchangeGovernance, governanceMothership.address);
         // await governanceMothership.addModule(exchangeGovernance.address);
 
         // Mooniswap Factory
 
-        const mooniswapDeployer = (network in DEPLOYER) ? await MooniswapDeployer.at(DEPLOYER[network]) : await deployer.deploy(MooniswapDeployer);
-        const mooniswapFactory = (network in FACTORY) ? await MooniswapFactory.at(FACTORY[network]) : await deployer.deploy(
-            MooniswapFactory,
-            POOL_OWNER[network],
-            mooniswapDeployer.address,
-            governanceMothership.address,
-        );
+        // const mooniswapDeployer = (network in DEPLOYER) ? await MooniswapDeployer.at(DEPLOYER[network]) : await deployer.deploy(MooniswapDeployer);
+        // const mooniswapFactory = (network in FACTORY) ? await MooniswapFactory.at(FACTORY[network]) : await deployer.deploy(
+        //     MooniswapFactory,
+        //     POOL_OWNER[network],
+        //     mooniswapDeployer.address,
+        //     governanceMothership.address,
+        // );
         // await governanceMothership.addModule(mooniswapFactory.address);
-        // await governanceMothership.removeModule('0xDA3ed1906ddC653b39d5ef05111c46F5D0EEB8b2'); // old mooniswapFactory
 
         // Governance
 
-        const govRewards = (network in GOV_REWARDS) ? await GovernanceRewards.at(GOV_REWARDS[network]) : await deployer.deploy(GovernanceRewards, token.address, governanceMothership.address);
+        // const govRewards = (network in GOV_REWARDS) ? await GovernanceRewards.at(GOV_REWARDS[network]) : await deployer.deploy(GovernanceRewards, token.address, governanceMothership.address);
         // await governanceMothership.addModule(govRewards.address);
 
         // await mooniswapFactory.setGovernanceWallet(GOV_WALLET[network]);
@@ -141,20 +157,26 @@ module.exports = function (deployer, network) {
 
         // await governanceMothership.transferOwnership(POOL_OWNER[network]);
         // await govRewards.transferOwnership(POOL_OWNER[network]);
+        // await mooniswapFactory.transferOwnership(POOL_OWNER[network]);
+
+        // Pools
 
         // for (const [, [token0, token1]] of Object.entries(POOLS[network])) {
         //     await mooniswapFactory.deploy(token0, token1);
         // }
 
-        for (const [poolName, [token0, token1]] of Object.entries(POOLS[network])) {
-            // const pool = await mooniswapFactory.pools(token0, token1);
-            // const poolRewards = await deployer.deploy(FarmingRewards, pool, token.address);
-            const poolRewards = await FarmingRewards.at(FARMING_REWARDS[network][poolName])
-            // await poolRewards.setRewardDistribution(POOL_OWNER[network]);
-            // await poolRewards.transferOwnership(POOL_OWNER[network]);
+        // Farming
 
-            // await token.transfer(poolRewards.address, FARM_REWARDS[network][poolName]);
-            await poolRewards.notifyRewardAmount(FARM_REWARDS[network][poolName]);
-        }
+        // for (const [poolName, [token0, token1]] of Object.entries(POOLS[network])) {
+        //     console.log('Farming: ', poolName)
+        //     const pool = await mooniswapFactory.pools(token0, token1);
+        //     const poolRewards = await deployer.deploy(FarmingRewards, pool, token.address);
+        //     // const poolRewards = await FarmingRewards.at('0xD7936052D1e096d48C81Ef3918F9Fd6384108480')
+        //     await poolRewards.setRewardDistribution(POOL_OWNER[network]);
+        //     await poolRewards.transferOwnership(POOL_OWNER[network]);
+
+        //     // await token.transfer(poolRewards.address, FARM_REWARDS[network][poolName]);
+        //     // await poolRewards.notifyRewardAmount(FARM_REWARDS[network][poolName]);
+        // }
     });
 };
