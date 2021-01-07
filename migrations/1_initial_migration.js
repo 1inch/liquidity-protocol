@@ -2,10 +2,25 @@ const GovernanceMothership = artifacts.require('./inch/GovernanceMothership.sol'
 const ExchangeGovernance = artifacts.require('./ExchangeGovernance.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
+const Mooniswap = artifacts.require('./Mooniswap.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
 const GovernanceRewards = artifacts.require('./governance/GovernanceRewards.sol');
 const FarmingRewards = artifacts.require('./inch/FarmingRewards.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
+
+const TOKENS = {
+    ETH: '0x0000000000000000000000000000000000000000',
+    DAI: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    WBTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    YFI: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e'
+}
+
+const TOKEN = {
+    mainnet: '0x111111111117dC0aa78b770fA6A738034120C302',
+    'mainnet-fork': '0x111111111117dC0aa78b770fA6A738034120C302',
+};
 
 const POOL_OWNER = {
     mainnet: '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
@@ -15,11 +30,6 @@ const POOL_OWNER = {
 const REWARD_DISTRIBUTION = {
     mainnet: '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
     'mainnet-fork': '0x5E89f8d81C74E311458277EA1Be3d3247c7cd7D1',
-};
-
-const TOKEN = {
-    mainnet: '0x111111111117dC0aa78b770fA6A738034120C302',
-    'mainnet-fork': '0x111111111117dC0aa78b770fA6A738034120C302',
 };
 
 const MOTHERSHIP = {
@@ -38,8 +48,8 @@ const GOV_REWARDS = {
 };
 
 const FEE_COLLECTOR = {
-    mainnet: '0xF5ab9Bf279284fB8e3De1C3BF0B0b4A6Fb0Bb538',
-    'mainnet-fork': '0xF5ab9Bf279284fB8e3De1C3BF0B0b4A6Fb0Bb538',
+    // mainnet: '0xF5ab9Bf279284fB8e3De1C3BF0B0b4A6Fb0Bb538',
+    // 'mainnet-fork': '0xF5ab9Bf279284fB8e3De1C3BF0B0b4A6Fb0Bb538',
 };
 
 const POOLS = {
@@ -68,7 +78,7 @@ const FARM_REWARDS = {
         'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7', '0'],
         'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', '0'],
         'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN.mainnet, '0'],
-        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN.mainnet, '0'],
+        'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN.mainnet, '0'],
     },
     'mainnet-fork': {
         'ETH-DAI': ['0x0000000000000000000000000000000000000000', '0x6B175474E89094C44Da98b954EedeAC495271d0F', '0'],
@@ -76,7 +86,7 @@ const FARM_REWARDS = {
         'ETH-USDT': ['0x0000000000000000000000000000000000000000', '0xdAC17F958D2ee523a2206206994597C13D831ec7', '0'],
         'ETH-WBTC': ['0x0000000000000000000000000000000000000000', '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', '0'],
         'ETH-1INCH': ['0x0000000000000000000000000000000000000000', TOKEN['mainnet'], '0'],
-        // 'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN['mainnet'], '0'],
+        'DAI-1INCH': ['0x6B175474E89094C44Da98b954EedeAC495271d0F', TOKEN['mainnet'], '0'],
     },
 };
 
@@ -91,8 +101,8 @@ const GOV_WALLET = {
 };
 
 const FACTORY = {
-    mainnet: '0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3',
-    'mainnet-fork': '0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3',
+    // mainnet: '0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3',
+    // 'mainnet-fork': '0xE1b8Ff58432916CCfBF65a467B66fa4313Dc04d3',
 };
 
 module.exports = function (deployer, network) {
