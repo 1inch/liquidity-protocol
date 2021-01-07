@@ -2,12 +2,13 @@
 
 pragma solidity ^0.6.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "../libraries/UniERC20.sol";
-import "../utils/BalanceAccounting.sol";
+import "./libraries/UniERC20.sol";
+import "./utils/BalanceAccounting.sol";
 
 
-contract FeeCollector is BalanceAccounting {
+contract FeeCollector is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using UniERC20 for IERC20;
 
@@ -39,6 +40,8 @@ contract FeeCollector is BalanceAccounting {
         uint256 totalShares;
         uint256 auctionStarted;
         mapping(address => uint256) userShare;
+        mapping(address => uint256) userLastAuctionClaimed;
+        mapping(uint256 => uint256) auctionSettlementPrice;
     }
 
     uint112 public minValue;
@@ -70,26 +73,26 @@ contract FeeCollector is BalanceAccounting {
     // time + log(x) / log(dec) = time2
 
     function setMinMax(uint256 _minValue, uint256 _maxValue) public onlyOwner {
-        minValue = _minValue;
-        maxValue = _maxValue;
-
         uint256 l = 0;
         uint256 r = 2**20;
         uint256[20] memory table = decelerationTable();
         while (l != r) {
             uint256 m = (l + r) / 2;
             uint256 p = _priceForTime(m, _minValue, _maxValue, table);
-            if (p > minValue) {
+            if (p > _minValue) {
                 l = m + 1;
             } else {
                 r = m;
             }
         }
+
+        minValue = _minValue;
+        maxValue = _maxValue;
         period = r;
     }
 
     function _configTable(uint256 _deceleration) private {
-        _k00 = 1e36 * _deceleration / 1e36;
+        _k00 = _deceleration;
         _k01 = _k00 * _k00 / 1e36;
         if (_k01 == 0) return;
         _k02 = _k01 * _k01 / 1e36;
