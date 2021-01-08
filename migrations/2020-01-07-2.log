@@ -1,0 +1,110 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12451104 (0xbdfd20)
+
+
+1_initial_migration.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 8.099031273432143 ETH
+Do not forget to govRewards.setRewardDistribution(GOV_WALLET[network]), where:
+ - govRewards = 0xd120D5171d1BcceA4fEE705289Df5fc0C3721100
+ - GOV_WALLET[network] = 0x7e11a8887A2c445883AcC453738635bC3aCDAdb6
+ - govRewards.owner() = 0x1cB37a0606003654b302bbD8fea408BFa066c6Ef
+
+Deployed pool (ETH-DAI): 0xE9F43ee914908B56F97c196e3464739fd434cE52
+Deployed pool (ETH-USDC): 0x13b6B8a12eb622b9469337e8f8544a6a3f4B6924
+Deployed pool (ETH-USDT): 0xF2fe404f4B6aB835D44B898FFc812716a3CCfFd5
+Deployed pool (ETH-WBTC): 0xe7D34daB03a0Ee822bF5E28c0CC2f4E6071355D4
+Deployed pool (ETH-1INCH): 0x1712ACA101E3422d259C3b16D461B58aDB15E409
+Deploying farm for pool (ETH-DAI): 0xE9F43ee914908B56F97c196e3464739fd434cE52
+
+   Deploying 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x2f1a74c3d01e943784a5dfb13b72360cc8162a4298f6f5f9c4afdcacc1a2ad2b
+   > Blocks: 4            Seconds: 9
+   > contract address:    0xaFeA5601b0A894451955355E79AD3026515e500d
+   > block number:        11607437
+   > block timestamp:     1610020996
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             5.586232173432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2162313 ETH
+
+Deploying farm for pool (ETH-USDC): 0x13b6B8a12eb622b9469337e8f8544a6a3f4B6924
+
+   Deploying 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xb3628a58a0a0189c5fee395a6086b473c1a83a34eff60736c51abe522b048e5d
+   > Blocks: 3            Seconds: 25
+   > contract address:    0xC1e16013A158D57a60d6aA5Bb3108722b0AC6df5
+   > block number:        11607504
+   > block timestamp:     1610021949
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             5.360250573432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2162313 ETH
+
+Deploying farm for pool (ETH-USDT): 0xF2fe404f4B6aB835D44B898FFc812716a3CCfFd5
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x51b5d00221b0f5d0a70a4c65220665bd9aeced082c44231cd3d87b1fddc07197
+   > Blocks: 2            Seconds: 13
+   > contract address:    0x322E22CC258cBA8b1D40348cB375BeddDD3C2d4C
+   > block number:        11607508
+   > block timestamp:     1610021972
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             5.139670773432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2162313 ETH
+
+Deploying farm for pool (ETH-WBTC): 0xe7D34daB03a0Ee822bF5E28c0CC2f4E6071355D4
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x88c6594f9cc61c69904fee0feb5805ee2228f9d2fad63885605d40a7ceff3765
+   > Blocks: 3            Seconds: 21
+   > contract address:    0xfbD61B037C325b959c0F6A7e69D8f37770C2c550
+   > block number:        11607512
+   > block timestamp:     1610022017
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.919090973432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2162313 ETH
+
+Deploying farm for pool (ETH-1INCH): 0x1712ACA101E3422d259C3b16D461B58aDB15E409
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x8d6c41585964c39730caaf0558021b36079ce27055f66900235dd0bb151af9ba
+   > Blocks: 1            Seconds: 9
+   > contract address:    0xe0c70111B6EE26865eadB35311748bFD45A3596E
+   > block number:        11607516
+   > block timestamp:     1610022055
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             4.698511173432142908
+   > gas used:            2162313 (0x20fe89)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.2162313 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.8649252 ETH
+
+
+Summary
+=======
+> Total deployments:   4
+> Final cost:          0.8649252 ETH
