@@ -227,17 +227,17 @@ module.exports = function (deployer, network) {
             feeCollector = await ReferralFeeReceiver.at(FEE_COLLECTOR[network]);
         } else {
             feeCollector = await deployer.deploy(ReferralFeeReceiver, token.address, mooniswapFactory.address);
+        }
 
-            if ((await mooniswapFactory.owner()) == account) {
-                await mooniswapFactory.setFeeCollector(feeCollector.address);
-            } else {
-                console.log(
-                    'Do not forget to mooniswapFactory.setFeeCollector(feeCollector.address), where:\n' +
-                    ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
-                    ` - feeCollector = ${feeCollector.address}\n` +
-                    ` - mooniswapFactory.owner() = ${await mooniswapFactory.owner()}\n`
-                );
-            }
+        if ((await mooniswapFactory.owner()) == account) {
+            await mooniswapFactory.setFeeCollector(feeCollector.address);
+        } else {
+            console.log(
+                'Do not forget to mooniswapFactory.setFeeCollector(feeCollector.address), where:\n' +
+                ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
+                ` - feeCollector = ${feeCollector.address}\n` +
+                ` - mooniswapFactory.owner() = ${await mooniswapFactory.owner()}\n`
+            );
         }
 
         // Transfer Ownership
@@ -250,6 +250,17 @@ module.exports = function (deployer, network) {
                 ` - governanceMothership = ${governanceMothership.address}\n` +
                 ` - POOL_OWNER[network] = ${POOL_OWNER[network]}\n` +
                 ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`
+            );
+        }
+
+        if ((await feeCollector.owner()) == account) {
+            await feeCollector.transferOwnership(POOL_OWNER[network]);
+        } else {
+            console.log(
+                'Do not forget to feeCollector.transferOwnership(POOL_OWNER[network]), where:\n' +
+                ` - feeCollector = ${feeCollector.address}\n` +
+                ` - POOL_OWNER[network] = ${POOL_OWNER[network]}\n` +
+                ` - feeCollector.owner() = ${await feeCollector.owner()}\n`
             );
         }
 
