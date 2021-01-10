@@ -140,11 +140,11 @@ contract FarmingRewards is BaseRewards {
     }
 
     function _updateVotes(address account, uint256 balance, uint256 newBalance, uint256 newTotalSupply) private {
-        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_FEE, _emitFeeVoteUpdate);
+        _fee.updateBalance(account, _fee.votes[account], balance, newBalance, newTotalSupply, mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
-        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_SLIPPAGE_FEE, _emitSlippageFeeVoteUpdate);
+        _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
-        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, MooniswapConstants._DEFAULT_DECAY_PERIOD, _emitDecayPeriodVoteUpdate);
+        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
         _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
