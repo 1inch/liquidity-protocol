@@ -1,4 +1,3 @@
-const GovernanceMothership = artifacts.require('./inch/GovernanceMothership.sol');
 const MooniswapDeployer = artifacts.require('./MooniswapDeployer.sol');
 const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
@@ -105,7 +104,6 @@ module.exports = function (deployer, network) {
         console.log('Deployer balance: ' + (await web3.eth.getBalance(account)) / 1e18 + ' ETH');
 
         const token = await TokenMock.at(TOKEN[network]);
-        const governanceMothership = await GovernanceMothership.at(MOTHERSHIP[network]);
 
         // Mooniswap Factory
 
@@ -119,19 +117,14 @@ module.exports = function (deployer, network) {
                 MooniswapFactory,
                 POOL_OWNER[network],
                 mooniswapDeployer.address,
-                governanceMothership.address,
+                MOTHERSHIP[network],
             );
 
-            if (await governanceMothership.owner() === account) {
-                await governanceMothership.addModule(mooniswapFactory.address);
-            } else {
-                console.log(
-                    'Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:\n' +
-                    ` - governanceMothership = ${governanceMothership.address}\n` +
-                    ` - mooniswapFactory = ${mooniswapFactory.address}\n` +
-                    ` - governanceMothership.owner() = ${await governanceMothership.owner()}\n`,
-                );
-            }
+            console.log(
+                'Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:\n' +
+                ` - governanceMothership = ${MOTHERSHIP[network]}\n` +
+                ` - mooniswapFactory = ${mooniswapFactory.address}\n`
+            );
         }
 
         if (await mooniswapFactory.governanceWallet() !== GOV_WALLET[network]) {
