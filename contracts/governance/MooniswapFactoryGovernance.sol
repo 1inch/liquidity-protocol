@@ -69,7 +69,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _defaultFee.votes[user].get(MooniswapConstants._DEFAULT_FEE);
     }
 
-    function virtualDefaultFee() external view returns(uint104, uint104, uint48) {
+    function virtualDefaultFee() external view override returns(uint104, uint104, uint48) {
         return (_defaultFee.data.oldResult, _defaultFee.data.result, _defaultFee.data.time);
     }
 
@@ -81,7 +81,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _defaultSlippageFee.votes[user].get(MooniswapConstants._DEFAULT_SLIPPAGE_FEE);
     }
 
-    function virtualDefaultSlippageFee() external view returns(uint104, uint104, uint48) {
+    function virtualDefaultSlippageFee() external view override returns(uint104, uint104, uint48) {
         return (_defaultSlippageFee.data.oldResult, _defaultSlippageFee.data.result, _defaultSlippageFee.data.time);
     }
 
@@ -93,7 +93,7 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
         return _defaultDecayPeriod.votes[user].get(MooniswapConstants._DEFAULT_DECAY_PERIOD);
     }
 
-    function virtualDefaultDecayPeriod() external view returns(uint104, uint104, uint48) {
+    function virtualDefaultDecayPeriod() external view override returns(uint104, uint104, uint48) {
         return (_defaultDecayPeriod.data.oldResult, _defaultDecayPeriod.data.result, _defaultDecayPeriod.data.time);
     }
 

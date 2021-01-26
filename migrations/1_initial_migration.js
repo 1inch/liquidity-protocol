@@ -5,6 +5,7 @@ const MooniswapFactory = artifacts.require('./MooniswapFactory.sol');
 const ReferralFeeReceiver = artifacts.require('./ReferralFeeReceiver.sol');
 const GovernanceRewards = artifacts.require('./governance/GovernanceRewards.sol');
 const FarmingRewards = artifacts.require('./inch/FarmingRewards.sol');
+const FarmingVoter = artifacts.require('./inch/FarmingVoter.sol');
 const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
 const TOKENS = {
@@ -125,6 +126,9 @@ module.exports = function (deployer, network) {
         const account = '0x11799622F4D98A24514011E8527B969f7488eF47';
         console.log('Deployer account: ' + account);
         console.log('Deployer balance: ' + (await web3.eth.getBalance(account)) / 1e18 + ' ETH');
+
+        const voter = await deployer.deploy(FarmingVoter, FACTORY[network]);
+        return;
 
         const token = (network in TOKEN) ? await TokenMock.at(TOKEN[network]) : await deployer.deploy(TokenMock, 'BOOM', 'BOOM', 18);
         const governanceMothership = (network in MOTHERSHIP) ? await GovernanceMothership.at(MOTHERSHIP[network]) : await deployer.deploy(GovernanceMothership, token.address);

@@ -10,6 +10,11 @@ interface IMooniswapFactoryGovernance {
     function defaultFee() external view returns(uint256);
     function defaultSlippageFee() external view returns(uint256);
     function defaultDecayPeriod() external view returns(uint256);
+
+    function virtualDefaultFee() external view returns(uint104, uint104, uint48);
+    function virtualDefaultSlippageFee() external view returns(uint104, uint104, uint48);
+    function virtualDefaultDecayPeriod() external view returns(uint104, uint104, uint48);
+
     function referralShare() external view returns(uint256);
     function governanceShare() external view returns(uint256);
     function governanceWallet() external view returns(address);

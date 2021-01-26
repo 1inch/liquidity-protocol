@@ -1,0 +1,35 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12475518 (0xbe5c7e)
+
+
+1_initial_migration.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 3.713215793432143 ETH
+
+   Deploying 'FarmingVoter'
+   ------------------------
+   > transaction hash:    0xa2567fcd796795f147ba1fbd20e044aea6728aac26ba178c0d4413863d19457b
+   > Blocks: 1            Seconds: 17
+   > contract address:    0x11a5504D869409D6E43D6ee18B41c6E7F16B09dC
+   > block number:        11639598
+   > block timestamp:     1610447498
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             3.682653093432142908
+   > gas used:            305627 (0x4a9db)
+   > gas price:           100 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0305627 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:           0.0305627 ETH
+
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.0305627 ETH
