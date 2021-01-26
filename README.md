@@ -1,12 +1,14 @@
-# Mooniswap
+# Mooniswap V2
 
-[![Build Status](https://github.com/CryptoManiacsZone/mooniswap/workflows/CI/badge.svg)](https://github.com/CryptoManiacsZone/mooniswap-v2/actions)
-[![Coverage Status](https://coveralls.io/repos/github/CryptoManiacsZone/mooniswap/badge.svg?branch=master)](https://coveralls.io/github/CryptoManiacsZone/mooniswap-v2?branch=master)
+[![Build Status](https://github.com/1inch-exchange/mooniswap-v2/workflows/CI/badge.svg)](https://github.com/1inch-exchange/mooniswap-v2/actions)
+[![Coverage Status](https://coveralls.io/repos/github/1inch-exchange/mooniswap-v2/badge.svg?branch=master)](https://coveralls.io/github/1inch-exchange/mooniswap-v2?branch=master)
 
 AMM with a beautiful mind
 
-## Factory Address
-[https://etherscan.io/address/0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303](https://etherscan.io/address/0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303)
+## Mainnet Contract Addresses
+
+[Mooniswap Factory](https://etherscan.io/address/0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643)
+[Referral Fee Receiver](https://etherscan.io/address/0x2eeA44E40930b1984F42078E836c659A12301E40)
 
 ## Swap
 ```solidity

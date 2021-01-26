@@ -1,8 +1,7 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const privateKey = '3ddc9f73d55425ca6ce31a26c2e4a70743d85f567436ea5028878ff80083b8b0';
-// const endpointUrl = 'https://web3-node.1inch.exchange';
-const kovanEndpointUrl = 'https://kovan.infura.io/v3/9e4cfe82e43c48e2afc547c40145dab8';
-const mainnetEndpointUrl = 'https://mainnet.infura.io/v3/9e4cfe82e43c48e2afc547c40145dab8';
+const privateKey = '';
+const kovanEndpointUrl = '';
+const mainnetEndpointUrl = '';
 
 module.exports = {
     networks: {
@@ -47,7 +46,7 @@ module.exports = {
         'truffle-plugin-verify'
     ],
     api_keys: {
-        etherscan: 'DTH5NTHIRUVSIQ8Q7PYAKPYSP3W25QHIZ7'
+        etherscan: ''
     },
     mocha: { // https://github.com/cgewecke/eth-gas-reporter
         reporter: 'eth-gas-reporter',
