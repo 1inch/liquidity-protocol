@@ -59,7 +59,7 @@ module.exports = function (deployer, network) {
 
         const token = await TokenMock.at(TOKEN[network]);
 
-        let mooniswapFactory = await MooniswapFactory.at(FACTORY[network]);
+        const mooniswapFactory = await MooniswapFactory.at(FACTORY[network]);
 
         const pools = {};
         for (const [pair, [token0, token1]] of Object.entries(POOLS[network])) {
