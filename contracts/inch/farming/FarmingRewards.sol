@@ -5,12 +5,14 @@ pragma solidity ^0.6.12;
 import "../../Mooniswap.sol";
 import "../../libraries/MooniswapConstants.sol";
 import "../../libraries/Voting.sol";
+import "../../libraries/UniERC20.sol";
 import "../../utils/BaseRewards.sol";
 
 
 contract FarmingRewards is BaseRewards {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
+    using UniERC20 for IERC20;
 
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
@@ -166,5 +168,14 @@ contract FarmingRewards is BaseRewards {
 
     function _emitDecayPeriodVoteUpdate(address account, uint256 newDecayPeriod, bool isDefault, uint256 newBalance) private {
         emit DecayPeriodVoteUpdate(account, newDecayPeriod, isDefault, newBalance);
+    }
+
+    function rescueFunds(IERC20 token, uint256 amount) external onlyOwner {
+        require(token != gift, "Can't rescue gift");
+
+        token.uniTransfer(msg.sender, amount);
+        if (token == mooniswap) {
+            require(token.uniBalanceOf(address(this)) == totalSupply(), "Can't withdraw staked tokens");
+        }
     }
 }

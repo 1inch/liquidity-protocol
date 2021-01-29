@@ -35,7 +35,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     modifier onlyRewardDistribution() {
-        require(_msgSender() == rewardDistribution, "Access denied");
+        require(msg.sender == rewardDistribution, "Access denied");
         _;
     }
 
@@ -70,7 +70,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     function getReward() public updateReward(msg.sender) {
-        uint256 reward = earned(msg.sender);
+        uint256 reward = rewards[msg.sender];
         if (reward > 0) {
             rewards[msg.sender] = 0;
             gift.transfer(msg.sender, reward);
@@ -86,6 +86,10 @@ contract BaseRewards is Ownable, BalanceAccounting {
             uint256 leftover = remaining.mul(rewardRate);
             rewardRate = reward.add(leftover).div(DURATION);
         }
+
+        uint balance = gift.balanceOf(address(this));
+        require(rewardRate <= balance.div(DURATION), "Reward is too big");
+
         lastUpdateTime = block.timestamp;
         periodFinish = block.timestamp.add(DURATION);
         emit RewardAdded(reward);
