@@ -190,6 +190,7 @@ module.exports = function (deployer, network) {
                 await poolRewards.notifyRewardAmount(FARM_REWARDS[network][pair]);
             }
             await poolRewards.setRewardDistribution(REWARD_DISTRIBUTION[network]);
+            await poolRewards.transferOwnership(POOL_OWNER[network]);
         }
     });
 };
