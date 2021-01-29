@@ -123,7 +123,7 @@ module.exports = function (deployer, network) {
             console.log(
                 'Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:\n' +
                 ` - governanceMothership = ${MOTHERSHIP[network]}\n` +
-                ` - mooniswapFactory = ${mooniswapFactory.address}\n`
+                ` - mooniswapFactory = ${mooniswapFactory.address}\n`,
             );
         }
 
