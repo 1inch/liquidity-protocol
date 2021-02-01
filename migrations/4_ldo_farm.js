@@ -4,7 +4,8 @@ const TokenMock = artifacts.require('./mocks/TokenMock.sol');
 
 const TOKENS = {
     ETH: '0x0000000000000000000000000000000000000000',
-    OPIUM: '0x888888888889C00c67689029D7856AAC1065eC11',
+    LDO: '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
+    STETH: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
     INCH: '0x111111111117dC0aa78b770fA6A738034120C302',
 };
 
@@ -25,19 +26,19 @@ const REWARD_DISTRIBUTION = {
 
 const POOLS = {
     // mainnet: {
-    //     'ETH-OPIUM': [TOKENS.ETH, TOKENS.OPIUM],
+    //     'LDO-STETH': [TOKENS.LDO, TOKENS.STETH],
     // },
     // 'mainnet-fork': {
-    //     'ETH-OPIUM': [TOKENS.ETH, TOKENS.OPIUM],
+    //     'LDO-STETH': [TOKENS.LDO, TOKENS.STETH],
     // },
 };
 
 const FARM_REWARDS = {
     // mainnet: {
-    //     'ETH-OPIUM': [TOKENS.ETH, TOKENS.OPIUM, '0'],
+    //     'LDO-STETH': [TOKENS.LDO, TOKENS.STETH, '0'],
     // },
     // 'mainnet-fork': {
-    //     'ETH-OPIUM': [TOKENS.ETH, TOKENS.OPIUM, '0'],
+    //     'LDO-STETH': [TOKENS.LDO, TOKENS.STETH, '0'],
     // },
 };
 
