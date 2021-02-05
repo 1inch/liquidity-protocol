@@ -12,7 +12,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
     event RewardAdded(uint256 reward);
     event RewardPaid(address indexed user, uint256 reward);
 
-    uint256 public constant DURATION = 7 days;
+    uint256 public immutable duration;
 
     address public rewardDistribution;
     IERC20 public immutable gift;
@@ -39,8 +39,9 @@ contract BaseRewards is Ownable, BalanceAccounting {
         _;
     }
 
-    constructor(IERC20 _gift) public {
+    constructor(IERC20 _gift, uint256 _duration) public {
         gift = _gift;
+        duration = _duration;
     }
 
     function lastTimeRewardApplicable() public view returns (uint256) {
@@ -80,18 +81,18 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
     function notifyRewardAmount(uint256 reward) external onlyRewardDistribution updateReward(address(0)) {
         if (block.timestamp >= periodFinish) {
-            rewardRate = reward.div(DURATION);
+            rewardRate = reward.div(duration);
         } else {
             uint256 remaining = periodFinish.sub(block.timestamp);
             uint256 leftover = remaining.mul(rewardRate);
-            rewardRate = reward.add(leftover).div(DURATION);
+            rewardRate = reward.add(leftover).div(duration);
         }
 
         uint balance = gift.balanceOf(address(this));
-        require(rewardRate <= balance.div(DURATION), "Reward is too big");
+        require(rewardRate <= balance.div(duration), "Reward is too big");
 
         lastUpdateTime = block.timestamp;
-        periodFinish = block.timestamp.add(DURATION);
+        periodFinish = block.timestamp.add(duration);
         emit RewardAdded(reward);
     }
 

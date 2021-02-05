@@ -28,7 +28,7 @@ contract FarmingRewards is BaseRewards {
     Voting.Data private _slippageFee;
     Voting.Data private _decayPeriod;
 
-    constructor(Mooniswap _mooniswap, IERC20 _gift) public BaseRewards(_gift) {
+    constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration) public BaseRewards(_gift, _duration) {
         mooniswap = _mooniswap;
         mooniswapFactoryGovernance = _mooniswap.mooniswapFactoryGovernance();
     }
