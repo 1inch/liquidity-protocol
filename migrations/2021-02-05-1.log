@@ -1,0 +1,133 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12475576 (0xbe5cb8)
+
+
+1_initial_migration.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 15.570690736432143 ETH
+Deploying 0 pools...
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_farming_voter.js
+==================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 15.570690736432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_opium_farm.js
+===============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 15.570690736432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_ldo_farm.js
+=============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 15.570690736432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+5_updated_core_farm.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 15.570690736432143 ETH
+Deploying farm for pool (ETH-DAI): 0x7566126f2fD0f2Dddae01Bb8A6EA49b760383D5A
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xf8e15f724d6c8c1a0d8eddc917d31d8638e42375fd7b94f60057014909a122fc
+   > Blocks: 4            Seconds: 76
+   > contract address:    0xCa6E3EBF4Ac8c3E84BCCDF5Cd89aece74D69F2a7
+   > block number:        11797272
+   > block timestamp:     1612541434
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             14.502066336432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           400 gwei
+   > value sent:          0 ETH
+   > total cost:          1.0686244 ETH
+
+Deploying farm for pool (ETH-USDC): 0xb4dB55a20E0624eDD82A0Cf356e3488B4669BD27
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xcc9e949f5ea2ca9b10e4ee28e7a1a1497202e1394f371d9e970950f866823385
+   > Blocks: 4            Seconds: 48
+   > contract address:    0xc7c42eccAc0D4Bb790a32Bc86519aC362e01d388
+   > block number:        11797280
+   > block timestamp:     1612541510
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             13.403708336432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           400 gwei
+   > value sent:          0 ETH
+   > total cost:          1.0686244 ETH
+
+Deploying farm for pool (ETH-USDT): 0xbBa17b81aB4193455Be10741512d0E71520F43cB
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x4e0d15ec9998f9c7f88406be1abc003f7e39cd449d2b1a282914451b00f3eb6c
+   > Blocks: 2            Seconds: 44
+   > contract address:    0xE22f6A5dd9e491dFAB49faeFdb32d01AaF99703e
+   > block number:        11797287
+   > block timestamp:     1612541572
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             12.305350336432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           400 gwei
+   > value sent:          0 ETH
+   > total cost:          1.0686244 ETH
+
+Deploying farm for pool (ETH-WBTC): 0x6a11F3E5a01D129e566d783A7b6E8862bFD66CcA
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x9c7a98de9166a8a2492d5eb4b96036cfadab524fef3ffc10985a9d8141a730a8
+   > Blocks: 3            Seconds: 64
+   > contract address:    0x2eDe375d73D81dBd19ef58A75ba359Dd28d25De8
+   > block number:        11797294
+   > block timestamp:     1612541683
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             11.206992336432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           400 gwei
+   > value sent:          0 ETH
+   > total cost:          1.0686244 ETH
+
+Deploying farm for pool (ETH-1INCH): 0x0EF1B8a0E726Fc3948E15b23993015eB1627f210
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0xe147265411e2ccdf3c93e499791ba10f0bea41f9ae8f3be45f8ac0d6c5b1cbee
+   > Blocks: 1            Seconds: 12
+   > contract address:    0xeb7DBc5a64d2D083d774595E560b147C5021Eacd
+   > block number:        11797298
+   > block timestamp:     1612541731
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             10.108634336432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           400 gwei
+   > value sent:          0 ETH
+   > total cost:          1.0686244 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:            5.313122 ETH
+
+
+Summary
+=======
+> Total deployments:   5
+> Final cost:          5.313122 ETH
