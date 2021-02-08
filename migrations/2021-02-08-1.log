@@ -1,0 +1,77 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12548385 (0xbf7921)
+
+
+1_initial_migration.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+Deploying 0 pools...
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_farming_voter.js
+==================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_opium_farm.js
+===============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_ldo_farm.js
+=============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+5_updated_core_farm.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+6_torn_farm.js
+==============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 9.037884536432143 ETH
+Deploying farm for pool (ETH-TORN): 0x9696D4999a25766719D0e80294F93bB62A5a3178
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x05fbdf6f7af7def5ea244370070204b608220b288d006a8f823e76961cc9e33e
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x7Cb203834CE6792756541d722d94296f4c1Ca356
+   > block number:        11817401
+   > block timestamp:     1612808392
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             8.450141116432142908
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           220 gwei
+   > value sent:          0 ETH
+   > total cost:          0.58774342 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.58774342 ETH
+
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.58774342 ETH
