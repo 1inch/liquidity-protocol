@@ -1,0 +1,85 @@
+Starting migrations...
+======================
+> Network name:    'mainnet'
+> Network id:      1
+> Block gas limit: 12481608 (0xbe7448)
+
+
+1_initial_migration.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+Deploying 0 pools...
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_farming_voter.js
+==================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_opium_farm.js
+===============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_ldo_farm.js
+=============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+5_updated_core_farm.js
+======================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+6_torn_farm.js
+==============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+7_vesper_farm.js
+================
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 6.325254226432143 ETH
+Deploying farm for pool (1INCH-VSP): 0xD471b6755EBA924AD94dD9144EA50022010eFcCC
+
+   Replacing 'FarmingRewards'
+   --------------------------
+   > transaction hash:    0x8116c046d75c49ec0b760056a5dcc8d9dcb44ce93dd37a997693866ca1c40fc9
+   > Blocks: 5            Seconds: 108
+   > contract address:    0xc84dCDAFF87F9b5639DB82F434c8Ba1c2023F6EB
+   > block number:        11874746
+   > block timestamp:     1613570143
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             5.977952856432142908
+   > gas used:            2671549 (0x28c3bd)
+   > gas price:           130 gwei
+   > value sent:          0 ETH
+   > total cost:          0.34730137 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.34730137 ETH
+
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.34730137 ETH
