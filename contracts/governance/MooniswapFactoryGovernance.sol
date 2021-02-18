@@ -123,7 +123,6 @@ contract MooniswapFactoryGovernance is IMooniswapFactoryGovernance, BaseGovernan
 
     function setGovernanceWallet(address newGovernanceWallet) external onlyOwner {
         governanceWallet = newGovernanceWallet;
-        isFeeCollector[newGovernanceWallet] = true;
         emit GovernanceWalletUpdate(newGovernanceWallet);
     }
 
