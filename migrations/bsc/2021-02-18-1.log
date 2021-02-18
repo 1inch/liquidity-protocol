@@ -1,0 +1,112 @@
+Starting migrations...
+======================
+> Network name:    'bsc'
+> Network id:      56
+> Block gas limit: 30000000 (0x1c9c380)
+
+
+1_initial_migration.js
+======================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_farming_voter.js
+==================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_opium_farm.js
+===============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_ldo_farm.js
+=============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+5_updated_core_farm.js
+======================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+6_torn_farm.js
+==============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+7_vesper_farm.js
+================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+8_bsc_deploy.js
+===============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 0.980628574 ETH
+
+   Deploying 'MooniswapDeployer'
+   -----------------------------
+   > transaction hash:    0x9093672e92b30d5f441ba5d9eebe05270194a6548299ac67d728aee7aa0ec903
+   > Blocks: 3            Seconds: 8
+   > contract address:    0x11431a89893025D2a48dCA4EddC396f8C8117187
+   > block number:        4994611
+   > block timestamp:     1613670442
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             0.975473774
+   > gas used:            5154800 (0x4ea7f0)
+   > gas price:           1 gwei
+   > value sent:          0 ETH
+   > total cost:          0.0051548 ETH
+
+
+   Deploying 'MooniswapFactory'
+   ----------------------------
+   > transaction hash:    0x1658791e15458ceaa600828176fd2bf0b2a7b8150fb3e8e962f22e38364669dc
+   > Blocks: 1            Seconds: 4
+   > contract address:    0xD41B24bbA51fAc0E4827b6F94C0D6DDeB183cD64
+   > block number:        4994614
+   > block timestamp:     1613670451
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             0.972541796
+   > gas used:            2931978 (0x2cbd0a)
+   > gas price:           1 gwei
+   > value sent:          0 ETH
+   > total cost:          0.002931978 ETH
+
+Do not forget to governanceMothership.addModule(mooniswapFactory.address), where:
+ - governanceMothership = 0x73F0a6927A3c04E679074e70DFb9105F453e799D
+ - mooniswapFactory = 0xD41B24bbA51fAc0E4827b6F94C0D6DDeB183cD64
+
+
+   Deploying 'ReferralFeeReceiver'
+   -------------------------------
+   > transaction hash:    0xf7cf2f6ab57cfd55daf67edc3eb7b041f307364ed3cd4dd2b23448bef4c4e622
+   > Blocks: 4            Seconds: 12
+   > contract address:    0x29BC86Ad68bB3BD3d54841a8522e0020C1882C22
+   > block number:        4994619
+   > block timestamp:     1613670466
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             0.969447206
+   > gas used:            3094590 (0x2f383e)
+   > gas price:           1 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00309459 ETH
+
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:         0.011181368 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.011181368 ETH
+
