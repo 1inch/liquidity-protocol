@@ -109,7 +109,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
     function setDuration(uint i, uint256 _duration) external onlyRewardDistribution(i) {
         TokenRewards storage tr = tokenRewards[i];
-        require(block.timestamp >= tr.periodFinish, "Access denied");
+        require(block.timestamp >= tr.periodFinish, "Not finished yet");
         tr.duration = _duration;
     }
 
@@ -118,15 +118,5 @@ contract BaseRewards is Ownable, BalanceAccounting {
         tr.gift = gift;
         tr.duration = duration;
         tr.rewardDistribution = rewardDistribution;
-        // TODO: test gas usage
-        // tokenRewards.push(TokenRewards({
-        //     gift: gift,
-        //     duration: duration,
-        //     rewardDistribution: rewardDistribution,
-        //     periodFinish: 0,
-        //     rewardRate: 0,
-        //     lastUpdateTime: 0,
-        //     rewardPerTokenStored: 0
-        // }));
     }
 }
