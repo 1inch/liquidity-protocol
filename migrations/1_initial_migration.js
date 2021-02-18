@@ -175,7 +175,7 @@ module.exports = function (deployer, network) {
             pools[pair] = pool;
         }
 
-        for (const [pair, [, , reward]] of Object.entries(FARM_REWARDS[network])) {
+        for (const [pair] of Object.entries(FARM_REWARDS[network])) {
             const pool = pools[pair];
             if (!pool) {
                 console.log(`Skipping farm deployment for pool ${pair}`);
