@@ -1,0 +1,69 @@
+Starting migrations...
+======================
+> Network name:    'bsc'
+> Network id:      56
+> Block gas limit: 30000000 (0x1c9c380)
+
+
+1_initial_migration.js
+======================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_farming_voter.js
+==================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_opium_farm.js
+===============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_ldo_farm.js
+=============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+5_updated_core_farm.js
+======================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+6_torn_farm.js
+==============
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+7_vesper_farm.js
+================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+8_bsc_deploy.js
+================
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+9_bsc_farm.js
+===============
+Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
+Deployer balance: 0.980628574 ETH
+
+   Deploying 'FarmingRewards'
+   -----------------------------
+   > transaction hash:    0x95c673d826c65b05f1fef83e1c3910620b66c68f54a4de0e6c495db32af041e6
+   > Blocks: 3            Seconds: 8
+   > contract address:    0x5D0EC1F843c1233D304B96DbDE0CAB9Ec04D71EF
+   > block number:        5188722
+   > account:             0x11799622F4D98A24514011E8527B969f7488eF47
+   > balance:             0.975473774
+

@@ -16,7 +16,7 @@
 
 //         const account = '0x11799622F4D98A24514011E8527B969f7488eF47';
 //         console.log('Deployer account: ' + account);
-//         console.log('Deployer balance: ' + (await web3.eth.getBalance(account)) / 1e18 + ' ETH');
+//         console.log('Deployer balance: ' + (await web3.eth.getBalance(account)) / 1e18 + ' BNB');
 
 
 //         // Mooniswap Factory
