@@ -9,8 +9,8 @@ import "./BalanceAccounting.sol";
 
 
 contract BaseRewards is Ownable, BalanceAccounting {
-    event RewardAdded(uint256 reward);
-    event RewardPaid(address indexed user, uint256 reward);
+    event RewardAdded(uint256 indexed i, uint256 reward);
+    event RewardPaid(uint256 indexed i, address indexed user, uint256 reward);
 
     struct TokenRewards {
         IERC20 gift;
@@ -78,7 +78,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         if (reward > 0) {
             tr.rewards[msg.sender] = 0;
             tr.gift.transfer(msg.sender, reward);
-            emit RewardPaid(msg.sender, reward);
+            emit RewardPaid(i, msg.sender, reward);
         }
     }
 
@@ -99,7 +99,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
         tr.lastUpdateTime = block.timestamp;
         tr.periodFinish = block.timestamp.add(duration);
-        emit RewardAdded(reward);
+        emit RewardAdded(i, reward);
     }
 
     function setRewardDistribution(uint i, address _rewardDistribution) external onlyOwner {
