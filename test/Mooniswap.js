@@ -28,10 +28,10 @@ const Token = artifacts.require('TokenMock');
 
 contract('Mooniswap', function ([_, wallet1, wallet2, wallet3]) {
     beforeEach(async function () {
-        this.DAI = await Token.new('DAI', 'DAI', 18);
-        this.WETH = await Token.new('WETH', 'WETH', 18);
+        this.DAI = await Token.new('DAI', 'DAI');
+        this.WETH = await Token.new('WETH', 'WETH');
         while (this.WETH.address.toLowerCase() > this.DAI.address.toLowerCase()) {
-            this.WETH = await Token.new('WETH', 'WETH', 18);
+            this.WETH = await Token.new('WETH', 'WETH');
         }
         this.factory = await MooniswapFactory.new(wallet1, constants.ZERO_ADDRESS, _);
     });

@@ -11,8 +11,8 @@ const TokenMock = artifacts.require('TokenMock');
 
 contract('ReferralFeeReceiver', function ([wallet1, wallet2]) {
     before(async function () {
-        this.DAI = await TokenMock.new('DAI', 'DAI', 18);
-        this.token = await TokenMock.new('INCH', 'INCH', 18);
+        this.DAI = await TokenMock.new('DAI', 'DAI');
+        this.token = await TokenMock.new('INCH', 'INCH');
         this.deployer = await MooniswapDeployer.new();
     });
 
