@@ -93,14 +93,18 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     function notifyRewardAmount(uint i, uint256 reward) external onlyRewardDistribution(i) updateReward(address(0)) {
+        require(reward < uint(-1).div(1e18), "Reward overlow");
+
         TokenRewards storage tr = tokenRewards[i];
         uint256 duration = tr.duration;
 
         if (block.timestamp >= tr.periodFinish) {
+            require(reward >= duration, "Reward is too small");
             tr.rewardRate = reward.div(duration);
         } else {
             uint256 remaining = tr.periodFinish.sub(block.timestamp);
             uint256 leftover = remaining.mul(tr.rewardRate);
+            require(reward.add(leftover) >= duration, "Reward is too small");
             tr.rewardRate = reward.add(leftover).div(duration);
         }
 
