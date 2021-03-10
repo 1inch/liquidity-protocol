@@ -64,11 +64,7 @@ contract FarmingRewards is BaseRewards {
 
     function exit() external {
         withdraw(balanceOf(msg.sender));
-
-        uint256 len = tokenRewards.length;
-        for (uint i = 0; i < len; i++) {
-            getReward(i);
-        }
+        getAllRewards();
     }
 
     function fee() public view returns(uint256) {

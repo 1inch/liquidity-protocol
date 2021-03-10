@@ -82,6 +82,13 @@ contract BaseRewards is Ownable, BalanceAccounting {
         }
     }
 
+    function getAllRewards() public {
+        uint256 len = tokenRewards.length;
+        for (uint i = 0; i < len; i++) {
+            getReward(i);
+        }
+    }
+
     function notifyRewardAmount(uint i, uint256 reward) external onlyRewardDistribution(i) updateReward(address(0)) {
         TokenRewards storage tr = tokenRewards[i];
         uint256 duration = tr.duration;
