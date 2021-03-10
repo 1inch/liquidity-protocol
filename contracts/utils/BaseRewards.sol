@@ -5,10 +5,13 @@ pragma solidity ^0.6.12;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./BalanceAccounting.sol";
 
 
 contract BaseRewards is Ownable, BalanceAccounting {
+    using SafeERC20 for IERC20;
+
     event RewardAdded(uint256 indexed i, uint256 reward);
     event RewardPaid(uint256 indexed i, address indexed user, uint256 reward);
 
@@ -77,7 +80,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         uint256 reward = tr.rewards[msg.sender];
         if (reward > 0) {
             tr.rewards[msg.sender] = 0;
-            tr.gift.transfer(msg.sender, reward);
+            tr.gift.safeTransfer(msg.sender, reward);
             emit RewardPaid(i, msg.sender, reward);
         }
     }
