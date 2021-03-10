@@ -14,6 +14,9 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
     event RewardAdded(uint256 indexed i, uint256 reward);
     event RewardPaid(uint256 indexed i, address indexed user, uint256 reward);
+    event DurationUpdated(uint256 indexed i, uint256 duration);
+    event RewardDistributionChanged(uint256 indexed i, address rewardDistribution);
+    event NewGift(uint256 indexed i, IERC20 gift);
 
     struct TokenRewards {
         IERC20 gift;
@@ -119,12 +122,14 @@ contract BaseRewards is Ownable, BalanceAccounting {
     function setRewardDistribution(uint i, address _rewardDistribution) external onlyOwner {
         TokenRewards storage tr = tokenRewards[i];
         tr.rewardDistribution = _rewardDistribution;
+        emit RewardDistributionChanged(i, _rewardDistribution);
     }
 
     function setDuration(uint i, uint256 _duration) external onlyRewardDistribution(i) {
         TokenRewards storage tr = tokenRewards[i];
         require(block.timestamp >= tr.periodFinish, "Not finished yet");
         tr.duration = _duration;
+        emit DurationUpdated(i, _duration);
     }
 
     function addGift(IERC20 gift, uint256 duration, address rewardDistribution) public onlyOwner {
@@ -137,5 +142,9 @@ contract BaseRewards is Ownable, BalanceAccounting {
         tr.gift = gift;
         tr.duration = duration;
         tr.rewardDistribution = rewardDistribution;
+
+        emit NewGift(len, gift);
+        emit DurationUpdated(len, duration);
+        emit RewardDistributionChanged(len, rewardDistribution);
     }
 }
