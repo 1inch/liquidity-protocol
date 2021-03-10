@@ -124,6 +124,11 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     function addGift(IERC20 gift, uint256 duration, address rewardDistribution) public onlyOwner {
+        uint256 len = tokenRewards.length;
+        for (uint i = 0; i < len; i++) {
+            require(gift != tokenRewards[i].gift, "Gift is already added");
+        }
+
         TokenRewards storage tr = tokenRewards.push();
         tr.gift = gift;
         tr.duration = duration;
