@@ -4,12 +4,12 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./interfaces/IFeeCollector.sol";
-import "./libraries/UniERC20.sol";
+import "./libraries/SafeERC20.sol";
 import "./utils/Converter.sol";
 
 
 contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
-    using UniERC20 for IERC20;
+    using SafeERC20 for IERC20;
 
     struct UserInfo {
         uint256 balance;
@@ -62,11 +62,11 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         require(token.firstUnprocessedEpoch == currentEpoch, "Previous epoch is not finalized");
 
         IERC20[] memory tokens = mooniswap.getTokens();
-        uint256 token0Balance = tokens[0].uniBalanceOf(address(this));
-        uint256 token1Balance = tokens[1].uniBalanceOf(address(this));
+        uint256 token0Balance = tokens[0].balanceOf(address(this));
+        uint256 token1Balance = tokens[1].balanceOf(address(this));
         mooniswap.withdraw(mooniswap.balanceOf(address(this)), new uint256[](0));
-        token.epochBalance[currentEpoch].token0Balance = tokens[0].uniBalanceOf(address(this)).sub(token0Balance);
-        token.epochBalance[currentEpoch].token1Balance = tokens[1].uniBalanceOf(address(this)).sub(token1Balance);
+        token.epochBalance[currentEpoch].token0Balance = tokens[0].balanceOf(address(this)).sub(token0Balance);
+        token.epochBalance[currentEpoch].token1Balance = tokens[1].balanceOf(address(this)).sub(token1Balance);
         token.currentEpoch = currentEpoch.add(1);
     }
 
@@ -95,14 +95,10 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
                     Mooniswap _mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
                     require(_validateSpread(_mooniswap), "Spread is too high");
                 }
-                if (path[0].isETH()) {
-                    tx.origin.transfer(availableBalance);  // solhint-disable-line avoid-tx-origin
-                } else {
-                    path[0].safeTransfer(address(mooniswap), availableBalance);
-                }
+                path[0].safeTransfer(address(mooniswap), availableBalance);
             }
         } else {
-            uint256 receivedAmount = _swap(path, amount, payable(address(this)));
+            uint256 receivedAmount = _swap(path, amount, address(this));
             epochBalance.inchBalance = epochBalance.inchBalance.add(receivedAmount);
         }
 
@@ -173,7 +169,7 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
     function _transferTokenShare(IERC20 token, uint256 balance, uint256 share, uint256 totalSupply) private returns(uint256 newBalance) {
         uint256 amount = balance.mul(share).div(totalSupply);
         if (amount > 0) {
-            token.uniTransfer(msg.sender, amount);
+            token.safeTransfer(msg.sender, amount);
         }
         return balance.sub(amount);
     }

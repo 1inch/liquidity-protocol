@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "../interfaces/IMooniswapFactory.sol";
-import "../libraries/UniERC20.sol";
+import "../libraries/SafeERC20.sol";
 import "../libraries/VirtualBalance.sol";
 import "../Mooniswap.sol";
 
@@ -14,7 +14,6 @@ import "../Mooniswap.sol";
 contract Converter is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    using UniERC20 for IERC20;
     using VirtualBalance for VirtualBalance.Data;
 
     uint256 private constant _ONE = 1e18;
@@ -28,11 +27,6 @@ contract Converter is Ownable {
     constructor (IERC20 _inchToken, IMooniswapFactory _mooniswapFactory) public {
         inchToken = _inchToken;
         mooniswapFactory = _mooniswapFactory;
-    }
-
-    receive() external payable {
-        // solhint-disable-next-line avoid-tx-origin
-        require(msg.sender != tx.origin, "ETH transfer forbidden");
     }
 
     modifier validSpread(Mooniswap mooniswap) {
@@ -70,8 +64,8 @@ contract Converter is Ownable {
         uint256 sellPrice;
         uint256 spotPrice;
         {
-            uint256 token0Balance = tokens[0].uniBalanceOf(address(mooniswap));
-            uint256 token1Balance = tokens[1].uniBalanceOf(address(mooniswap));
+            uint256 token0Balance = tokens[0].balanceOf(address(mooniswap));
+            uint256 token1Balance = tokens[1].balanceOf(address(mooniswap));
             uint256 decayPeriod = mooniswap.decayPeriod();
             VirtualBalance.Data memory vb;
             (vb.balance, vb.time) = mooniswap.virtualBalancesForAddition(tokens[0]);
@@ -98,7 +92,7 @@ contract Converter is Ownable {
 
         for (uint256 i = 0; i + 1 < pathLength; i += 1) {
             Mooniswap mooniswap = mooniswapFactory.pools(path[i], path[i+1]);
-            uint256 maxCurStepAmount = path[i].uniBalanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
+            uint256 maxCurStepAmount = path[i].balanceOf(address(mooniswap)).div(_MAX_LIQUIDITY_SHARE);
             if (maxCurStepAmount < dstAmount) {
                 srcAmount = srcAmount.mul(maxCurStepAmount).div(dstAmount);
                 dstAmount = maxCurStepAmount;
@@ -107,7 +101,7 @@ contract Converter is Ownable {
         }
     }
 
-    function _swap(IERC20[] memory path, uint256 initialAmount, address payable destination) internal returns(uint256 amount)
+    function _swap(IERC20[] memory path, uint256 initialAmount, address destination) internal returns(uint256 amount)
     {
         amount = initialAmount;
 
@@ -116,17 +110,13 @@ contract Converter is Ownable {
 
             require(_validateSpread(mooniswap), "Spread is too high");
 
-            uint256 value = amount;
-            if (!path[i].isETH()) {
-                path[i].safeApprove(address(mooniswap), amount);
-                value = 0;
-            }
+            path[i].safeApprove(address(mooniswap), amount);
 
             if (i + 2 < path.length) {
-                amount = mooniswap.swap{value: value}(path[i], path[i+1], amount, 0, address(0));
+                amount = mooniswap.swap(path[i], path[i+1], amount, 0, address(0));
             }
             else {
-                amount = mooniswap.swapFor{value: value}(path[i], path[i+1], amount, 0, address(0), destination);
+                amount = mooniswap.swapFor(path[i], path[i+1], amount, 0, address(0), destination);
             }
         }
 

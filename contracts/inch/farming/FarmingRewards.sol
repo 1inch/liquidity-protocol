@@ -5,14 +5,14 @@ pragma solidity ^0.6.12;
 import "../../Mooniswap.sol";
 import "../../libraries/MooniswapConstants.sol";
 import "../../libraries/Voting.sol";
-import "../../libraries/UniERC20.sol";
+import "../../libraries/SafeERC20.sol";
 import "../../utils/BaseRewards.sol";
 
 
 contract FarmingRewards is BaseRewards {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
-    using UniERC20 for IERC20;
+    using SafeERC20 for IERC20;
 
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
@@ -105,14 +105,6 @@ contract FarmingRewards is BaseRewards {
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
-    function decayPeriodVote(uint256 vote) external {
-        require(vote <= MooniswapConstants._MAX_DECAY_PERIOD, "Decay period vote is too high");
-        require(vote >= MooniswapConstants._MIN_DECAY_PERIOD, "Decay period vote is too low");
-
-        _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
-        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
-    }
-
     function discardFeeVote() external {
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
@@ -121,11 +113,6 @@ contract FarmingRewards is BaseRewards {
     function discardSlippageFeeVote() external {
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
-    }
-
-    function discardDecayPeriodVote() external {
-        _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
-        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
     function _mint(address account, uint256 amount) internal override {
@@ -147,8 +134,6 @@ contract FarmingRewards is BaseRewards {
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
         _slippageFee.updateBalance(account, _slippageFee.votes[account], balance, newBalance, newTotalSupply, mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
-        _decayPeriod.updateBalance(account, _decayPeriod.votes[account], balance, newBalance, newTotalSupply, mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
-        _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
     function _vote(Voting.Data storage votingData, function(uint256) external vote, function() external discardVote) private {
@@ -176,9 +161,9 @@ contract FarmingRewards is BaseRewards {
             require(token != tokenRewards[i].gift, "Can't rescue gift");
         }
 
-        token.uniTransfer(msg.sender, amount);
+        token.safeTransfer(msg.sender, amount);
         if (token == mooniswap) {
-            require(token.uniBalanceOf(address(this)) == totalSupply(), "Can't withdraw staked tokens");
+            require(token.balanceOf(address(this)) == totalSupply(), "Can't withdraw staked tokens");
         }
     }
 }

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/IFeeCollector.sol";
-import "./libraries/UniERC20.sol";
+import "./libraries/SafeERC20.sol";
 import "./libraries/Sqrt.sol";
 import "./libraries/VirtualBalance.sol";
 import "./governance/MooniswapGovernance.sol";
@@ -15,7 +15,7 @@ import "./governance/MooniswapGovernance.sol";
 contract Mooniswap is MooniswapGovernance {
     using Sqrt for uint256;
     using SafeMath for uint256;
-    using UniERC20 for IERC20;
+    using SafeERC20 for IERC20;
     using VirtualBalance for VirtualBalance.Data;
 
     struct Balances {
@@ -120,12 +120,12 @@ contract Mooniswap is MooniswapGovernance {
     }
 
     function getBalanceForAddition(IERC20 token) public view returns(uint256) {
-        uint256 balance = token.uniBalanceOf(address(this));
+        uint256 balance = token.balanceOf(address(this));
         return Math.max(virtualBalancesForAddition[token].current(decayPeriod(), balance), balance);
     }
 
     function getBalanceForRemoval(IERC20 token) public view returns(uint256) {
-        uint256 balance = token.uniBalanceOf(address(this));
+        uint256 balance = token.balanceOf(address(this));
         return Math.min(virtualBalancesForRemoval[token].current(decayPeriod(), balance), balance);
     }
 
@@ -133,13 +133,12 @@ contract Mooniswap is MooniswapGovernance {
         return _getReturn(src, dst, amount, getBalanceForAddition(src), getBalanceForRemoval(dst), fee(), slippageFee());
     }
 
-    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external payable returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
+    function deposit(uint256[2] memory maxAmounts, uint256[2] memory minAmounts) external returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
         return depositFor(maxAmounts, minAmounts, msg.sender);
     }
 
-    function depositFor(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public payable nonReentrant returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
+    function depositFor(uint256[2] memory maxAmounts, uint256[2] memory minAmounts, address target) public nonReentrant returns(uint256 fairSupply, uint256[2] memory receivedAmounts) {
         IERC20[2] memory _tokens = [token0, token1];
-        require(msg.value == (_tokens[0].isETH() ? maxAmounts[0] : (_tokens[1].isETH() ? maxAmounts[1] : 0)), "Mooniswap: wrong value usage");
 
         uint256 totalSupply = totalSupply();
 
@@ -153,14 +152,14 @@ contract Mooniswap is MooniswapGovernance {
                 require(maxAmounts[i] > 0, "Mooniswap: amount is zero");
                 require(maxAmounts[i] >= minAmounts[i], "Mooniswap: minAmount not reached");
 
-                _tokens[i].uniTransferFrom(msg.sender, address(this), maxAmounts[i]);
+                _tokens[i].safeTransferFrom(msg.sender, address(this), maxAmounts[i]);
                 receivedAmounts[i] = maxAmounts[i];
             }
         }
         else {
             uint256[2] memory realBalances;
             for (uint i = 0; i < realBalances.length; i++) {
-                realBalances[i] = _tokens[i].uniBalanceOf(address(this)).sub(_tokens[i].isETH() ? msg.value : 0);
+                realBalances[i] = _tokens[i].balanceOf(address(this));
             }
 
             // Pre-compute fair supply
@@ -176,8 +175,8 @@ contract Mooniswap is MooniswapGovernance {
                 uint256 amount = realBalances[i].mul(fairSupplyCached).add(totalSupply - 1).div(totalSupply);
                 require(amount >= minAmounts[i], "Mooniswap: minAmount not reached");
 
-                _tokens[i].uniTransferFrom(msg.sender, address(this), amount);
-                receivedAmounts[i] = _tokens[i].uniBalanceOf(address(this)).sub(realBalances[i]);
+                _tokens[i].safeTransferFrom(msg.sender, address(this), amount);
+                receivedAmounts[i] = _tokens[i].balanceOf(address(this)).sub(realBalances[i]);
                 fairSupply = Math.min(fairSupply, totalSupply.mul(receivedAmounts[i]).div(realBalances[i]));
             }
 
@@ -198,7 +197,7 @@ contract Mooniswap is MooniswapGovernance {
         return withdrawFor(amount, minReturns, msg.sender);
     }
 
-    function withdrawFor(uint256 amount, uint256[] memory minReturns, address payable target) public nonReentrant returns(uint256[2] memory withdrawnAmounts) {
+    function withdrawFor(uint256 amount, uint256[] memory minReturns, address target) public nonReentrant returns(uint256[2] memory withdrawnAmounts) {
         IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
@@ -208,9 +207,9 @@ contract Mooniswap is MooniswapGovernance {
         for (uint i = 0; i < _tokens.length; i++) {
             IERC20 token = _tokens[i];
 
-            uint256 preBalance = token.uniBalanceOf(address(this));
+            uint256 preBalance = token.balanceOf(address(this));
             uint256 value = preBalance.mul(amount).div(totalSupply);
-            token.uniTransfer(target, value);
+            token.safeTransfer(target, value);
             withdrawnAmounts[i] = value;
             require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
 
@@ -221,16 +220,14 @@ contract Mooniswap is MooniswapGovernance {
         emit Withdrawn(msg.sender, target, amount, withdrawnAmounts[0], withdrawnAmounts[1]);
     }
 
-    function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external payable returns(uint256 result) {
+    function swap(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral) external returns(uint256 result) {
         return swapFor(src, dst, amount, minReturn, referral, msg.sender);
     }
 
-    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address payable receiver) public payable nonReentrant whenNotShutdown returns(uint256 result) {
-        require(msg.value == (src.isETH() ? amount : 0), "Mooniswap: wrong value usage");
-
+    function swapFor(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address referral, address receiver) public nonReentrant whenNotShutdown returns(uint256 result) {
         Balances memory balances = Balances({
-            src: src.uniBalanceOf(address(this)).sub(src.isETH() ? msg.value : 0),
-            dst: dst.uniBalanceOf(address(this))
+            src: src.balanceOf(address(this)),
+            dst: dst.balanceOf(address(this))
         });
         uint256 confirmed;
         Balances memory virtualBalances;
@@ -247,7 +244,7 @@ contract Mooniswap is MooniswapGovernance {
         volumes[src].result += uint128(result);
     }
 
-    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address payable receiver, Balances memory balances, Fees memory fees)
+    function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address receiver, Balances memory balances, Fees memory fees)
         private returns(uint256 confirmed, uint256 result, Balances memory virtualBalances)
     {
         uint256 _decayPeriod = decayPeriod();
@@ -255,11 +252,11 @@ contract Mooniswap is MooniswapGovernance {
         virtualBalances.src = Math.max(virtualBalances.src, balances.src);
         virtualBalances.dst = virtualBalancesForRemoval[dst].current(_decayPeriod, balances.dst);
         virtualBalances.dst = Math.min(virtualBalances.dst, balances.dst);
-        src.uniTransferFrom(msg.sender, address(this), amount);
-        confirmed = src.uniBalanceOf(address(this)).sub(balances.src);
+        src.safeTransferFrom(msg.sender, address(this), amount);
+        confirmed = src.balanceOf(address(this)).sub(balances.src);
         result = _getReturn(src, dst, confirmed, virtualBalances.src, virtualBalances.dst, fees.fee, fees.slippageFee);
         require(result > 0 && result >= minReturn, "Mooniswap: return is not enough");
-        dst.uniTransfer(receiver, result);
+        dst.safeTransfer(receiver, result);
 
         // Update virtual balances to the same direction only at imbalanced state
         if (virtualBalances.src != balances.src) {
@@ -350,13 +347,13 @@ contract Mooniswap is MooniswapGovernance {
     }
 
     function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner {
-        uint256 balance0 = token0.uniBalanceOf(address(this));
-        uint256 balance1 = token1.uniBalanceOf(address(this));
+        uint256 balance0 = token0.balanceOf(address(this));
+        uint256 balance1 = token1.balanceOf(address(this));
 
-        token.uniTransfer(msg.sender, amount);
+        token.safeTransfer(msg.sender, amount);
 
-        require(token0.uniBalanceOf(address(this)) >= balance0, "Mooniswap: access denied");
-        require(token1.uniBalanceOf(address(this)) >= balance1, "Mooniswap: access denied");
+        require(token0.balanceOf(address(this)) >= balance0, "Mooniswap: access denied");
+        require(token1.balanceOf(address(this)) >= balance1, "Mooniswap: access denied");
         require(balanceOf(address(this)) >= _BASE_SUPPLY, "Mooniswap: access denied");
     }
 }

@@ -11,6 +11,7 @@
         "@openzeppelin/contracts": "^3.0.2"
     },
     "devDependencies": {
+        "@eth-optimism/plugins": "^0.0.17",
         "@nomiclabs/hardhat-ethers": "^2.0.1",
         "@nomiclabs/hardhat-truffle5": "^2.0.0",
         "@nomiclabs/hardhat-web3": "^2.0.0",
@@ -32,7 +33,7 @@
         "solidity-coverage": "^0.7.15"
     },
     "scripts": {
-        "test": "hardhat test --show-stack-traces",
+        "test": "hardhat --config hardhat-ovm.config.js test --show-stack-traces",
         "clean": "rimraf artifacts cache coverage",
         "deploy:kovan": "truffle migrate --network kovan --reset",
         "deploy:mainnet": "truffle migrate --network mainnet --reset",
