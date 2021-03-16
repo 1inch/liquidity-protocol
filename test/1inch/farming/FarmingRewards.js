@@ -62,14 +62,14 @@ contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidit
 
     before(async () => {
         // Deploy mock tokens
-        const token1 = await Token.new('One', 'ONE', DECIMALS);
-        const token2 = await Token.new('Two', 'TWO', DECIMALS);
+        const token1 = await Token.new('One', 'ONE');
+        const token2 = await Token.new('Two', 'TWO');
         await token1.mint(liquidityProvider, money.dai(TOKENS_100));
         await token2.mint(liquidityProvider, money.dai(TOKENS_100));
 
-        firstRewardToken = await Token.new('FIRST', 'FIRST', DECIMALS);
-        secondRewardToken = await Token.new('SECOND', 'SECOND', DECIMALS);
-        externalRewardToken = await Token.new('External Rewards Token', 'MOAR', DECIMALS);
+        firstRewardToken = await Token.new('FIRST', 'FIRST');
+        secondRewardToken = await Token.new('SECOND', 'SECOND');
+        externalRewardToken = await Token.new('External Rewards Token', 'MOAR');
         await firstRewardToken.mint(firstNotifier, TOKENS_35000);
         await secondRewardToken.mint(secondNotifier, TOKENS_7000);
         await externalRewardToken.mint(randomGuy, TOKENS_5000);
@@ -125,7 +125,7 @@ contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidit
         it('only notifier can call notifyRewardAmount', async () => {
             const rewardValue = TOKENS_1;
             await firstRewardToken.transfer(farmingRewards.address, rewardValue, { from: firstNotifier });
-            
+
             await expectRevert(
                 farmingRewards.notifyRewardAmount(0, rewardValue, { from: randomGuy }),
                 'Access denied',
@@ -632,7 +632,7 @@ contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidit
             const firstRewardBalAfter = await firstRewardToken.balanceOf(stakerOne);
             const secondRewardBalAfter = await secondRewardToken.balanceOf(stakerOne);
             const postExitLPBal = await lpToken.balanceOf(stakerOne);
-            
+
             expect(roundBy1(firstRewardBalAfter).sub(TOKENS_5000)).to.be.bignumber.equal(firstRewardBalBefore);
             expect(roundBy1(secondRewardBalAfter).sub(TOKENS_1000)).to.be.bignumber.equal(secondRewardBalBefore);
             expect(postExitLPBal.sub(totalToStake)).to.be.bignumber.equal(preExitLPBal);
@@ -709,7 +709,7 @@ contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidit
             const firstRewardBalAfter = await firstRewardToken.balanceOf(stakerOne);
             const secondRewardBalAfter = await secondRewardToken.balanceOf(stakerOne);
             const postExitLPBal = await lpToken.balanceOf(stakerOne);
-            
+
             expect(roundBy1(firstRewardBalAfter).sub(TOKENS_27500)).to.be.bignumber.equal(firstRewardBalBefore);
             expect(roundBy1(secondRewardBalAfter).sub(TOKENS_4499)).to.be.bignumber.equal(secondRewardBalBefore);
             expect(postExitLPBal.sub(totalToStake)).to.be.bignumber.equal(preExitLPBal);
