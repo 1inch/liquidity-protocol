@@ -118,9 +118,10 @@ contract('MooniswapGovernance', function ([_, wallet1, wallet2]) {
 
         it('should reject big decay period', async function () {
             expect(await this.mooniswap.decayPeriod()).to.be.bignumber.equal('60');
-            await expectRevert(
+            await expectRevert.unspecified(
+            // await expectRevert(
                 this.mooniswap.decayPeriodVote('4000'),
-                'Decay period vote is too high',
+                // 'Decay period vote is too high',
             );
         });
 

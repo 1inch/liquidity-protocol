@@ -34,9 +34,8 @@ async function trackReceivedTokenAndTx (token, wallet, txPromise) {
 }
 
 async function timeIncreaseTo (seconds) {
-    const delay = 1000 - new Date().getMilliseconds();
-    await new Promise(resolve => setTimeout(resolve, delay));
-    await time.increaseTo(seconds);
+    await network.provider.send("evm_setNextBlockTimestamp", [seconds.toNumber()]);
+    await network.provider.send("evm_mine");
 }
 
 async function countInstructions (txHash, instruction) {

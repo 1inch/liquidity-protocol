@@ -14,11 +14,6 @@ module.exports = {
             },
         },
     },
-    networks: {
-        hardhat: {
-            blockGasLimit: 10000000,
-        },
-    },
     gasReporter: {
         enable: true,
         currency: 'USD',
