@@ -28,9 +28,10 @@ contract FarmingRewards is BaseRewards {
     Voting.Data private _slippageFee;
     Voting.Data private _decayPeriod;
 
-    constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration) public BaseRewards(_gift, _duration) {
+    constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration, address _rewardDistribution) public {
         mooniswap = _mooniswap;
         mooniswapFactoryGovernance = _mooniswap.mooniswapFactoryGovernance();
+        addGift(_gift, _duration, _rewardDistribution);
     }
 
     function name() external view returns(string memory) {
@@ -63,7 +64,7 @@ contract FarmingRewards is BaseRewards {
 
     function exit() external {
         withdraw(balanceOf(msg.sender));
-        getReward();
+        getAllRewards();
     }
 
     function fee() public view returns(uint256) {
@@ -171,7 +172,9 @@ contract FarmingRewards is BaseRewards {
     }
 
     function rescueFunds(IERC20 token, uint256 amount) external onlyOwner {
-        require(token != gift, "Can't rescue gift");
+        for (uint i = 0; i < tokenRewards.length; i++) {
+            require(token != tokenRewards[i].gift, "Can't rescue gift");
+        }
 
         token.uniTransfer(msg.sender, amount);
         if (token == mooniswap) {

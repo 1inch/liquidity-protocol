@@ -175,7 +175,7 @@ module.exports = function (deployer, network) {
             pools[pair] = pool;
         }
 
-        for (const [pair, [, , reward]] of Object.entries(FARM_REWARDS[network])) {
+        for (const [pair] of Object.entries(FARM_REWARDS[network])) {
             const pool = pools[pair];
             if (!pool) {
                 console.log(`Skipping farm deployment for pool ${pair}`);
@@ -183,13 +183,7 @@ module.exports = function (deployer, network) {
             }
 
             console.log(`Deploying farm for pool (${pair}): ${pool}`);
-            const poolRewards = await deployer.deploy(FarmingRewards, pool, token.address);
-            if (reward !== '0') {
-                await poolRewards.setRewardDistribution(account);
-                await token.transfer(poolRewards.address, FARM_REWARDS[network][pair]);
-                await poolRewards.notifyRewardAmount(FARM_REWARDS[network][pair]);
-            }
-            await poolRewards.setRewardDistribution(REWARD_DISTRIBUTION[network]);
+            const poolRewards = await deployer.deploy(FarmingRewards, pool, token.address, REWARD_DISTRIBUTION[network]);
             await poolRewards.transferOwnership(POOL_OWNER[network]);
         }
     });

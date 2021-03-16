@@ -66,8 +66,7 @@ module.exports = function (deployer, network) {
                 }
 
                 console.log(`Deploying farm for pool (${pair}): ${pool}`);
-                const poolRewards = await deployer.deploy(FarmingRewards, pool, TOKENS.INCH, duration);
-                await poolRewards.setRewardDistribution(REWARD_DISTRIBUTION[network]);
+                const poolRewards = await deployer.deploy(FarmingRewards, pool, TOKENS.INCH, duration, REWARD_DISTRIBUTION[network]);
                 await poolRewards.transferOwnership(POOL_OWNER[network]);
             }
         }
