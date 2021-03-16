@@ -51,7 +51,16 @@ library UniERC20 {
 
     function uniSymbol(IERC20 token) internal view returns(string memory) {
         if (isETH(token)) {
-            return "ETH";
+            uint256 chainId = _chainId();
+            if (chainId == 1) {
+                return "ETH";
+            }
+            else if (chainId == 56) {
+                return "BNB";
+            }
+            else {
+                return "COIN";
+            }
         }
 
         (bool success, bytes memory data) = address(token).staticcall{ gas: 20000 }(
@@ -86,6 +95,12 @@ library UniERC20 {
         }
 
         return _toHex(address(token));
+    }
+
+    function _chainId() private pure returns(uint256 chainId) {
+        assembly { // solhint-disable-line no-inline-assembly
+            chainId := chainid()
+        }
     }
 
     function _toHex(address account) private pure returns(string memory) {

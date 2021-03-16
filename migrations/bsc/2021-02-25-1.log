@@ -48,22 +48,37 @@ Starting migrations...
 
 
 8_bsc_deploy.js
-================
+===============
    -------------------------------------
    > Total cost:                   0 ETH
 
 
 9_bsc_farm.js
-===============
+=============
 Deployer account: 0x11799622F4D98A24514011E8527B969f7488eF47
-Deployer balance: 0.980628574 ETH
+Deployer balance: 0.96642616 BNB
+Deploying farm for pool (1INCH-BNB): 0xdaF66c0B7e8E2FC76B15B07AD25eE58E04a66796
 
    Deploying 'FarmingRewards'
-   -----------------------------
-   > transaction hash:    0x95c673d826c65b05f1fef83e1c3910620b66c68f54a4de0e6c495db32af041e6
-   > Blocks: 3            Seconds: 8
-   > contract address:    0x5D0EC1F843c1233D304B96DbDE0CAB9Ec04D71EF
-   > block number:        5188722
+   --------------------------
+   > transaction hash:    0xb4f1a8f35f7da95de4117dc677b9d6672e7fa43f43ac5bce8a26a00d432c9b58
+   > Blocks: 1            Seconds: 4
+   > contract address:    0x7731F8Df999a9441AE10519617C24568Dc82F697
+   > block number:        5189334
+   > block timestamp:     1614265852
    > account:             0x11799622F4D98A24514011E8527B969f7488eF47
-   > balance:             0.975473774
+   > balance:             0.963754599
+   > gas used:            2671561 (0x28c3c9)
+   > gas price:           1 gwei
+   > value sent:          0 ETH
+   > total cost:          0.002671561 ETH
 
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:         0.002671561 ETH
+
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.002671561 ETH
