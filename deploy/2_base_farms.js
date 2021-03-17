@@ -25,8 +25,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy } = deployments;
     const { deployer } = await getNamedAccounts();
 
-    const MooniswapFactory = await ethers.getContractFactory("MooniswapFactory");
-    const FarmingRewards = await ethers.getContractFactory("FarmingRewards");
+    const MooniswapFactory = await ethers.getContractFactory('MooniswapFactory');
+    const FarmingRewards = await ethers.getContractFactory('FarmingRewards');
 
     const mooniswapFactory = MooniswapFactory.attach((await deployments.get('MooniswapFactory')).address);
 
@@ -46,7 +46,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         console.log(`FarmingRewards ${pair} deployed to: ${farmingRewardsDeployment.address}`);
 
-        await hre.run("verify:verify", {
+        await hre.run('verify:verify', {
             address: farmingRewardsDeployment.address,
             constructorArguments: [poolAddress, TOKENS.INCH, duration, OWNER],
         });
@@ -56,4 +56,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     }
 };
 
-module.exports.skip = async() => true;
+module.exports.skip = async () => true;
