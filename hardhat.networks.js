@@ -8,7 +8,7 @@ if (process.env.MAINNET_RPC_URL && process.env.HARDHAT_ENABLE_FORKING) {
         accounts: {
             mnemonic: 'test test test test test test test test test test test junk',
         },
-    }
+    };
 }
 
 if (process.env.MAINNET_RPC_URL && process.env.MAINNET_PRIVATE_KEY) {
