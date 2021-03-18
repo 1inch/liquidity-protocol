@@ -1,8 +1,12 @@
 require('@nomiclabs/hardhat-ethers');
+require('@nomiclabs/hardhat-etherscan');
 require('@nomiclabs/hardhat-truffle5');
-require('solidity-coverage');
+require('hardhat-deploy');
 require('hardhat-gas-reporter');
+require('solidity-coverage');
 require('dotenv').config();
+
+const networks = require('./hardhat.networks');
 
 module.exports = {
     solidity: {
@@ -12,6 +16,15 @@ module.exports = {
                 enabled: true,
                 runs: 1000,
             },
+        },
+    },
+    networks,
+    etherscan: {
+        apiKey: process.env.MAINNET_ETHERSCAN_KEY,
+    },
+    namedAccounts: {
+        deployer: {
+            default: 0,
         },
     },
     gasReporter: {
