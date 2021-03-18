@@ -20,13 +20,11 @@ contract FarmingRewards is BaseRewards {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event SlippageFeeVoteUpdate(address indexed user, uint256 slippageFee, bool isDefault, uint256 amount);
-    event DecayPeriodVoteUpdate(address indexed user, uint256 decayPeriod, bool isDefault, uint256 amount);
 
     Mooniswap public immutable mooniswap;
     IMooniswapFactoryGovernance public immutable mooniswapFactoryGovernance;
     Voting.Data private _fee;
     Voting.Data private _slippageFee;
-    Voting.Data private _decayPeriod;
 
     constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration, address _rewardDistribution) public {
         mooniswap = _mooniswap;
@@ -75,20 +73,12 @@ contract FarmingRewards is BaseRewards {
         return _slippageFee.result;
     }
 
-    function decayPeriod() public view returns(uint256) {
-        return _decayPeriod.result;
-    }
-
     function feeVotes(address user) external view returns(uint256) {
         return _fee.votes[user].get(mooniswapFactoryGovernance.defaultFee);
     }
 
     function slippageFeeVotes(address user) external view returns(uint256) {
         return _slippageFee.votes[user].get(mooniswapFactoryGovernance.defaultSlippageFee);
-    }
-
-    function decayPeriodVotes(address user) external view returns(uint256) {
-        return _decayPeriod.votes[user].get(mooniswapFactoryGovernance.defaultDecayPeriod);
     }
 
     function feeVote(uint256 vote) external {
@@ -150,10 +140,6 @@ contract FarmingRewards is BaseRewards {
 
     function _emitSlippageFeeVoteUpdate(address account, uint256 newSlippageFee, bool isDefault, uint256 newBalance) private {
         emit SlippageFeeVoteUpdate(account, newSlippageFee, isDefault, newBalance);
-    }
-
-    function _emitDecayPeriodVoteUpdate(address account, uint256 newDecayPeriod, bool isDefault, uint256 newBalance) private {
-        emit DecayPeriodVoteUpdate(account, newDecayPeriod, isDefault, newBalance);
     }
 
     function rescueFunds(IERC20 token, uint256 amount) external onlyOwner {

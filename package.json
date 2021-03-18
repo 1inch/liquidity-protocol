@@ -8,7 +8,7 @@
     },
     "license": "MIT",
     "dependencies": {
-        "@openzeppelin/contracts": "^3.0.2"
+        "@openzeppelin/contracts": "^3.4.1"
     },
     "devDependencies": {
         "@eth-optimism/plugins": "^0.0.17",

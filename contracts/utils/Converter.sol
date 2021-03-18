@@ -66,16 +66,15 @@ contract Converter is Ownable {
         {
             uint256 token0Balance = tokens[0].balanceOf(address(mooniswap));
             uint256 token1Balance = tokens[1].balanceOf(address(mooniswap));
-            uint256 decayPeriod = mooniswap.decayPeriod();
             VirtualBalance.Data memory vb;
             (vb.balance, vb.time) = mooniswap.virtualBalancesForAddition(tokens[0]);
-            uint256 token0BalanceForAddition = Math.max(vb.current(decayPeriod, token0Balance), token0Balance);
+            uint256 token0BalanceForAddition = Math.max(vb.current(token0Balance), token0Balance);
             (vb.balance, vb.time) = mooniswap.virtualBalancesForAddition(tokens[1]);
-            uint256 token1BalanceForAddition = Math.max(vb.current(decayPeriod, token1Balance), token1Balance);
+            uint256 token1BalanceForAddition = Math.max(vb.current(token1Balance), token1Balance);
             (vb.balance, vb.time) = mooniswap.virtualBalancesForRemoval(tokens[0]);
-            uint256 token0BalanceForRemoval = Math.min(vb.current(decayPeriod, token0Balance), token0Balance);
+            uint256 token0BalanceForRemoval = Math.min(vb.current(token0Balance), token0Balance);
             (vb.balance, vb.time) = mooniswap.virtualBalancesForRemoval(tokens[1]);
-            uint256 token1BalanceForRemoval = Math.min(vb.current(decayPeriod, token1Balance), token1Balance);
+            uint256 token1BalanceForRemoval = Math.min(vb.current(token1Balance), token1Balance);
 
             buyPrice = _ONE.mul(token1BalanceForAddition).div(token0BalanceForRemoval);
             sellPrice = _ONE.mul(token1BalanceForRemoval).div(token0BalanceForAddition);

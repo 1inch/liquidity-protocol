@@ -4,7 +4,6 @@ pragma solidity ^0.6.0;
 
 import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/IFeeCollector.sol";
 import "./libraries/SafeERC20.sol";
 import "./libraries/Sqrt.sol";
@@ -21,11 +20,6 @@ contract Mooniswap is MooniswapGovernance {
     struct Balances {
         uint256 src;
         uint256 dst;
-    }
-
-    struct SwapVolumes {
-        uint128 confirmed;
-        uint128 result;
     }
 
     struct Fees {
@@ -76,7 +70,6 @@ contract Mooniswap is MooniswapGovernance {
 
     IERC20 public immutable token0;
     IERC20 public immutable token1;
-    mapping(IERC20 => SwapVolumes) public volumes;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
 
@@ -121,12 +114,12 @@ contract Mooniswap is MooniswapGovernance {
 
     function getBalanceForAddition(IERC20 token) public view returns(uint256) {
         uint256 balance = token.balanceOf(address(this));
-        return Math.max(virtualBalancesForAddition[token].current(decayPeriod(), balance), balance);
+        return Math.max(virtualBalancesForAddition[token].current(balance), balance);
     }
 
     function getBalanceForRemoval(IERC20 token) public view returns(uint256) {
         uint256 balance = token.balanceOf(address(this));
-        return Math.min(virtualBalancesForRemoval[token].current(decayPeriod(), balance), balance);
+        return Math.min(virtualBalancesForRemoval[token].current(balance), balance);
     }
 
     function getReturn(IERC20 src, IERC20 dst, uint256 amount) external view returns(uint256) {
@@ -180,10 +173,9 @@ contract Mooniswap is MooniswapGovernance {
                 fairSupply = Math.min(fairSupply, totalSupply.mul(receivedAmounts[i]).div(realBalances[i]));
             }
 
-            uint256 _decayPeriod = decayPeriod();  // gas savings
             for (uint i = 0; i < maxAmounts.length; i++) {
-                virtualBalancesForRemoval[_tokens[i]].scale(_decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
-                virtualBalancesForAddition[_tokens[i]].scale(_decayPeriod, realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForRemoval[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
+                virtualBalancesForAddition[_tokens[i]].scale(realBalances[i], totalSupply.add(fairSupply), totalSupply);
             }
         }
 
@@ -201,7 +193,6 @@ contract Mooniswap is MooniswapGovernance {
         IERC20[2] memory _tokens = [token0, token1];
 
         uint256 totalSupply = totalSupply();
-        uint256 _decayPeriod = decayPeriod();  // gas savings
         _burn(msg.sender, amount);
 
         for (uint i = 0; i < _tokens.length; i++) {
@@ -213,8 +204,8 @@ contract Mooniswap is MooniswapGovernance {
             withdrawnAmounts[i] = value;
             require(i >= minReturns.length || value >= minReturns[i], "Mooniswap: result is not enough");
 
-            virtualBalancesForAddition[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
-            virtualBalancesForRemoval[token].scale(_decayPeriod, preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForAddition[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
+            virtualBalancesForRemoval[token].scale(preBalance, totalSupply.sub(amount), totalSupply);
         }
 
         emit Withdrawn(msg.sender, target, amount, withdrawnAmounts[0], withdrawnAmounts[1]);
@@ -238,19 +229,14 @@ contract Mooniswap is MooniswapGovernance {
         (confirmed, result, virtualBalances) = _doTransfers(src, dst, amount, minReturn, receiver, balances, fees);
         emit Swapped(msg.sender, receiver, address(src), address(dst), confirmed, result, virtualBalances.src, virtualBalances.dst, referral);
         _mintRewards(confirmed, result, referral, balances, fees);
-
-        // Overflow of uint128 is desired
-        volumes[src].confirmed += uint128(confirmed);
-        volumes[src].result += uint128(result);
     }
 
     function _doTransfers(IERC20 src, IERC20 dst, uint256 amount, uint256 minReturn, address receiver, Balances memory balances, Fees memory fees)
         private returns(uint256 confirmed, uint256 result, Balances memory virtualBalances)
     {
-        uint256 _decayPeriod = decayPeriod();
-        virtualBalances.src = virtualBalancesForAddition[src].current(_decayPeriod, balances.src);
+        virtualBalances.src = virtualBalancesForAddition[src].current(balances.src);
         virtualBalances.src = Math.max(virtualBalances.src, balances.src);
-        virtualBalances.dst = virtualBalancesForRemoval[dst].current(_decayPeriod, balances.dst);
+        virtualBalances.dst = virtualBalancesForRemoval[dst].current(balances.dst);
         virtualBalances.dst = Math.min(virtualBalances.dst, balances.dst);
         src.safeTransferFrom(msg.sender, address(this), amount);
         confirmed = src.balanceOf(address(this)).sub(balances.src);
@@ -266,8 +252,8 @@ contract Mooniswap is MooniswapGovernance {
             virtualBalancesForRemoval[dst].set(virtualBalances.dst.sub(result));
         }
         // Update virtual balances to the opposite direction
-        virtualBalancesForRemoval[src].update(_decayPeriod, balances.src);
-        virtualBalancesForAddition[dst].update(_decayPeriod, balances.dst);
+        virtualBalancesForRemoval[src].update(balances.src);
+        virtualBalancesForAddition[dst].update(balances.dst);
     }
 
     function _mintRewards(uint256 confirmed, uint256 result, address referral, Balances memory balances, Fees memory fees) private {
@@ -344,16 +330,5 @@ contract Mooniswap is MooniswapGovernance {
             uint256 feeDenominator = MooniswapConstants._FEE_DENOMINATOR.mul(srcBalancePlusTaxedAmount);
             return ret.mul(feeNumerator).div(feeDenominator);
         }
-    }
-
-    function rescueFunds(IERC20 token, uint256 amount) external nonReentrant onlyOwner {
-        uint256 balance0 = token0.balanceOf(address(this));
-        uint256 balance1 = token1.balanceOf(address(this));
-
-        token.safeTransfer(msg.sender, amount);
-
-        require(token0.balanceOf(address(this)) >= balance0, "Mooniswap: access denied");
-        require(token1.balanceOf(address(this)) >= balance1, "Mooniswap: access denied");
-        require(balanceOf(address(this)) >= _BASE_SUPPLY, "Mooniswap: access denied");
     }
 }

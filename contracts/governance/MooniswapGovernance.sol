@@ -44,10 +44,6 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
         return _slippageFee.data.current();
     }
 
-    function decayPeriod() public pure returns(uint256) {
-        return MooniswapConstants._DEFAULT_DECAY_PERIOD;
-    }
-
     function virtualFee() external view returns(uint104, uint104, uint48) {
         return (_fee.data.oldResult, _fee.data.result, _fee.data.time);
     }
@@ -124,7 +120,7 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
             newTotalSupply: newTotalSupply
         });
 
-        (uint256 defaultFee, uint256 defaultSlippageFee,) = _mooniswapFactoryGovernance.defaults();
+        (uint256 defaultFee, uint256 defaultSlippageFee) = _mooniswapFactoryGovernance.defaults();
 
         _updateOnTransfer(params, defaultFee, _emitFeeVoteUpdate, _fee);
         _updateOnTransfer(params, defaultSlippageFee, _emitSlippageFeeVoteUpdate, _slippageFee);
