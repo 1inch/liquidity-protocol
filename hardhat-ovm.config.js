@@ -1,6 +1,7 @@
 require('@nomiclabs/hardhat-ethers');
 require('@nomiclabs/hardhat-truffle5');
 require('@eth-optimism/plugins/hardhat/compiler');
+require('hardhat-deploy');
 require('dotenv').config();
 
 module.exports = {
@@ -17,6 +18,11 @@ module.exports = {
             debug: {
                 revertStrings: 'strip',
             },
+        },
+    },
+    namedAccounts: {
+        deployer: {
+            default: 0,
         },
     },
     networks: {
