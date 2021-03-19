@@ -35,9 +35,11 @@
         "solidity-coverage": "^0.7.15"
     },
     "scripts": {
-        "test": "hardhat --config hardhat-ovm.config.js test --show-stack-traces",
+        "test": "hardhat test --show-stack-traces",
+        "test:ovm": "hardhat --config hardhat-ovm.config.js test --show-stack-traces",
         "clean": "rimraf artifacts cache coverage",
         "deploy": "hardhat deploy --network",
+        "deploy:ovm": "hardhat --config hardhat-ovm.config.js deploy --network",
         "coverage": "hardhat coverage",
         "lint:js": "eslint .",
         "lint:js:fix": "eslint . --fix",
