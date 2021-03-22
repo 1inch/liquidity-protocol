@@ -1,4 +1,4 @@
-const { constants, time } = require('@openzeppelin/test-helpers');
+const { constants, time, time: { advanceBlock } } = require('@openzeppelin/test-helpers');
 const { promisify } = require('util');
 
 async function trackReceivedToken (token, wallet, txPromise) {
@@ -34,9 +34,8 @@ async function trackReceivedTokenAndTx (token, wallet, txPromise) {
 }
 
 async function timeIncreaseTo (seconds) {
-    const delay = 1000 - new Date().getMilliseconds();
-    await new Promise(resolve => setTimeout(resolve, delay));
-    await time.increaseTo(seconds);
+    await network.provider.send("evm_setNextBlockTimestamp", [seconds.toNumber()]);
+    await network.provider.send("evm_mine");
 }
 
 async function countInstructions (txHash, instruction) {
@@ -58,9 +57,46 @@ async function countInstructions (txHash, instruction) {
     return str.split('"' + instruction.toUpperCase() + '"').length - 1;
 }
 
+/**
+ * Sends JSON RPC call with payload to the node
+ * @param {Object} payload JSON RPC payload
+ */
+async function send(payload) {
+    return promisify(web3.currentProvider.send.bind(web3.currentProvider))({
+        jsonrpc: '2.0',
+        id: new Date().getTime(),
+        ...payload,
+    });
+}
+
+/**
+ *  Takes a snapshot and returns the ID of the snapshot for restoring later.
+ * @returns {string} id
+ */
+async function takeSnapshot () {
+    const { result } = await send({ method: 'evm_snapshot', params: [] });
+    await advanceBlock();
+
+    return result;
+}
+
+/**
+ *  Restores a snapshot that was previously taken with takeSnapshot
+ *  @param {string} id The ID that was returned when takeSnapshot was called.
+ */
+async function restoreSnapshot (id) {
+    await send({
+        method: 'evm_revert',
+        params: [id],
+    });
+    await advanceBlock();
+}
+
 module.exports = {
     trackReceivedToken,
     trackReceivedTokenAndTx,
     countInstructions,
     timeIncreaseTo,
+    takeSnapshot,
+    restoreSnapshot
 };
