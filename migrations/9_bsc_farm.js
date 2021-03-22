@@ -20,7 +20,7 @@ const REWARD_DISTRIBUTION = {
 
 const FARM_REWARDS = {
     bsc: {
-        '1INCH-BNB': [TOKENS.INCH, TOKENS.BNB, 4 * WEEK],
+        // '1INCH-BNB': [TOKENS.INCH, TOKENS.BNB, 4 * WEEK],
     },
 };
 
@@ -57,6 +57,3 @@ module.exports = function (deployer, network) {
         }
     });
 };
-
-// module.exports = function (deployer, network) {
-// };
