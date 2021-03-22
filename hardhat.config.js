@@ -20,7 +20,7 @@ module.exports = {
     },
     networks,
     etherscan: {
-        apiKey: process.env.MAINNET_ETHERSCAN_KEY,
+        apiKey: process.env.BSC_ETHERSCAN_KEY,
     },
     namedAccounts: {
         deployer: {
