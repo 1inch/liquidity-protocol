@@ -38,7 +38,9 @@ const TOKENS_35000 = money.dai('35000');
 
 const roundBy1 = bn => bn.div(TOKENS_1).mul(TOKENS_1);
 
-contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidityProvider, stakerOne, stakerTwo, randomGuy]) {
+describe('FarmingRewards', async function () {
+    let _, firstNotifier, secondNotifier, liquidityProvider, stakerOne, stakerTwo, randomGuy;
+
     // Contracts
     let lpToken,
         firstRewardToken,
@@ -61,9 +63,14 @@ contract('FarmingRewards', function ([_, firstNotifier, secondNotifier, liquidit
     });
 
     before(async () => {
+        [_, firstNotifier, secondNotifier, liquidityProvider, stakerOne, stakerTwo, randomGuy] = await web3.eth.getAccounts();
+
         // Deploy mock tokens
         const token1 = await Token.new('One', 'ONE');
-        const token2 = await Token.new('Two', 'TWO');
+        let token2 = await Token.new('Two', 'TWO');
+        while (token2.address.toLowerCase() < token1.address.toLowerCase()) {
+            token2 = await Token.new('Two', 'TWO');
+        }
         await token1.mint(liquidityProvider, money.dai(TOKENS_100));
         await token2.mint(liquidityProvider, money.dai(TOKENS_100));
 
