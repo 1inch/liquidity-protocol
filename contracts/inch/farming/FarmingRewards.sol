@@ -28,10 +28,10 @@ contract FarmingRewards is BaseRewards {
     Voting.Data private _slippageFee;
     Voting.Data private _decayPeriod;
 
-    constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration, address _rewardDistribution) public {
+    constructor(Mooniswap _mooniswap, IERC20 _gift, uint256 _duration, address _rewardDistribution, uint256 scale) public {
         mooniswap = _mooniswap;
         mooniswapFactoryGovernance = _mooniswap.mooniswapFactoryGovernance();
-        addGift(_gift, _duration, _rewardDistribution);
+        addGift(_gift, _duration, _rewardDistribution, scale);
     }
 
     function name() external view returns(string memory) {

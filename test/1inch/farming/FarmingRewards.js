@@ -8,6 +8,7 @@ const MooniswapDeployer = artifacts.require('MooniswapDeployer');
 const MooniswapFactory = artifacts.require('MooniswapFactory');
 const FarmingRewards = artifacts.require('FarmingRewards');
 const Token = artifacts.require('TokenMock');
+const TokenWithDecimals = artifacts.require('CustomDecimalsTokenMock');
 
 const money = {
     ether,
@@ -38,7 +39,7 @@ const TOKENS_35000 = money.dai('35000');
 
 const roundBy1 = bn => bn.div(TOKENS_1).mul(TOKENS_1);
 
-describe('FarmingRewards', async function () {
+describe.only('FarmingRewards', async function () {
     let _, firstNotifier, secondNotifier, liquidityProvider, stakerOne, stakerTwo, randomGuy;
 
     // Contracts
@@ -99,6 +100,7 @@ describe('FarmingRewards', async function () {
             firstRewardToken.address,
             WEEK,
             firstNotifier,
+            ether('1'),
             { from: _ },
         );
     });
@@ -505,6 +507,7 @@ describe('FarmingRewards', async function () {
                 firstRewardToken.address,
                 WEEK,
                 firstNotifier,
+                ether('1'),
                 { from: _ },
             );
         });
@@ -600,7 +603,7 @@ describe('FarmingRewards', async function () {
 
     describe('Second gift integration test', () => {
         it('simultaneous gifts for one staker', async () => {
-            await farmingRewards.addGift(secondRewardToken.address, WEEK, secondNotifier, { from: _ });
+            await farmingRewards.addGift(secondRewardToken.address, WEEK, secondNotifier, ether('1'), { from: _ });
 
             // Transfer some LP Tokens to user
             const totalToStake = TOKENS_100;
@@ -655,7 +658,7 @@ describe('FarmingRewards', async function () {
             // 1x:         +----------+ = 0k for 2d + 2.5k for 5d = 2.5k
             //
 
-            await farmingRewards.addGift(secondRewardToken.address, WEEK, secondNotifier, { from: _ });
+            await farmingRewards.addGift(secondRewardToken.address, WEEK, secondNotifier, ether('1'), { from: _ });
 
             // Transfer some LP Tokens to stakers
             const totalToStake = TOKENS_50;
@@ -720,6 +723,56 @@ describe('FarmingRewards', async function () {
             expect(roundBy1(firstRewardBalAfter).sub(TOKENS_27500)).to.be.bignumber.equal(firstRewardBalBefore);
             expect(roundBy1(secondRewardBalAfter).sub(TOKENS_4499)).to.be.bignumber.equal(secondRewardBalBefore);
             expect(postExitLPBal.sub(totalToStake)).to.be.bignumber.equal(preExitLPBal);
+        });
+    });
+
+    describe.only('low decimals', () => {
+        let localFarmingRewards;
+        let lowDecimalsToken;
+
+        before(async () => {
+            lowDecimalsToken = await TokenWithDecimals.new('Low', 'LOW', 8);
+            await lowDecimalsToken.mint(firstNotifier, TOKENS_35000);
+            localFarmingRewards = await FarmingRewards.new(
+                lpToken.address,
+                lowDecimalsToken.address,
+                WEEK,
+                firstNotifier,
+                ether('10000000000'),
+                { from: _ },
+            );
+            // Transfer some LP Tokens to user
+            const totalToStake = TOKENS_100;
+            await lpToken.transfer(stakerOne, totalToStake, { from: liquidityProvider });
+
+            // Stake LP Tokens
+            await lpToken.approve(localFarmingRewards.address, totalToStake, { from: stakerOne });
+            await localFarmingRewards.stake(totalToStake, { from: stakerOne });
+        });
+
+        it('Should properly scale', async () => {
+            const rewardValue = '1000000';
+            await lowDecimalsToken.transfer(localFarmingRewards.address, rewardValue, { from: firstNotifier });
+            await localFarmingRewards.notifyRewardAmount(0, rewardValue, { from: firstNotifier });
+            let rewardInfo = await localFarmingRewards.tokenRewards(0);
+            expect(rewardInfo.rewardRate).to.be.bignumber.equal('16534391534391534391534391534');
+            await localFarmingRewards.notifyRewardAmount(0, '0', { from: firstNotifier });
+            rewardInfo = await localFarmingRewards.tokenRewards(0);
+            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('165343915');
+        });
+
+        it('Should work with decimals=1', async () => {
+            const oneDecimalToken = await TokenWithDecimals.new('One', 'ONE', 1);
+            await oneDecimalToken.mint(firstNotifier, TOKENS_35000);
+            const rewardValue = '1000000';
+            await localFarmingRewards.addGift(oneDecimalToken.address, WEEK, firstNotifier, ether('1').mul(ether('1')), { from: _ });
+            await oneDecimalToken.transfer(localFarmingRewards.address, rewardValue, { from: firstNotifier });
+            await localFarmingRewards.notifyRewardAmount(1, rewardValue, { from: firstNotifier });
+            let rewardInfo = await localFarmingRewards.tokenRewards(1);
+            expect(rewardInfo.rewardRate).to.be.bignumber.equal('1653439153439153439153439153439153439');
+            await localFarmingRewards.notifyRewardAmount(1, '0', { from: firstNotifier });
+            rewardInfo = await localFarmingRewards.tokenRewards(1);
+            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('16534391534391534');
         });
     });
 });
