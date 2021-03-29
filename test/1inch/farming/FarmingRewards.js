@@ -751,28 +751,28 @@ describe.only('FarmingRewards', async function () {
         });
 
         it('Should properly scale', async () => {
-            const rewardValue = '1000000';
+            const rewardValue = '100000000000000';
             await lowDecimalsToken.transfer(localFarmingRewards.address, rewardValue, { from: firstNotifier });
             await localFarmingRewards.notifyRewardAmount(0, rewardValue, { from: firstNotifier });
             let rewardInfo = await localFarmingRewards.tokenRewards(0);
-            expect(rewardInfo.rewardRate).to.be.bignumber.equal('16534391534391534391534391534');
+            expect(rewardInfo.rewardRate).to.be.bignumber.equal('1653439153439153439153439153439153439');
             await localFarmingRewards.notifyRewardAmount(0, '0', { from: firstNotifier });
             rewardInfo = await localFarmingRewards.tokenRewards(0);
-            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('165343915');
+            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('16534391534391534');
         });
 
         it('Should work with decimals=1', async () => {
             const oneDecimalToken = await TokenWithDecimals.new('One', 'ONE', 1);
             await oneDecimalToken.mint(firstNotifier, TOKENS_35000);
-            const rewardValue = '1000000';
+            const rewardValue = '10000000';
             await localFarmingRewards.addGift(oneDecimalToken.address, WEEK, firstNotifier, ether('1').mul(ether('1')).divn(10), { from: _ });
             await oneDecimalToken.transfer(localFarmingRewards.address, rewardValue, { from: firstNotifier });
             await localFarmingRewards.notifyRewardAmount(1, rewardValue, { from: firstNotifier });
             let rewardInfo = await localFarmingRewards.tokenRewards(1);
-            expect(rewardInfo.rewardRate).to.be.bignumber.equal('165343915343915343915343915343915343');
+            expect(rewardInfo.rewardRate).to.be.bignumber.equal('1653439153439153439153439153439153439');
             await localFarmingRewards.notifyRewardAmount(1, '0', { from: firstNotifier });
             rewardInfo = await localFarmingRewards.tokenRewards(1);
-            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('1653439153439153');
+            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('16534391534391534');
         });
 
         it('Should work with decimals=0', async () => {
