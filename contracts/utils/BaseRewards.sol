@@ -143,7 +143,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
 
     function addGift(IERC20 gift, uint256 duration, address rewardDistribution, uint256 scale) public onlyOwner {
         require(scale > 0, "Scale is too low");
-        require(scale <= 1e36, "Scale si too high");
+        require(scale <= 1e36, "Scale is too high");
         uint256 len = tokenRewards.length;
         for (uint i = 0; i < len; i++) {
             require(gift != tokenRewards[i].gift, "Gift is already added");
