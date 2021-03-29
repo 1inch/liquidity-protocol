@@ -12,6 +12,7 @@ contract FeeCollector is Ownable, BalanceAccounting {
     using SafeMath for uint256;
     using UniERC20 for IERC20;
 
+    IERC20 public immutable token;
     uint256 private immutable _k00;
     uint256 private immutable _k01;
     uint256 private immutable _k02;
@@ -32,9 +33,6 @@ contract FeeCollector is Ownable, BalanceAccounting {
     uint256 private immutable _k17;
     uint256 private immutable _k18;
     uint256 private immutable _k19;
-
-    IERC20 public immutable token;
-    uint256 public immutable deceleration;
 
     struct TokenInfo {
         uint256 totalShares;
@@ -61,8 +59,30 @@ contract FeeCollector is Ownable, BalanceAccounting {
         require(_maxValue * 1e36 > 1e36, "Max value is too huge"); // check overflow
 
         token = _token;
-        deceleration = _deceleration;
-        _configTable(_deceleration);
+
+        uint256 z;
+        _k00 = z = _deceleration;
+        _k01 = z = z * z / 1e36;
+        _k02 = z = z * z / 1e36;
+        _k03 = z = z * z / 1e36;
+        _k04 = z = z * z / 1e36;
+        _k05 = z = z * z / 1e36;
+        _k06 = z = z * z / 1e36;
+        _k07 = z = z * z / 1e36;
+        _k08 = z = z * z / 1e36;
+        _k09 = z = z * z / 1e36;
+        _k10 = z = z * z / 1e36;
+        _k11 = z = z * z / 1e36;
+        _k12 = z = z * z / 1e36;
+        _k13 = z = z * z / 1e36;
+        _k14 = z = z * z / 1e36;
+        _k15 = z = z * z / 1e36;
+        _k16 = z = z * z / 1e36;
+        _k17 = z = z * z / 1e36;
+        _k18 = z = z * z / 1e36;
+        _k19 = z = z * z / 1e36;
+        require(z == 0, "Deceleration is too slow");
+
         setMinMax(_minValue, _maxValue);
     }
 
@@ -91,48 +111,6 @@ contract FeeCollector is Ownable, BalanceAccounting {
         period = r;
     }
 
-    function _configTable(uint256 _deceleration) private {
-        _k00 = _deceleration;
-        _k01 = _k00 * _k00 / 1e36;
-        if (_k01 == 0) return;
-        _k02 = _k01 * _k01 / 1e36;
-        if (_k02 == 0) return;
-        _k03 = _k02 * _k02 / 1e36;
-        if (_k03 == 0) return;
-        _k04 = _k03 * _k03 / 1e36;
-        if (_k04 == 0) return;
-        _k05 = _k04 * _k04 / 1e36;
-        if (_k05 == 0) return;
-        _k06 = _k05 * _k05 / 1e36;
-        if (_k06 == 0) return;
-        _k07 = _k06 * _k06 / 1e36;
-        if (_k07 == 0) return;
-        _k08 = _k07 * _k07 / 1e36;
-        if (_k08 == 0) return;
-        _k09 = _k08 * _k08 / 1e36;
-        if (_k09 == 0) return;
-        _k10 = _k09 * _k09 / 1e36;
-        if (_k10 == 0) return;
-        _k11 = _k10 * _k10 / 1e36;
-        if (_k11 == 0) return;
-        _k12 = _k11 * _k11 / 1e36;
-        if (_k12 == 0) return;
-        _k13 = _k12 * _k12 / 1e36;
-        if (_k13 == 0) return;
-        _k14 = _k13 * _k13 / 1e36;
-        if (_k14 == 0) return;
-        _k15 = _k14 * _k14 / 1e36;
-        if (_k15 == 0) return;
-        _k16 = _k15 * _k15 / 1e36;
-        if (_k16 == 0) return;
-        _k17 = _k16 * _k16 / 1e36;
-        if (_k17 == 0) return;
-        _k18 = _k17 * _k17 / 1e36;
-        if (_k18 == 0) return;
-        _k19 = _k18 * _k18 / 1e36;
-        require(_k19 == 0, "Deceleration is too slow");
-    }
-
     function decelerationTable() public pure returns(uint256[20] memory) {
         return [
             _k00, _k01, _k02, _k03, _k04,
@@ -149,6 +127,13 @@ contract FeeCollector is Ownable, BalanceAccounting {
     function priceForTime(uint256 time) public view returns(uint256) {
         return _priceForTime(time, minValue, maxValue, decelerationTable());
     }
+
+    // cost1 = max * deceleration^time1
+    // cost2 = max * deceleration^time2
+    // cost1 * k = cost2
+    // deceleration^time1 * k = deceleration^(time1+shift)
+    // deceleration^time1 * k = deceleration^time1 * deceleration^shift
+    // k = deceleration^shift
 
     function _priceForTime(uint256 time, uint256 _minValue, uint256 _maxValue, uint256[20] memory table) private view returns(uint256 result) {
         result = _maxValue;
