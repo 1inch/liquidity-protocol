@@ -1,4 +1,5 @@
 require('@nomiclabs/hardhat-ethers');
+require('@nomiclabs/hardhat-etherscan');
 require('@nomiclabs/hardhat-truffle5');
 require('hardhat-deploy');
 require('hardhat-gas-reporter');
