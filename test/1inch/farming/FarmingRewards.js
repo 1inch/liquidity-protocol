@@ -726,7 +726,7 @@ describe.only('FarmingRewards', async function () {
         });
     });
 
-    describe.only('low decimals', () => {
+    describe('low decimals', () => {
         let localFarmingRewards;
         let lowDecimalsToken;
 
@@ -763,6 +763,20 @@ describe.only('FarmingRewards', async function () {
 
         it('Should work with decimals=1', async () => {
             const oneDecimalToken = await TokenWithDecimals.new('One', 'ONE', 1);
+            await oneDecimalToken.mint(firstNotifier, TOKENS_35000);
+            const rewardValue = '1000000';
+            await localFarmingRewards.addGift(oneDecimalToken.address, WEEK, firstNotifier, ether('1').mul(ether('1')).divn(10), { from: _ });
+            await oneDecimalToken.transfer(localFarmingRewards.address, rewardValue, { from: firstNotifier });
+            await localFarmingRewards.notifyRewardAmount(1, rewardValue, { from: firstNotifier });
+            let rewardInfo = await localFarmingRewards.tokenRewards(1);
+            expect(rewardInfo.rewardRate).to.be.bignumber.equal('165343915343915343915343915343915343');
+            await localFarmingRewards.notifyRewardAmount(1, '0', { from: firstNotifier });
+            rewardInfo = await localFarmingRewards.tokenRewards(1);
+            expect(rewardInfo.rewardPerTokenStored).to.be.bignumber.equal('1653439153439153');
+        });
+
+        it('Should work with decimals=0', async () => {
+            const oneDecimalToken = await TokenWithDecimals.new('Zero', '0', 0);
             await oneDecimalToken.mint(firstNotifier, TOKENS_35000);
             const rewardValue = '1000000';
             await localFarmingRewards.addGift(oneDecimalToken.address, WEEK, firstNotifier, ether('1').mul(ether('1')), { from: _ });
