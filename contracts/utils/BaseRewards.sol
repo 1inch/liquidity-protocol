@@ -37,11 +37,12 @@ contract BaseRewards is Ownable, BalanceAccounting {
         uint256 len = tokenRewards.length;
         for (uint i = 0; i < len; i++) {
             TokenRewards storage tr = tokenRewards[i];
-            tr.rewardPerTokenStored = rewardPerToken(i);
+            uint256 newRewardPerToken = rewardPerToken(i);
+            tr.rewardPerTokenStored = newRewardPerToken;
             tr.lastUpdateTime = lastTimeRewardApplicable(i);
             if (account != address(0)) {
-                tr.rewards[account] = earned(i, account);
-                tr.userRewardPerTokenPaid[account] = tr.rewardPerTokenStored;
+                tr.rewards[account] = _earned(i, account, newRewardPerToken);
+                tr.userRewardPerTokenPaid[account] = newRewardPerToken;
             }
         }
         _;
@@ -71,11 +72,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     function earned(uint i, address account) public view returns (uint256) {
-        TokenRewards storage tr = tokenRewards[i];
-        return balanceOf(account)
-            .mul(rewardPerToken(i).sub(tr.userRewardPerTokenPaid[account]))
-            .div(1e18)
-            .add(tr.rewards[account]);
+        return _earned(i, account, rewardPerToken(i));
     }
 
     function getReward(uint i) public updateReward(msg.sender) {
@@ -146,5 +143,13 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit NewGift(len, gift);
         emit DurationUpdated(len, duration);
         emit RewardDistributionChanged(len, rewardDistribution);
+    }
+
+    function _earned(uint i, address account, uint256 _rewardPerToken) private view returns (uint256) {
+        TokenRewards storage tr = tokenRewards[i];
+        return balanceOf(account)
+            .mul(_rewardPerToken.sub(tr.userRewardPerTokenPaid[account]))
+            .div(1e18)
+            .add(tr.rewards[account]);
     }
 }
