@@ -39,7 +39,7 @@ const TOKENS_35000 = money.dai('35000');
 
 const roundBy1 = bn => bn.div(TOKENS_1).mul(TOKENS_1);
 
-describe.only('FarmingRewards', async function () {
+describe('FarmingRewards', async function () {
     let _, firstNotifier, secondNotifier, liquidityProvider, stakerOne, stakerTwo, randomGuy;
 
     // Contracts
