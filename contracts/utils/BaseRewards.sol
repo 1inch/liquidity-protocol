@@ -136,7 +136,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         require(scale > 0, "Scale is too low");
         require(scale <= 1e36, "Scale si too high");
         TokenRewards storage tr = tokenRewards[i];
-        require(block.timestamp >= tr.periodFinish, "Not finished yet");
+        require(tr.periodFinish == 0, "Can't change scale after start");
         tr.scale = scale;
         emit ScaleUpdated(i, scale);
     }
