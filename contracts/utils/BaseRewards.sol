@@ -132,7 +132,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit DurationUpdated(i, duration);
     }
 
-    function setScale(uint i, uint256 scale) external onlyRewardDistribution(i) {
+    function setScale(uint i, uint256 scale) external onlyOwner {
         require(scale > 0, "Scale is too low");
         require(scale <= 1e36, "Scale si too high");
         TokenRewards storage tr = tokenRewards[i];
