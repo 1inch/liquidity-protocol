@@ -1,10 +1,10 @@
 {
-    "name": "@1inch-exchange/1inch-liquidity-protocol",
+    "name": "@1inch/liquidity-protocol",
     "version": "0.0.1",
     "description": "",
     "repository": {
         "type": "git",
-        "url": "git@github.com:1inch-exchange/1inch-liquidity-protocol.git"
+        "url": "git@github.com:1inch/liquidity-protocol.git"
     },
     "license": "MIT",
     "dependencies": {
