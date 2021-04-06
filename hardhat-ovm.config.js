@@ -15,9 +15,6 @@ module.exports = {
                 enabled: true,
                 runs: 0,
             },
-            debug: {
-                revertStrings: 'strip',
-            },
         },
     },
     namedAccounts: {

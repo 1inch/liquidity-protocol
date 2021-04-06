@@ -23,11 +23,20 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
     IMooniswapFactoryGovernance public mooniswapFactoryGovernance;
     LiquidVoting.Data private _fee;
     LiquidVoting.Data private _slippageFee;
+    address private _owner;
+    bool private _initialized;
 
-    constructor(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
+    function _init(IMooniswapFactoryGovernance _mooniswapFactoryGovernance) internal {
+        require(!_initialized, "Already initialized");
         mooniswapFactoryGovernance = _mooniswapFactoryGovernance;
         _fee.data.result = _mooniswapFactoryGovernance.defaultFee().toUint104();
         _slippageFee.data.result = _mooniswapFactoryGovernance.defaultSlippageFee().toUint104();
+        _owner = msg.sender;
+        _initialized = true;
+    }
+
+    function owner() public view override returns (address) {
+        return _owner;
     }
 
     function setMooniswapFactoryGovernance(IMooniswapFactoryGovernance newMooniswapFactoryGovernance) external onlyOwner {

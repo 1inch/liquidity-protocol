@@ -11,7 +11,7 @@
         "@openzeppelin/contracts": "^3.4.1"
     },
     "devDependencies": {
-        "@eth-optimism/plugins": "^0.0.17",
+        "@eth-optimism/plugins": "^0.0.20",
         "@nomiclabs/hardhat-ethers": "^2.0.2",
         "@nomiclabs/hardhat-etherscan": "^2.1.1",
         "@nomiclabs/hardhat-truffle5": "^2.0.0",
@@ -35,6 +35,7 @@
         "solidity-coverage": "^0.7.15"
     },
     "scripts": {
+        "compile": "hardhat --config hardhat-ovm.config.js compile",
         "test": "hardhat test --show-stack-traces",
         "test:ovm": "hardhat --config hardhat-ovm.config.js test --show-stack-traces",
         "clean": "rimraf artifacts cache coverage",

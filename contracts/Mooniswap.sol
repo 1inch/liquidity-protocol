@@ -68,32 +68,49 @@ contract Mooniswap is MooniswapGovernance {
 
     uint256 private constant _BASE_SUPPLY = 1000;  // Total supply on first deposit
 
-    IERC20 public immutable token0;
-    IERC20 public immutable token1;
+    IERC20 public token0;
+    IERC20 public token1;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForAddition;
     mapping(IERC20 => VirtualBalance.Data) public virtualBalancesForRemoval;
+
+    string private _name;
+    string private _symbol;
 
     modifier whenNotShutdown {
         require(mooniswapFactoryGovernance.isActive(), "Mooniswap: factory shutdown");
         _;
     }
 
-    constructor(
-        IERC20 _token0,
-        IERC20 _token1,
-        string memory name,
-        string memory symbol,
+    function name() public view override returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public view override returns (string memory) {
+        return _symbol;
+    }
+
+    constructor(string memory name_, string memory symbol_) public ERC20(name_, symbol_) {
+        require(bytes(name_).length > 0, "Mooniswap: name is empty");
+        require(bytes(symbol_).length > 0, "Mooniswap: symbol is empty");
+        _name = name_;
+        _symbol = symbol_;
+    }
+
+    function init(
+        IERC20 token0_,
+        IERC20 token1_,
+        string memory name_,
+        string memory symbol_,
         IMooniswapFactoryGovernance _mooniswapFactoryGovernance
-    )
-        public
-        ERC20(name, symbol)
-        MooniswapGovernance(_mooniswapFactoryGovernance)
-    {
-        require(bytes(name).length > 0, "Mooniswap: name is empty");
-        require(bytes(symbol).length > 0, "Mooniswap: symbol is empty");
-        require(_token0 != _token1, "Mooniswap: duplicate tokens");
-        token0 = _token0;
-        token1 = _token1;
+    ) external {
+        require(bytes(name_).length > 0, "Mooniswap: name is empty");
+        require(bytes(symbol_).length > 0, "Mooniswap: symbol is empty");
+        require(token0_ != token1_, "Mooniswap: duplicate tokens");
+        token0 = token0_;
+        token1 = token1_;
+        _name = name_;
+        _symbol = symbol_;
+        _init(_mooniswapFactoryGovernance);
     }
 
     function getTokens() external view returns(IERC20[] memory tokens) {

@@ -18,7 +18,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
     const mooniswapDeployerDeployment = await deploy('MooniswapDeployer-ovm', {
         from: deployer,
-        skipIfAlreadyDeployed: true,
+        skipIfAlreadyDeployed: false,
     });
 
     console.log(`MooniswapDeployer deployed to: ${mooniswapDeployerDeployment.address}`);
@@ -26,7 +26,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const mooniswapFactoryDeployment = await deploy('MooniswapFactory-ovm', {
         args: [OWNER, mooniswapDeployerDeployment.address, mothershipAddress],
         from: deployer,
-        skipIfAlreadyDeployed: true,
+        skipIfAlreadyDeployed: false,
     });
 
     console.log(`MooniswapFactory deployed to: ${mooniswapFactoryDeployment.address}`);
@@ -40,16 +40,20 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const feeCollectorDeployment = await deploy('ReferralFeeReceiver-ovm', {
         args: [tokenAddress, mooniswapFactoryDeployment.address],
         from: deployer,
-        skipIfAlreadyDeployed: true,
+        skipIfAlreadyDeployed: false,
     });
 
     const mooniswapFactory = MooniswapFactory.attach(mooniswapFactoryDeployment.address);
     const feeCollector = ReferralFeeReceiver.attach(feeCollectorDeployment.address);
 
-    await mooniswapFactory.setGovernanceWallet(OWNER);
-    await mooniswapFactory.setFeeCollector(feeCollector.address);
-    await feeCollector.transferOwnership(OWNER);
-    await mooniswapFactory.transferOwnership(OWNER);
+    const tx1 = await mooniswapFactory.setGovernanceWallet(OWNER);
+    const tx2 = await mooniswapFactory.setFeeCollector(feeCollector.address);
+    await tx1.wait();
+    await tx2.wait();
+    const tx3 = await feeCollector.transferOwnership(OWNER);
+    const tx4 = await mooniswapFactory.transferOwnership(OWNER);
+    await tx3.wait();
+    await tx4.wait();
 };
 
-module.exports.skip = async () => true;
+module.exports.skip = async () => false;
