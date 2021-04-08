@@ -2,7 +2,6 @@ const hre = require('hardhat');
 const { getChainId, ethers } = hre;
 const { ether } = require('@openzeppelin/test-helpers');
 
-
 const WEEK = 7 * 24 * 60 * 60;
 
 const TOKENS = {
