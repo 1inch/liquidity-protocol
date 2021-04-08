@@ -1,5 +1,7 @@
 const hre = require('hardhat');
 const { getChainId, ethers } = hre;
+const { ether } = require('@openzeppelin/test-helpers');
+
 
 const WEEK = 7 * 24 * 60 * 60;
 
@@ -50,8 +52,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
             console.log(`Pool address: ${poolAddress}`);
         }
 
+        const args = [poolAddress, baseReward.token, baseReward.duration, baseReward.rewardDistribution, ether('1').toString()];
         const farmingRewardsDeployment = await deploy('FarmingRewards', {
-            args: [poolAddress, baseReward.token, baseReward.duration, baseReward.rewardDistribution],
+            args: args,
             from: deployer,
         });
 
@@ -59,7 +62,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         const farmingRewards = FarmingRewards.attach(farmingRewardsDeployment.address);
         for (const reward of extraRewards) {
-            const addGiftTxn = await farmingRewards.addGift(reward.token, reward.duration, reward.rewardDistribution);
+            const addGiftTxn = await farmingRewards.addGift(reward.token, reward.duration, reward.rewardDistribution, ether('10000000000').toString());
             await addGiftTxn.wait();
         }
 
@@ -68,7 +71,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         await hre.run('verify:verify', {
             address: farmingRewardsDeployment.address,
-            constructorArguments: [poolAddress, baseReward.token, baseReward.duration, baseReward.rewardDistribution],
+            constructorArguments: args,
         });
     }
 };
