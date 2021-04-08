@@ -70,4 +70,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     });
 };
 
-module.exports.skip = async () => false;
+module.exports.skip = async () => true;
