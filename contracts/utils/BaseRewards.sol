@@ -15,11 +15,13 @@ contract BaseRewards is Ownable, BalanceAccounting {
     event RewardAdded(uint256 indexed i, uint256 reward);
     event RewardPaid(uint256 indexed i, address indexed user, uint256 reward);
     event DurationUpdated(uint256 indexed i, uint256 duration);
+    event ScaleUpdated(uint256 indexed i, uint256 scale);
     event RewardDistributionChanged(uint256 indexed i, address rewardDistribution);
     event NewGift(uint256 indexed i, IERC20 gift);
 
     struct TokenRewards {
         IERC20 gift;
+        uint256 scale;
         uint256 duration;
         address rewardDistribution;
 
@@ -37,11 +39,12 @@ contract BaseRewards is Ownable, BalanceAccounting {
         uint256 len = tokenRewards.length;
         for (uint i = 0; i < len; i++) {
             TokenRewards storage tr = tokenRewards[i];
-            tr.rewardPerTokenStored = rewardPerToken(i);
+            uint256 newRewardPerToken = rewardPerToken(i);
+            tr.rewardPerTokenStored = newRewardPerToken;
             tr.lastUpdateTime = lastTimeRewardApplicable(i);
             if (account != address(0)) {
-                tr.rewards[account] = earned(i, account);
-                tr.userRewardPerTokenPaid[account] = tr.rewardPerTokenStored;
+                tr.rewards[account] = _earned(i, account, newRewardPerToken);
+                tr.userRewardPerTokenPaid[account] = newRewardPerToken;
             }
         }
         _;
@@ -65,17 +68,12 @@ contract BaseRewards is Ownable, BalanceAccounting {
             lastTimeRewardApplicable(i)
                 .sub(tr.lastUpdateTime)
                 .mul(tr.rewardRate)
-                .mul(1e18)
                 .div(totalSupply())
         );
     }
 
     function earned(uint i, address account) public view returns (uint256) {
-        TokenRewards storage tr = tokenRewards[i];
-        return balanceOf(account)
-            .mul(rewardPerToken(i).sub(tr.userRewardPerTokenPaid[account]))
-            .div(1e18)
-            .add(tr.rewards[account]);
+        return _earned(i, account, rewardPerToken(i));
     }
 
     function getReward(uint i) public updateReward(msg.sender) {
@@ -96,24 +94,26 @@ contract BaseRewards is Ownable, BalanceAccounting {
     }
 
     function notifyRewardAmount(uint i, uint256 reward) external onlyRewardDistribution(i) updateReward(address(0)) {
-        require(reward < uint(-1).div(1e18), "Reward overlow");
-
         TokenRewards storage tr = tokenRewards[i];
+        uint256 scale = tr.scale;
+        require(reward < uint(-1).div(scale), "Reward overlow");
         uint256 duration = tr.duration;
+        uint256 rewardRate;
 
         if (block.timestamp >= tr.periodFinish) {
             require(reward >= duration, "Reward is too small");
-            tr.rewardRate = reward.div(duration);
+            rewardRate = reward.mul(scale).div(duration);
         } else {
             uint256 remaining = tr.periodFinish.sub(block.timestamp);
-            uint256 leftover = remaining.mul(tr.rewardRate);
+            uint256 leftover = remaining.mul(tr.rewardRate).div(scale);
             require(reward.add(leftover) >= duration, "Reward is too small");
-            tr.rewardRate = reward.add(leftover).div(duration);
+            rewardRate = reward.add(leftover).mul(scale).div(duration);
         }
 
         uint balance = tr.gift.balanceOf(address(this));
-        require(tr.rewardRate <= balance.div(duration), "Reward is too big");
+        require(rewardRate <= balance.mul(scale).div(duration), "Reward is too big");
 
+        tr.rewardRate = rewardRate;
         tr.lastUpdateTime = block.timestamp;
         tr.periodFinish = block.timestamp.add(duration);
         emit RewardAdded(i, reward);
@@ -125,14 +125,25 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit RewardDistributionChanged(i, _rewardDistribution);
     }
 
-    function setDuration(uint i, uint256 _duration) external onlyRewardDistribution(i) {
+    function setDuration(uint i, uint256 duration) external onlyRewardDistribution(i) {
         TokenRewards storage tr = tokenRewards[i];
         require(block.timestamp >= tr.periodFinish, "Not finished yet");
-        tr.duration = _duration;
-        emit DurationUpdated(i, _duration);
+        tr.duration = duration;
+        emit DurationUpdated(i, duration);
     }
 
-    function addGift(IERC20 gift, uint256 duration, address rewardDistribution) public onlyOwner {
+    function setScale(uint i, uint256 scale) external onlyOwner {
+        require(scale > 0, "Scale is too low");
+        require(scale <= 1e36, "Scale si too high");
+        TokenRewards storage tr = tokenRewards[i];
+        require(tr.periodFinish == 0, "Can't change scale after start");
+        tr.scale = scale;
+        emit ScaleUpdated(i, scale);
+    }
+
+    function addGift(IERC20 gift, uint256 duration, address rewardDistribution, uint256 scale) public onlyOwner {
+        require(scale > 0, "Scale is too low");
+        require(scale <= 1e36, "Scale is too high");
         uint256 len = tokenRewards.length;
         for (uint i = 0; i < len; i++) {
             require(gift != tokenRewards[i].gift, "Gift is already added");
@@ -142,9 +153,18 @@ contract BaseRewards is Ownable, BalanceAccounting {
         tr.gift = gift;
         tr.duration = duration;
         tr.rewardDistribution = rewardDistribution;
+        tr.scale = scale;
 
         emit NewGift(len, gift);
         emit DurationUpdated(len, duration);
         emit RewardDistributionChanged(len, rewardDistribution);
+    }
+
+    function _earned(uint i, address account, uint256 _rewardPerToken) private view returns (uint256) {
+        TokenRewards storage tr = tokenRewards[i];
+        return balanceOf(account)
+            .mul(_rewardPerToken.sub(tr.userRewardPerTokenPaid[account]))
+            .div(tr.scale)
+            .add(tr.rewards[account]);
     }
 }
