@@ -59,10 +59,12 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         const farmingRewards = FarmingRewards.attach(farmingRewardsDeployment.address);
         for (const reward of extraRewards) {
-            await farmingRewards.addGift(reward.token, reward.duration, reward.rewardDistribution);
+            const addGiftTxn = await farmingRewards.addGift(reward.token, reward.duration, reward.rewardDistribution);
+            await addGiftTxn.wait();
         }
 
-        await farmingRewards.transferOwnership(OWNER);
+        const transferOwnershipTxn = await farmingRewards.transferOwnership(OWNER);
+        await transferOwnershipTxn.wait();
 
         await hre.run('verify:verify', {
             address: farmingRewardsDeployment.address,
