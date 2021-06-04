@@ -179,13 +179,14 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
     }
 
     function _collectProcessedEpochs(UserInfo storage user, TokenInfo storage token, Mooniswap mooniswap, uint256 currentEpoch) private {
+        uint256 userEpoch = user.firstUnprocessedEpoch[mooniswap];
+
         // Early return for the new users
-        if (user.share[mooniswap][user.firstUnprocessedEpoch[mooniswap]] == 0) {
+        if (user.share[mooniswap][userEpoch] == 0) {
             user.firstUnprocessedEpoch[mooniswap] = currentEpoch;
             return;
         }
 
-        uint256 userEpoch = user.firstUnprocessedEpoch[mooniswap];
         uint256 tokenEpoch = token.firstUnprocessedEpoch;
         if (tokenEpoch <= userEpoch) {
             return;
