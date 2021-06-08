@@ -179,18 +179,19 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
     }
 
     function _collectProcessedEpochs(UserInfo storage user, TokenInfo storage token, Mooniswap mooniswap, uint256 currentEpoch) private {
+        uint256 userEpoch = user.firstUnprocessedEpoch[mooniswap];
+
         // Early return for the new users
-        if (user.share[mooniswap][user.firstUnprocessedEpoch[mooniswap]] == 0) {
+        if (user.share[mooniswap][userEpoch] == 0) {
             user.firstUnprocessedEpoch[mooniswap] = currentEpoch;
             return;
         }
 
-        uint256 userEpoch = user.firstUnprocessedEpoch[mooniswap];
         uint256 tokenEpoch = token.firstUnprocessedEpoch;
-        uint256 epochCount = Math.min(2, tokenEpoch.sub(userEpoch)); // 0, 1 or 2 epochs
-        if (epochCount == 0) {
+        if (tokenEpoch <= userEpoch) {
             return;
         }
+        uint256 epochCount = Math.min(2, tokenEpoch - userEpoch); // 0, 1 or 2 epochs
 
         // Claim 1 or 2 processed epochs for the user
         uint256 collected = _collectEpoch(user, token, mooniswap, userEpoch);
