@@ -31,7 +31,7 @@ function swap(address src, address dst, uint256 amount, uint256 minReturn, addre
 * @param minAmounts minimal amounts that will be charged from sender address to liquidity pool (each amount sorted by token0 and token1) 
 * @return fairSupply received liquidity token amount
 */
-function deposit(uint256[] calldata amounts, uint256[] calldata minAmounts) external payable returns(uint256 fairSupply);
+function deposit(uint256[2] calldata amounts, uint256[2] calldata minAmounts) external payable returns(uint256 fairSupply);
 ```
 
 ## Withdraw
