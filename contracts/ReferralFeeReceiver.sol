@@ -7,7 +7,7 @@ import "./interfaces/IFeeCollector.sol";
 import "./libraries/UniERC20.sol";
 import "./utils/Converter.sol";
 
-
+/// @title Referral fee collector
 contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
     using UniERC20 for IERC20;
 
@@ -36,12 +36,14 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
     // solhint-disable-next-line no-empty-blocks
     constructor(IERC20 _inchToken, IMooniswapFactory _mooniswapFactory) public Converter(_inchToken, _mooniswapFactory) {}
 
+    /// @inheritdoc IFeeCollector
     function updateRewards(address[] calldata receivers, uint256[] calldata amounts) external override {
         for (uint i = 0; i < receivers.length; i++) {
             updateReward(receivers[i], amounts[i]);
         }
     }
 
+    /// @inheritdoc IFeeCollector
     function updateReward(address referral, uint256 amount) public override {
         Mooniswap mooniswap = Mooniswap(msg.sender);
         TokenInfo storage token = tokenInfo[mooniswap];
@@ -56,6 +58,7 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         _collectProcessedEpochs(user, token, mooniswap, currentEpoch);
     }
 
+    /// @notice Freezes current epoch and creates new as an active one
     function freezeEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) validSpread(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 currentEpoch = token.currentEpoch;
@@ -70,6 +73,8 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         token.currentEpoch = currentEpoch.add(1);
     }
 
+    /// @notice Perform chain swap described by `path`. First element of `path` should match either token of the `mooniswap`.
+    /// The last token in chain should always be `1INCH`
     function trade(Mooniswap mooniswap, IERC20[] memory path) external nonReentrant validPool(mooniswap) validPath(path) {
         TokenInfo storage token = tokenInfo[mooniswap];
         uint256 firstUnprocessedEpoch = token.firstUnprocessedEpoch;
@@ -117,6 +122,7 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         }
     }
 
+    /// @notice Collects `msg.sender`'s tokens from pools and transfers them to him
     function claim(Mooniswap[] memory pools) external {
         UserInfo storage user = userInfo[msg.sender];
         for (uint256 i = 0; i < pools.length; ++i) {
@@ -133,6 +139,7 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         }
     }
 
+    /// @notice Collects current epoch `msg.sender`'s tokens from pool and transfers them to him
     function claimCurrentEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];
@@ -145,6 +152,7 @@ contract ReferralFeeReceiver is IFeeCollector, Converter, ReentrancyGuard {
         }
     }
 
+    /// @notice Collects frozen epoch `msg.sender`'s tokens from pool and transfers them to him
     function claimFrozenEpoch(Mooniswap mooniswap) external nonReentrant validPool(mooniswap) {
         TokenInfo storage token = tokenInfo[mooniswap];
         UserInfo storage user = userInfo[msg.sender];

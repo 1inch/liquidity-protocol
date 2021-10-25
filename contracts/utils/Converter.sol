@@ -10,8 +10,8 @@ import "../libraries/UniERC20.sol";
 import "../libraries/VirtualBalance.sol";
 import "../Mooniswap.sol";
 
-
-contract Converter is Ownable {
+/// @title Base contract for maintaining tokens whitelist
+abstract contract Converter is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using UniERC20 for IERC20;

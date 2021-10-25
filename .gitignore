@@ -5,3 +5,4 @@ build
 artifacts
 cache
 .env
+.idea

@@ -11,6 +11,7 @@
         "@openzeppelin/contracts": "^3.4.2"
     },
     "devDependencies": {
+        "@1inch/1inch-solidity-utils": "^1.1.3",
         "@nomiclabs/hardhat-ethers": "^2.0.2",
         "@nomiclabs/hardhat-etherscan": "^2.1.6",
         "@nomiclabs/hardhat-truffle5": "^2.0.0",
@@ -37,6 +38,7 @@
         "test": "hardhat test --show-stack-traces",
         "clean": "rimraf artifacts cache coverage",
         "deploy": "hardhat deploy --network",
+        "docify": "npx solidity-utils-docify",
         "coverage": "hardhat coverage",
         "lint:js": "eslint .",
         "lint:js:fix": "eslint . --fix",
