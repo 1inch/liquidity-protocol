@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "./BalanceAccounting.sol";
 
-
-contract BaseRewards is Ownable, BalanceAccounting {
+/// @title Base contract for reward mechanics
+abstract contract BaseRewards is Ownable, BalanceAccounting {
     using SafeERC20 for IERC20;
 
     event RewardAdded(uint256 indexed i, uint256 reward);
@@ -55,10 +55,12 @@ contract BaseRewards is Ownable, BalanceAccounting {
         _;
     }
 
+    /// @notice Returns last time specific token reward was applicable
     function lastTimeRewardApplicable(uint i) public view returns (uint256) {
         return Math.min(block.timestamp, tokenRewards[i].periodFinish);
     }
 
+    /// @notice Returns current reward per token
     function rewardPerToken(uint i) public view returns (uint256) {
         TokenRewards storage tr = tokenRewards[i];
         if (totalSupply() == 0) {
@@ -72,10 +74,12 @@ contract BaseRewards is Ownable, BalanceAccounting {
         );
     }
 
+    /// @notice Returns how many tokens account currently has
     function earned(uint i, address account) public view returns (uint256) {
         return _earned(i, account, rewardPerToken(i));
     }
 
+    /// @notice Withdraws `msg.sender`'s reward
     function getReward(uint i) public updateReward(msg.sender) {
         TokenRewards storage tr = tokenRewards[i];
         uint256 reward = tr.rewards[msg.sender];
@@ -86,6 +90,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         }
     }
 
+    /// @notice Same as `getReward` but for all listed tokens
     function getAllRewards() public {
         uint256 len = tokenRewards.length;
         for (uint i = 0; i < len; i++) {
@@ -93,6 +98,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         }
     }
 
+    /// @notice Updates specific token rewards amount
     function notifyRewardAmount(uint i, uint256 reward) external onlyRewardDistribution(i) updateReward(address(0)) {
         TokenRewards storage tr = tokenRewards[i];
         uint256 scale = tr.scale;
@@ -119,12 +125,14 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit RewardAdded(i, reward);
     }
 
+    /// @notice Updates rewards distributor
     function setRewardDistribution(uint i, address _rewardDistribution) external onlyOwner {
         TokenRewards storage tr = tokenRewards[i];
         tr.rewardDistribution = _rewardDistribution;
         emit RewardDistributionChanged(i, _rewardDistribution);
     }
 
+    /// @notice Updates rewards duration
     function setDuration(uint i, uint256 duration) external onlyRewardDistribution(i) {
         TokenRewards storage tr = tokenRewards[i];
         require(block.timestamp >= tr.periodFinish, "Not finished yet");
@@ -132,6 +140,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit DurationUpdated(i, duration);
     }
 
+    /// @notice Updates rewards scale
     function setScale(uint i, uint256 scale) external onlyOwner {
         require(scale > 0, "Scale is too low");
         require(scale <= 1e36, "Scale si too high");
@@ -141,6 +150,7 @@ contract BaseRewards is Ownable, BalanceAccounting {
         emit ScaleUpdated(i, scale);
     }
 
+    /// @notice Adds new token to the list
     function addGift(IERC20 gift, uint256 duration, address rewardDistribution, uint256 scale) public onlyOwner {
         require(scale > 0, "Scale is too low");
         require(scale <= 1e36, "Scale is too high");

@@ -10,7 +10,7 @@ import "../libraries/LiquidVoting.sol";
 import "../libraries/MooniswapConstants.sol";
 import "../libraries/SafeCast.sol";
 
-
+/// @title 1inch Mooniswap governance
 abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
     using Vote for Vote.Data;
     using LiquidVoting for LiquidVoting.Data;
@@ -40,54 +40,66 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
         this.discardDecayPeriodVote();
     }
 
+    /// @notice Current fee
     function fee() public view returns(uint256) {
         return _fee.data.current();
     }
 
+    /// @notice Current slippage
     function slippageFee() public view returns(uint256) {
         return _slippageFee.data.current();
     }
 
+    /// @notice Current decay period
     function decayPeriod() public view returns(uint256) {
         return _decayPeriod.data.current();
     }
 
+    /// @notice Describes previous fee that had place, current one and time on which this changed
     function virtualFee() external view returns(uint104, uint104, uint48) {
         return (_fee.data.oldResult, _fee.data.result, _fee.data.time);
     }
 
+    /// @notice Describes previous slippage fee that had place, current one and time on which this changed
     function virtualSlippageFee() external view returns(uint104, uint104, uint48) {
         return (_slippageFee.data.oldResult, _slippageFee.data.result, _slippageFee.data.time);
     }
 
+    /// @notice Describes previous decay period that had place, current one and time on which this changed
     function virtualDecayPeriod() external view returns(uint104, uint104, uint48) {
         return (_decayPeriod.data.oldResult, _decayPeriod.data.result, _decayPeriod.data.time);
     }
 
+    /// @notice Returns user stance to preferred fee
     function feeVotes(address user) external view returns(uint256) {
         return _fee.votes[user].get(mooniswapFactoryGovernance.defaultFee);
     }
 
+    /// @notice Returns user stance to preferred slippage fee
     function slippageFeeVotes(address user) external view returns(uint256) {
         return _slippageFee.votes[user].get(mooniswapFactoryGovernance.defaultSlippageFee);
     }
 
+    /// @notice Returns user stance to preferred decay period
     function decayPeriodVotes(address user) external view returns(uint256) {
         return _decayPeriod.votes[user].get(mooniswapFactoryGovernance.defaultDecayPeriod);
     }
 
+    /// @notice Records `msg.senders`'s vote for fee
     function feeVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_FEE, "Fee vote is too high");
 
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
     }
 
+    /// @notice Records `msg.senders`'s vote for slippage fee
     function slippageFeeVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
     }
 
+    /// @notice Records `msg.senders`'s vote for decay period
     function decayPeriodVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= MooniswapConstants._MIN_DECAY_PERIOD, "Decay period vote is too low");
@@ -95,14 +107,17 @@ abstract contract MooniswapGovernance is ERC20, Ownable, ReentrancyGuard {
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(vote), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for fee
     function discardFeeVote() external {
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for slippage fee
     function discardSlippageFeeVote() external {
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for decay period
     function discardDecayPeriodVote() external {
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
     }

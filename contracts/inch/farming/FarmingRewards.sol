@@ -8,7 +8,7 @@ import "../../libraries/Voting.sol";
 import "../../libraries/UniERC20.sol";
 import "../../utils/BaseRewards.sol";
 
-
+/// @title Farming rewards contract
 contract FarmingRewards is BaseRewards {
     using Vote for Vote.Data;
     using Voting for Voting.Data;
@@ -46,6 +46,7 @@ contract FarmingRewards is BaseRewards {
         return mooniswap.decimals();
     }
 
+    /// @notice Stakes `amount` of tokens into farm
     function stake(uint256 amount) public updateReward(msg.sender) {
         require(amount > 0, "Cannot stake 0");
         mooniswap.transferFrom(msg.sender, address(this), amount);
@@ -54,6 +55,7 @@ contract FarmingRewards is BaseRewards {
         emit Transfer(address(0), msg.sender, amount);
     }
 
+    /// @notice Withdraws `amount` of tokens from farm
     function withdraw(uint256 amount) public updateReward(msg.sender) {
         require(amount > 0, "Cannot withdraw 0");
         _burn(msg.sender, amount);
@@ -62,35 +64,43 @@ contract FarmingRewards is BaseRewards {
         emit Transfer(msg.sender, address(0), amount);
     }
 
+    /// @notice Withdraws all staked funds and rewards
     function exit() external {
         withdraw(balanceOf(msg.sender));
         getAllRewards();
     }
 
+    /// @notice Current fee
     function fee() public view returns(uint256) {
         return _fee.result;
     }
 
+    /// @notice Current slippage
     function slippageFee() public view returns(uint256) {
         return _slippageFee.result;
     }
 
+    /// @notice Current decay period
     function decayPeriod() public view returns(uint256) {
         return _decayPeriod.result;
     }
 
+    /// @notice Returns user stance to preferred fee
     function feeVotes(address user) external view returns(uint256) {
         return _fee.votes[user].get(mooniswapFactoryGovernance.defaultFee);
     }
 
+    /// @notice Returns user stance to preferred slippage fee
     function slippageFeeVotes(address user) external view returns(uint256) {
         return _slippageFee.votes[user].get(mooniswapFactoryGovernance.defaultSlippageFee);
     }
 
+    /// @notice Returns user stance to preferred decay period
     function decayPeriodVotes(address user) external view returns(uint256) {
         return _decayPeriod.votes[user].get(mooniswapFactoryGovernance.defaultDecayPeriod);
     }
 
+    /// @notice Records `msg.senders`'s vote for fee
     function feeVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_FEE, "Fee vote is too high");
 
@@ -98,6 +108,7 @@ contract FarmingRewards is BaseRewards {
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
     }
 
+    /// @notice Records `msg.senders`'s vote for slippage fee
     function slippageFeeVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_SLIPPAGE_FEE, "Slippage fee vote is too high");
 
@@ -105,6 +116,7 @@ contract FarmingRewards is BaseRewards {
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
+    /// @notice Records `msg.senders`'s vote for decay period
     function decayPeriodVote(uint256 vote) external {
         require(vote <= MooniswapConstants._MAX_DECAY_PERIOD, "Decay period vote is too high");
         require(vote >= MooniswapConstants._MIN_DECAY_PERIOD, "Decay period vote is too low");
@@ -113,16 +125,19 @@ contract FarmingRewards is BaseRewards {
         _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for fee
     function discardFeeVote() external {
         _fee.updateVote(msg.sender, _fee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultFee(), _emitFeeVoteUpdate);
         _vote(_fee, mooniswap.feeVote, mooniswap.discardFeeVote);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for slippage fee
     function discardSlippageFeeVote() external {
         _slippageFee.updateVote(msg.sender, _slippageFee.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultSlippageFee(), _emitSlippageFeeVoteUpdate);
         _vote(_slippageFee, mooniswap.slippageFeeVote, mooniswap.discardSlippageFeeVote);
     }
 
+    /// @notice Retracts `msg.senders`'s vote for decay period
     function discardDecayPeriodVote() external {
         _decayPeriod.updateVote(msg.sender, _decayPeriod.votes[msg.sender], Vote.init(), balanceOf(msg.sender), totalSupply(), mooniswapFactoryGovernance.defaultDecayPeriod(), _emitDecayPeriodVoteUpdate);
         _vote(_decayPeriod, mooniswap.decayPeriodVote, mooniswap.discardDecayPeriodVote);
@@ -171,6 +186,7 @@ contract FarmingRewards is BaseRewards {
         emit DecayPeriodVoteUpdate(account, newDecayPeriod, isDefault, newBalance);
     }
 
+    /// @notice Allows contract owner to withdraw funds that was send to contract by mistake
     function rescueFunds(IERC20 token, uint256 amount) external onlyOwner {
         for (uint i = 0; i < tokenRewards.length; i++) {
             require(token != tokenRewards[i].gift, "Can't rescue gift");

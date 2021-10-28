@@ -5,7 +5,7 @@ pragma solidity ^0.6.12;
 import "./FarmingRewards.sol";
 import "../../interfaces/IMooniswapFactoryGovernance.sol";
 
-
+/// @title Allows to vote on multiple predefined farms in one transaction
 contract FarmingVoter {
     IMooniswapFactoryGovernance public immutable factory;
 
