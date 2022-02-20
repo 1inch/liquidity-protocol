@@ -71,7 +71,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
                 reward.token, reward.duration, reward.rewardDistribution, reward.scale, {
                     maxFeePerGas: 100000000000,
                     maxPriorityFeePerGas: 2000000000,
-                }
+                },
             );
             await addGiftTxn.wait();
         }
