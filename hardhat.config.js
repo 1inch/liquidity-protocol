@@ -4,8 +4,10 @@ require('@nomiclabs/hardhat-truffle5');
 require('hardhat-deploy');
 require('hardhat-gas-reporter');
 require('solidity-coverage');
+require('solidity-docgen');
 require('dotenv').config();
 
+const { oneInchTemplates } = require('@1inch/solidity-utils/docgen');
 const networks = require('./hardhat.networks');
 
 module.exports = {
@@ -30,5 +32,11 @@ module.exports = {
     gasReporter: {
         enable: true,
         currency: 'USD',
+    },
+    docgen: {
+        outputDir: 'docs',
+        templates: oneInchTemplates(),
+        pages: 'files',
+        exclude: ['mocks'],
     },
 };
