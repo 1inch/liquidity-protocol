@@ -31,8 +31,8 @@
         "hardhat-gas-reporter": "^1.0.4",
         "rimraf": "^3.0.2",
         "solc": "^0.6.12",
-        "solhint": "^3.3.6",
-        "solidity-coverage": "^0.7.17",
+        "solhint": "3.3.6",
+        "solidity-coverage": "^0.8.13",
         "solidity-docgen": "0.6.0-beta.36"
     },
     "scripts": {
